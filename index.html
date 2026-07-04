@@ -932,6 +932,9 @@
           <button class="purple" id="removeDuplicateMCQBtn">Remove duplicate MCQs</button>
           <p class="muted tiny" style="margin:8px 0 0;">Keeps one copy of MCQs with the same subject, deck, topic, question, choices, correct answer, and explanation.</p>
           <div style="height:10px;"></div>
+          <button class="warn" id="removeBrokenMCQBtn">Remove broken imported MCQs</button>
+          <p class="muted tiny" style="margin:8px 0 0;">Use this if pasted CSV imported with cut-off questions, quoted subjects, or wrong columns.</p>
+          <div style="height:10px;"></div>
           <button class="danger" id="clearAllBtn">Clear all data</button>
           <div class="divider"></div>
           <h2 class="section-title">Restore JSON backup</h2>
@@ -1101,7 +1104,7 @@
       importType: $("importType"), importTargetDeck: $("importTargetDeck"), importText: $("importText"), importCsvBtn: $("importCsvBtn"), clearImportBtn: $("clearImportBtn"),
       pdfInput: $("pdfInput"), extractPdfBtn: $("extractPdfBtn"), promptType: $("promptType"), cardPrompt: $("cardPrompt"), copyPromptBtn: $("copyPromptBtn"),
 
-      exportCsvBtn: $("exportCsvBtn"), exportMCQCsvBtn: $("exportMCQCsvBtn"), exportJsonBtn: $("exportJsonBtn"), removeDuplicateMCQBtn: $("removeDuplicateMCQBtn"), clearAllBtn: $("clearAllBtn"), jsonRestoreFile: $("jsonRestoreFile"), restoreJsonBtn: $("restoreJsonBtn"), resetProfileBtn: $("resetProfileBtn")
+      exportCsvBtn: $("exportCsvBtn"), exportMCQCsvBtn: $("exportMCQCsvBtn"), exportJsonBtn: $("exportJsonBtn"), removeDuplicateMCQBtn: $("removeDuplicateMCQBtn"), removeBrokenMCQBtn: $("removeBrokenMCQBtn"), clearAllBtn: $("clearAllBtn"), jsonRestoreFile: $("jsonRestoreFile"), restoreJsonBtn: $("restoreJsonBtn"), resetProfileBtn: $("resetProfileBtn")
     };
 
     function loadProfile() {
@@ -1609,7 +1612,19 @@
       db.decks.push({ id: uid(), subject, name }); el.newDeckName.value = ""; saveDB(); showToast("Deck added");
     }
 
+    function normalizeImportText(text) {
+      return String(text || "")
+        .replace(/```csv/gi, "")
+        .replace(/```/g, "")
+        .replace(/[“”]/g, '"')
+        .replace(/[‘’]/g, "'")
+        .replace(/[^]*/g, "")
+        .replace(/\uFEFF/g, "")
+        .trim();
+    }
+
     function parseCSV(text) {
+      text = normalizeImportText(text);
       const rows = []; let row = []; let field = ""; let inQuotes = false;
       for (let i = 0; i < text.length; i++) {
         const char = text[i], next = text[i + 1];
@@ -1623,13 +1638,20 @@
     }
 
     function importItems() {
+      const text = normalizeImportText(el.importText.value);
+      const firstLine = text.split(/\n/)[0]?.toLowerCase() || "";
+      const looksLikeMCQ = firstLine.includes("subject") && firstLine.includes("question") && firstLine.includes("correct") && firstLine.includes("explanation") && firstLine.includes("a") && firstLine.includes("b") && firstLine.includes("c") && firstLine.includes("d");
       const type = el.importType.value;
-      if (type === "mcq") importMCQCSV();
-      else importCards();
+      if (type === "mcq" || looksLikeMCQ) {
+        el.importType.value = "mcq";
+        importMCQCSV();
+      } else {
+        importCards();
+      }
     }
 
     function importCards() {
-      const text = el.importText.value.trim(); if (!text) { showToast("Paste cards first"); return; }
+      const text = normalizeImportText(el.importText.value); if (!text) { showToast("Paste cards first"); return; }
       let imported = 0; const targetDeck = getDeck(el.importTargetDeck.value);
       if (text.includes(",") && text.split("\n")[0].toLowerCase().includes("question")) {
         const rows = parseCSV(text); const header = rows.shift().map(h => h.toLowerCase().trim()); const idx = (name) => header.indexOf(name);
@@ -1654,7 +1676,7 @@
     }
 
     function importMCQCSV() {
-      const text = el.importText.value.trim(); if (!text) { showToast("Paste MCQ CSV first"); return; }
+      const text = normalizeImportText(el.importText.value); if (!text) { showToast("Paste MCQ CSV first"); return; }
       let imported = 0; const targetDeck = getDeck(el.importTargetDeck.value);
       const rows = parseCSV(text);
       let header = [];
@@ -1792,6 +1814,42 @@
       showToast(`Removed ${removed} duplicate MCQ${removed === 1 ? "" : "s"}`);
     }
 
+    function removeBrokenImportedMCQs() {
+      if (!db.mcqs || !db.mcqs.length) {
+        showToast("No MCQs to check");
+        return;
+      }
+
+      const confirmed = confirm("Remove broken imported MCQs? This deletes MCQs with quoted subjects, cut-off stems, invalid subject labels, invalid answer letters, or missing choices. Export full JSON first if you want extra safety.");
+      if (!confirmed) return;
+
+      const allowedSubjects = new Set(["FAR", "AFAR", "MAS", "Auditing Theory", "Auditing Problems", "Taxation", "RFBT"]);
+      const hasSmartQuote = value => /[“”]/.test(String(value || ""));
+      const hasBadWrappingQuote = value => {
+        const s = String(value || "").trim();
+        return s.startsWith('"') || s.endsWith('"') || s.startsWith("“") || s.endsWith("”");
+      };
+
+      const isBroken = item => {
+        const fields = [item.subject, item.topic, item.question, item.A, item.B, item.C, item.D, item.correct, item.explanation];
+        if (!allowedSubjects.has(String(item.subject || "").trim())) return true;
+        if (!"ABCD".includes(String(item.correct || "").trim().toUpperCase())) return true;
+        if (!item.question || !item.A || !item.B || !item.C || !item.D) return true;
+        if (String(item.question || "").trim().length < 15) return true;
+        if (fields.some(hasSmartQuote) || fields.some(hasBadWrappingQuote)) return true;
+        return false;
+      };
+
+      const before = db.mcqs.length;
+      db.mcqs = db.mcqs.filter(item => !isBroken(item));
+      const removed = before - db.mcqs.length;
+
+      saveDB(true);
+      renderMCQList();
+      buildQuizQueue(false);
+      showToast(`Removed ${removed} broken MCQ${removed === 1 ? "" : "s"}`);
+    }
+
     function clearAllData() {
       if (!confirm("Delete all decks, cards, MCQs, and stats from this browser?")) return;
       localStorage.removeItem(STORE); db = loadDB(); updateAll(); showToast("Data reset to samples");
@@ -1882,6 +1940,7 @@ Notes:`;
 
       el.exportCsvBtn.addEventListener("click", exportCSV); el.exportMCQCsvBtn.addEventListener("click", exportMCQCSV); el.exportJsonBtn.addEventListener("click", exportJSON); el.restoreJsonBtn.addEventListener("click", restoreJSON);
       el.removeDuplicateMCQBtn.addEventListener("click", removeDuplicateMCQs);
+      el.removeBrokenMCQBtn.addEventListener("click", removeBrokenImportedMCQs);
       el.clearAllBtn.addEventListener("click", clearAllData);
       el.resetProfileBtn.addEventListener("click", () => { if (!confirm("Reset your local profile? Cards and MCQs will remain.")) return; localStorage.removeItem(PROFILE); profile = null; renderProfile(); });
     }

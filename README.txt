@@ -1,31 +1,33 @@
-CPALE Recall Deck v3.1
+CPALE Recall Deck v3.2
 
-New in v3.1:
-- Added a Backup tab button: Remove duplicate MCQs
-- The button keeps one copy of each repeated MCQ and deletes duplicate copies
-- Duplicate detection compares:
-  subject, deck, topic, question, A, B, C, D, correct answer, and explanation
-- Full JSON backup/export still works
+New in v3.2:
+- Smarter CSV importer for pasted MCQ CSV
+- Handles smart/curly quotes copied from chat apps
+- Strips markdown code fences from pasted CSV
+- Strips ChatGPT/file citation markers from pasted text
+- Auto-detects MCQ CSV if the header contains correct/explanation
+- Added Backup button: Remove broken imported MCQs
 
-How to update your GitHub website:
-1. Download and extract this ZIP.
-2. In your GitHub repository, replace/upload:
+Why this version matters:
+If your imported MCQs showed cut-off questions, quoted subjects like “RFBT”, or wrong answers, the older importer likely misread commas because the copied CSV used smart quotes instead of normal CSV quotes.
+
+How to fix your current website:
+1. Upload/replace these files in GitHub:
    - index.html
    - manifest.webmanifest
    - service-worker.js
    - README.txt
-3. Commit changes.
-4. Open your GitHub Pages website.
-5. If the old version still appears, refresh Safari. If installed on Home Screen, remove it and add it again.
+2. Commit changes.
+3. Open your GitHub Pages website.
+4. Go to Backup.
+5. Export full JSON first for safety.
+6. Tap Remove broken imported MCQs.
+7. Tap Remove duplicate MCQs if needed.
+8. Re-import the MCQ CSV.
 
-How to remove duplicate MCQs:
-1. Open your website.
-2. Go to Backup.
-3. Optional but recommended: tap Export full JSON first.
-4. Tap Remove duplicate MCQs.
-5. Confirm.
-6. The app will show how many duplicate MCQs were removed.
+Best import format:
+subject,deck,topic,question,A,B,C,D,correct,explanation
 
 Important:
-- Your website saves data locally in your browser.
-- Always export full JSON before major changes.
+- This app saves data locally in your browser.
+- Always export full JSON before cleanup or major imports.
