@@ -1,9 +1,0 @@
-{
-  "name": "CPALE Recall Deck",
-  "short_name": "CPALE Deck",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#0b1020",
-  "theme_color": "#0f172a",
-  "description": "A CPALE flashcard and MCQ quiz app with visible Finish panel and growth areas."
-}
