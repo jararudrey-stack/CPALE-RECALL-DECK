@@ -824,7 +824,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v4.0 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v4.1 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -879,8 +879,8 @@
                 <b id="scoreText">0%</b>
                 <p class="muted" id="scoreDetails">Quiz complete.</p>
                 <div class="stack">
-                  <button class="warn" id="finishQuizBtn">Option 4: Finish</button>
-                  <p class="muted tiny" style="margin:0;">Only appears after completion. Terminates and clears the completed quiz session.</p>
+                  <button class="warn" id="finishQuizBtn" type="button" onclick="finishQuizSession()">Finish</button>
+                  <p class="muted tiny" style="margin:0;">Clears the completed quiz and exits the quiz screen.</p>
                   <div class="two-col">
                     <button id="reviewMissedBtn">Review missed</button>
                     <button class="secondary" id="newQuizBtn">New quiz</button>
@@ -902,9 +902,9 @@
               <div class="title-v40">Quiz session options</div>
 
               <div class="options-v40">
-                <button class="warn" id="exitSaveQuizBtn">Option 1: Exit and Save</button>
-                <button class="danger" id="exitNoSaveQuizBtn">Option 2: Exit and Not Save</button>
-                <button class="secondary" id="restartQuizBtn">Option 3: Restart</button>
+                <button class="warn" id="exitSaveQuizBtn">Exit and Save</button>
+                <button class="danger" id="exitNoSaveQuizBtn">Exit and Not Save</button>
+                <button class="secondary" id="restartQuizBtn">Restart</button>
               </div>
             </div></div>
         </div>
@@ -1398,7 +1398,7 @@
       const name = profile.name || "Student";
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
-      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v4.0` : "Flashcards + CPALE-style multiple choice quizzes. v4.0";
+      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v4.1` : "Flashcards + CPALE-style multiple choice quizzes. v4.1";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
@@ -2038,10 +2038,30 @@
     }
 
     function finishQuizSession() {
-      clearCurrentQuizSession();
+      resetQuizRuntime();
+
+      quizQueue = [];
+      quizIndex = 0;
+      quizAnswers = {};
+      quizTimerRemainingById = {};
+      quizTimerDeadline = 0;
+
+      localStorage.removeItem(QUIZ_SESSION_KEY);
+      localStorage.removeItem(QUIZ_RETRY_KEY);
+
+      if (el.quizResults) el.quizResults.classList.add("hidden");
+      if (el.quizActiveArea) el.quizActiveArea.classList.remove("hidden");
+      if (el.quizControlsV40) el.quizControlsV40.classList.remove("hidden");
+
+      updateQuizProgressUI();
+      updateTimerDisplay();
+      renderQuiz();
+
       showScreen("dashboard");
-      showToast("Quiz finished");
+      showToast("Quiz finished and cleared");
     }
+
+    window.finishQuizSession = finishQuizSession;
 
     function showQuizResults() {
       resetQuizRuntime();
@@ -2616,8 +2636,17 @@ Notes:`;
       el.prevCardBtn.addEventListener("click", prevReviewCard); el.revealCardBtn.addEventListener("click", revealCurrentCard); el.againCardBtn.addEventListener("click", () => rateReview("again")); el.hardCardBtn.addEventListener("click", () => rateReview("hard")); el.goodCardBtn.addEventListener("click", () => rateReview("good"));
 
       el.enableSoundBtn.addEventListener("click", enableSoundManually);
-      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", retrySavedQuizSession); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.finishQuizBtn.addEventListener("click", finishQuizSession);
+      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", retrySavedQuizSession); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false));
       el.prevQuizBtn.addEventListener("click", prevQuiz); el.nextQuizBtn.addEventListener("click", nextQuiz); el.exitSaveQuizBtn.addEventListener("click", exitQuizSession); el.exitNoSaveQuizBtn.addEventListener("click", exitQuizWithoutSaving); el.restartQuizBtn.addEventListener("click", restartCurrentQuiz); el.quizTimerMode.addEventListener("change", () => { enableTimedModeFromSelect(); updateTimerDisplay(); }); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
+
+      // finishQuizBtn fail-safe: keeps Finish working even if browser cache or dynamic rendering interferes.
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (target && target.id === "finishQuizBtn") {
+          event.preventDefault();
+          finishQuizSession();
+        }
+      });
 
       el.addDeckBtn.addEventListener("click", addDeck);
       el.cardDeckFilter.addEventListener("change", renderCardsList); el.cardSearch.addEventListener("input", renderCardsList);
