@@ -640,6 +640,38 @@
       vertical-align: middle;
     }
 
+    .quiz-completion-panel-v44 {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 24px;
+      border: 1px solid rgba(34, 197, 94, .28);
+      background: rgba(34, 197, 94, .08);
+      box-shadow: var(--shadow);
+    }
+
+    .quiz-completion-panel-v44 h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .growth-list-v44 {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .growth-item-v44 {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .growth-item-v44 strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
     @media (max-width: 720px) {
       .quiz-actions-v40 .nav-v40,
       .quiz-actions-v40 .options-v40 {
@@ -824,7 +856,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v4.3 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v4.4 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -907,6 +939,12 @@
                 <button class="secondary" id="restartQuizBtn">Restart</button>
               </div>
             </div></div>
+            <div id="quizCompletionPanelV44" class="quiz-completion-panel-v44 hidden">
+              <h3>Quiz completed</h3>
+              <p class="muted tiny" id="quizCompletionSummaryV44">Review your results and growth areas below.</p>
+              <button class="warn" id="finishQuizBtnV44" type="button" onclick="finishQuizSession(event)">Finish</button>
+              <div id="growthAreasV44" class="growth-list-v44"></div>
+            </div>
         </div>
 
         <aside class="panel pad">
@@ -1246,7 +1284,7 @@
       quizProgressBar: $("quizProgressBar"), quizProgressText: $("quizProgressText"), quizProgressPercent: $("quizProgressPercent"), quizTimerText: $("quizTimerText"),
       quizQuestion: $("quizQuestion"), choiceGrid: $("choiceGrid"), quizExplanation: $("quizExplanation"), quizResults: $("quizResults"), scoreText: $("scoreText"), scoreDetails: $("scoreDetails"),
       reviewMissedBtn: $("reviewMissedBtn"), newQuizBtn: $("newQuizBtn"), finishQuizBtn: $("finishQuizBtn"), quizHint: $("quizHint"), quizScoreLive: $("quizScoreLive"), prevQuizBtn: $("prevQuizBtn"), nextQuizBtn: $("nextQuizBtn"),
-      quizControlsV40: $("quizControlsV40"), exitSaveQuizBtn: $("exitSaveQuizBtn"), exitNoSaveQuizBtn: $("exitNoSaveQuizBtn"), restartQuizBtn: $("restartQuizBtn"),
+      quizControlsV40: $("quizControlsV40"), exitSaveQuizBtn: $("exitSaveQuizBtn"), exitNoSaveQuizBtn: $("exitNoSaveQuizBtn"), restartQuizBtn: $("restartQuizBtn"), quizCompletionPanelV44: $("quizCompletionPanelV44"), finishQuizBtnV44: $("finishQuizBtnV44"), growthAreasV44: $("growthAreasV44"), quizCompletionSummaryV44: $("quizCompletionSummaryV44"),
       quizQueueSummary: $("quizQueueSummary"), quizQueueList: $("quizQueueList"),
 
       deckGrid: $("deckGrid"), newDeckSubject: $("newDeckSubject"), newDeckName: $("newDeckName"), addDeckBtn: $("addDeckBtn"),
@@ -1398,7 +1436,7 @@
       const name = profile.name || "Student";
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
-      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v4.3` : "Flashcards + CPALE-style multiple choice quizzes. v4.3";
+      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v4.4` : "Flashcards + CPALE-style multiple choice quizzes. v4.4";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
@@ -1573,6 +1611,73 @@
       if (el.resumeQuizBtn) el.resumeQuizBtn.disabled = !hasSavedQuizSession();
     }
 
+    function renderGrowthAreasV44() {
+      if (!el.growthAreasV44) return;
+
+      const missed = quizQueue.filter(q => quizAnswers[q.id] && quizAnswers[q.id] !== q.correct);
+
+      if (!quizQueue.length) {
+        el.growthAreasV44.innerHTML = "";
+        if (el.quizCompletionSummaryV44) el.quizCompletionSummaryV44.textContent = "No completed quiz to summarize.";
+        return;
+      }
+
+      const score = quizCorrectCount();
+      const total = quizQueue.length;
+      const pct = total ? Math.round((score / total) * 100) : 0;
+
+      if (el.quizCompletionSummaryV44) {
+        el.quizCompletionSummaryV44.textContent = `Final score: ${score}/${total} (${pct}%).`;
+      }
+
+      if (!missed.length) {
+        el.growthAreasV44.innerHTML = `
+          <div class="growth-item-v44">
+            <strong>No major growth area detected.</strong>
+            <span class="muted">You answered all items correctly. Keep reviewing the same topic later for retention and speed.</span>
+          </div>`;
+        return;
+      }
+
+      const grouped = {};
+      missed.forEach(q => {
+        const deck = getDeck(q.deckId);
+        const topic = q.topic || deck.name || "General";
+        const key = `${q.subject}|${deck.name}|${topic}`;
+        if (!grouped[key]) grouped[key] = { subject: q.subject, deck: deck.name, topic, count: 0, questions: [] };
+        grouped[key].count++;
+        grouped[key].questions.push(q.question);
+      });
+
+      const areas = Object.values(grouped).sort((a, b) => b.count - a.count).slice(0, 5);
+
+      el.growthAreasV44.innerHTML = areas.map(area => {
+        const sample = area.questions.slice(0, 2).map(q => `<li>${escapeHTML(q)}</li>`).join("");
+        const label = `${area.subject} · ${area.deck} · ${area.topic}`;
+        return `
+          <div class="growth-item-v44">
+            <strong>${escapeHTML(label)}</strong>
+            <span class="muted">${area.count} missed item${area.count === 1 ? "" : "s"}. Prioritize this area in your next recall session.</span>
+            <ul class="muted tiny" style="margin:8px 0 0 18px;">${sample}</ul>
+          </div>`;
+      }).join("");
+    }
+
+    function showCompletionPanelV44() {
+      if (!el.quizCompletionPanelV44) return;
+      renderGrowthAreasV44();
+      el.quizCompletionPanelV44.classList.remove("hidden");
+      setTimeout(() => {
+        try { el.quizCompletionPanelV44.scrollIntoView({ behavior: "smooth", block: "center" }); } catch {}
+      }, 80);
+    }
+
+    function hideCompletionPanelV44() {
+      if (!el.quizCompletionPanelV44) return;
+      el.quizCompletionPanelV44.classList.add("hidden");
+      if (el.growthAreasV44) el.growthAreasV44.innerHTML = "";
+    }
+
     function saveQuizSession(completed = false) {
       captureCurrentTimerRemaining();
 
@@ -1686,6 +1791,7 @@
       const confirmed = confirm("Restart this quiz from item 1? Your answers in this current attempt will be cleared.");
       if (!confirmed) return;
 
+      hideCompletionPanelV44();
       resetQuizRuntime();
       quizIndex = 0;
       quizAnswers = {};
@@ -1698,6 +1804,7 @@
     }
 
     function buildQuizQueue(useMissed = false) {
+      hideCompletionPanelV44();
       resetQuizRuntime();
       unlockAudio();
       enableTimedModeFromSelect();
@@ -1938,6 +2045,7 @@
         el.quizScoreLive.textContent = "Score: 0/0";
         updateQuizProgressUI();
         updateTimerDisplay();
+        hideCompletionPanelV44();
         return;
       }
 
@@ -1978,6 +2086,8 @@
       el.quizScoreLive.textContent = `Score: ${correctItems}/${answeredItems}`;
       updateQuizProgressUI();
       startQuestionTimer();
+      if (quizIsComplete()) showCompletionPanelV44();
+      else hideCompletionPanelV44();
     }
 
     function answerQuiz(letter) {
@@ -2032,6 +2142,7 @@
       quizTimerDeadline = 0;
       localStorage.removeItem(QUIZ_SESSION_KEY);
       localStorage.removeItem(QUIZ_RETRY_KEY);
+      hideCompletionPanelV44();
       updateQuizProgressUI();
       updateTimerDisplay();
       renderQuiz();
@@ -2056,6 +2167,7 @@
       if (el.quizResults) el.quizResults.classList.add("hidden");
       if (el.quizActiveArea) el.quizActiveArea.classList.remove("hidden");
       if (el.quizControlsV40) el.quizControlsV40.classList.remove("hidden");
+      hideCompletionPanelV44();
 
       activeScreen = "quiz";
       renderQuiz();
@@ -2086,6 +2198,7 @@
       localStorage.removeItem(QUIZ_SESSION_KEY);
       updateQuizProgressUI();
       updateTimerDisplay();
+      showCompletionPanelV44();
       saveDB(true);
     }
 
@@ -2637,12 +2750,20 @@ Notes:`;
       el.prevCardBtn.addEventListener("click", prevReviewCard); el.revealCardBtn.addEventListener("click", revealCurrentCard); el.againCardBtn.addEventListener("click", () => rateReview("again")); el.hardCardBtn.addEventListener("click", () => rateReview("hard")); el.goodCardBtn.addEventListener("click", () => rateReview("good"));
 
       el.enableSoundBtn.addEventListener("click", enableSoundManually);
-      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", retrySavedQuizSession); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false));
+      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", retrySavedQuizSession); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false)); if (el.finishQuizBtnV44) el.finishQuizBtnV44.addEventListener("click", finishQuizSession); if (el.finishQuizBtn) el.finishQuizBtn.addEventListener("click", finishQuizSession);
       el.prevQuizBtn.addEventListener("click", prevQuiz); el.nextQuizBtn.addEventListener("click", nextQuiz); el.exitSaveQuizBtn.addEventListener("click", exitQuizSession); el.exitNoSaveQuizBtn.addEventListener("click", exitQuizWithoutSaving); el.restartQuizBtn.addEventListener("click", restartCurrentQuiz); el.quizTimerMode.addEventListener("change", () => { enableTimedModeFromSelect(); updateTimerDisplay(); }); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
       // Finish button fallback v4.3
       document.addEventListener("click", (event) => {
         const target = event.target;
         if (target && target.id === "finishQuizBtn") {
+          finishQuizSession(event);
+        }
+      });
+
+      // Finish button fallback v4.4
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (target && (target.id === "finishQuizBtn" || target.id === "finishQuizBtnV44")) {
           finishQuizSession(event);
         }
       });
