@@ -885,6 +885,8 @@
               <option value="mcq">MCQ CSV</option>
             </select>
             <select id="importTargetDeck"></select>
+            <input id="csvFileInput" type="file" accept=".csv,text/csv" />
+            <button class="secondary" id="loadCsvFileBtn">Load CSV file into box</button>
             <textarea id="importText" placeholder="Paste CSV or Q/A text here."></textarea>
             <div class="two-col">
               <button id="importCsvBtn">Import</button>
@@ -933,7 +935,7 @@
           <p class="muted tiny" style="margin:8px 0 0;">Keeps one copy of MCQs with the same subject, deck, topic, question, choices, correct answer, and explanation.</p>
           <div style="height:10px;"></div>
           <button class="warn" id="removeBrokenMCQBtn">Remove broken imported MCQs</button>
-          <p class="muted tiny" style="margin:8px 0 0;">Use this if pasted CSV imported with cut-off questions, quoted subjects, or wrong columns.</p>
+          <p class="muted tiny" style="margin:8px 0 0;">Removes malformed MCQs caused by bad CSV splitting, cut-off questions, quoted subjects, missing choices, or invalid columns.</p>
           <div style="height:10px;"></div>
           <button class="danger" id="clearAllBtn">Clear all data</button>
           <div class="divider"></div>
@@ -1101,7 +1103,7 @@
       mcqDeckFilter: $("mcqDeckFilter"), mcqSearch: $("mcqSearch"), mcqList: $("mcqList"), mcqEditDeck: $("mcqEditDeck"), mcqEditTopic: $("mcqEditTopic"), mcqEditQuestion: $("mcqEditQuestion"),
       mcqA: $("mcqA"), mcqB: $("mcqB"), mcqC: $("mcqC"), mcqD: $("mcqD"), mcqCorrect: $("mcqCorrect"), mcqExplanation: $("mcqExplanation"), saveMCQBtn: $("saveMCQBtn"), resetMCQBtn: $("resetMCQBtn"), deleteMCQBtn: $("deleteMCQBtn"),
 
-      importType: $("importType"), importTargetDeck: $("importTargetDeck"), importText: $("importText"), importCsvBtn: $("importCsvBtn"), clearImportBtn: $("clearImportBtn"),
+      importType: $("importType"), importTargetDeck: $("importTargetDeck"), csvFileInput: $("csvFileInput"), loadCsvFileBtn: $("loadCsvFileBtn"), importText: $("importText"), importCsvBtn: $("importCsvBtn"), clearImportBtn: $("clearImportBtn"),
       pdfInput: $("pdfInput"), extractPdfBtn: $("extractPdfBtn"), promptType: $("promptType"), cardPrompt: $("cardPrompt"), copyPromptBtn: $("copyPromptBtn"),
 
       exportCsvBtn: $("exportCsvBtn"), exportMCQCsvBtn: $("exportMCQCsvBtn"), exportJsonBtn: $("exportJsonBtn"), removeDuplicateMCQBtn: $("removeDuplicateMCQBtn"), removeBrokenMCQBtn: $("removeBrokenMCQBtn"), clearAllBtn: $("clearAllBtn"), jsonRestoreFile: $("jsonRestoreFile"), restoreJsonBtn: $("restoreJsonBtn"), resetProfileBtn: $("resetProfileBtn")
@@ -1243,7 +1245,7 @@
       const name = profile.name || "Student";
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
-      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer.` : "Flashcards + CPALE-style multiple choice quizzes.";
+      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v3.3` : "Flashcards + CPALE-style multiple choice quizzes. v3.3";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
@@ -1618,6 +1620,7 @@
         .replace(/```/g, "")
         .replace(/[“”]/g, '"')
         .replace(/[‘’]/g, "'")
+        .replace(/，/g, ",")
         .replace(/[^]*/g, "")
         .replace(/\uFEFF/g, "")
         .trim();
@@ -1675,20 +1678,91 @@
       saveDB(); showToast(`Imported ${imported} card${imported === 1 ? "" : "s"}`);
     }
 
+    function stripWrappingQuotes(value) {
+      let s = String(value || "").trim();
+      let changed = true;
+      while (changed && s.length >= 2) {
+        changed = false;
+        const first = s[0], last = s[s.length - 1];
+        if ((first === '"' && last === '"') || (first === "'" && last === "'") || (first === "“" && last === "”") || (first === "‘" && last === "’")) {
+          s = s.slice(1, -1).trim();
+          changed = true;
+        }
+      }
+      return s;
+    }
+
+    function cleanCSVField(value) {
+      return stripWrappingQuotes(String(value || "")
+        .replace(/[“”]/g, '"')
+        .replace(/[‘’]/g, "'")
+        .replace(/[^]*/g, "")
+        .trim());
+    }
+
+    function isValidMCQFields(subjectRaw, question, A, B, C, D, correct) {
+      const allowedSubjects = new Set(["FAR", "AFAR", "MAS", "Auditing Theory", "Auditing Problems", "Taxation", "RFBT"]);
+      if (!allowedSubjects.has(subjectRaw)) return false;
+      if (!question || question.length < 20) return false;
+      if (!A || !B || !C || !D) return false;
+      if ([A, B, C, D].some(choice => String(choice).trim().length < 2)) return false;
+      if (!"ABCD".includes(String(correct || "").trim().toUpperCase())) return false;
+      if ([subjectRaw, question, A, B, C, D, correct].some(v => /[“”]/.test(String(v || "")))) return false;
+      return true;
+    }
+
     function importMCQCSV() {
-      const text = normalizeImportText(el.importText.value); if (!text) { showToast("Paste MCQ CSV first"); return; }
-      let imported = 0; const targetDeck = getDeck(el.importTargetDeck.value);
+      const text = normalizeImportText(el.importText.value); 
+      if (!text) { 
+        showToast("Paste MCQ CSV first"); 
+        return; 
+      }
+
+      let imported = 0;
+      let skipped = 0;
+      const targetDeck = getDeck(el.importTargetDeck.value);
       const rows = parseCSV(text);
+      if (!rows.length) {
+        showToast("No CSV rows found");
+        return;
+      }
+
       let header = [];
-      if (rows.length && rows[0].join(",").toLowerCase().includes("correct")) header = rows.shift().map(h => h.toLowerCase().trim());
+      if (rows.length && rows[0].join(",").toLowerCase().includes("correct")) {
+        header = rows.shift().map(h => cleanCSVField(h).toLowerCase().trim());
+      }
+
+      const hasHeader = header.length > 0;
+      const expectedHeader = ["subject", "deck", "topic", "question", "a", "b", "c", "d", "correct", "explanation"];
       const getVal = (row, names, fallbackIndex) => {
         for (const name of names) {
           const i = header.indexOf(name);
-          if (i >= 0) return row[i];
+          if (i >= 0) return cleanCSVField(row[i]);
         }
-        return row[fallbackIndex];
+        return cleanCSVField(row[fallbackIndex]);
       };
+
       rows.forEach(row => {
+        if (!row || !row.some(cell => String(cell || "").trim())) return;
+
+        // Strict protection: if a header is present, a valid MCQ row should have exactly 10 columns.
+        // If it has more columns, it usually means the question had commas but was not quoted properly.
+        if (hasHeader && row.length !== expectedHeader.length) {
+          skipped++;
+          return;
+        }
+
+        // For non-header import, require at least 10 columns and ignore extras only if they are empty.
+        if (!hasHeader && row.length < 10) {
+          skipped++;
+          return;
+        }
+
+        if (!hasHeader && row.length > 10 && row.slice(10).some(cell => String(cell || "").trim())) {
+          skipped++;
+          return;
+        }
+
         const subjectRaw = getVal(row, ["subject"], 0) || targetDeck.subject;
         const deckName = getVal(row, ["deck"], 1) || targetDeck.name;
         const topic = getVal(row, ["topic"], 2) || "";
@@ -1699,13 +1773,25 @@
         const D = getVal(row, ["d", "choiced", "choice_d"], 7);
         const correct = (getVal(row, ["correct", "answer"], 8) || "A").trim().toUpperCase().slice(0,1);
         const explanation = getVal(row, ["explanation", "rationale"], 9) || "";
-        if (!question || !A || !B || !C || !D || !"ABCD".includes(correct)) return;
+
+        if (!isValidMCQFields(subjectRaw, question, A, B, C, D, correct)) {
+          skipped++;
+          return;
+        }
+
         let deck = db.decks.find(d => d.name.toLowerCase() === deckName.toLowerCase() && d.subject === subjectRaw);
-        if (!deck) { deck = { id: uid(), subject: subjectRaw, name: deckName }; db.decks.push(deck); }
+        if (!deck) {
+          deck = { id: uid(), subject: subjectRaw, name: deckName };
+          db.decks.push(deck);
+        }
+
         db.mcqs.push(makeMCQ(deck.id, deck.subject, topic, question, A, B, C, D, correct, explanation));
         imported++;
       });
-      saveDB(); showToast(`Imported ${imported} MCQ item${imported === 1 ? "" : "s"}`);
+
+      saveDB(true);
+      updateAll();
+      showToast(`Imported ${imported}; skipped ${skipped} broken row${skipped === 1 ? "" : "s"}`);
     }
 
     function csvEscape(value) {
@@ -1820,23 +1906,57 @@
         return;
       }
 
-      const confirmed = confirm("Remove broken imported MCQs? This deletes MCQs with quoted subjects, cut-off stems, invalid subject labels, invalid answer letters, or missing choices. Export full JSON first if you want extra safety.");
+      const confirmed = confirm("Remove broken imported MCQs? This deletes malformed MCQs caused by bad CSV splitting, including cut-off stems like 'A owes B P100', quoted subjects, missing choices, invalid answer letters, and wrong columns. Export full JSON first if you want extra safety.");
       if (!confirmed) return;
 
       const allowedSubjects = new Set(["FAR", "AFAR", "MAS", "Auditing Theory", "Auditing Problems", "Taxation", "RFBT"]);
-      const hasSmartQuote = value => /[“”]/.test(String(value || ""));
-      const hasBadWrappingQuote = value => {
+
+      const rawHasWrappingQuote = value => {
         const s = String(value || "").trim();
-        return s.startsWith('"') || s.endsWith('"') || s.startsWith("“") || s.endsWith("”");
+        return s.startsWith('"') || s.endsWith('"') || s.startsWith("“") || s.endsWith("”") || s.startsWith("'") || s.endsWith("'");
+      };
+
+      const looksCutOff = q => {
+        const s = String(q || "").trim();
+        if (s.length < 25) return true;
+        if (/^A owes B P\d+$/i.test(s)) return true;
+        if (/^"?A"?$/i.test(s)) return true;
+        if (/^"?D"?$/i.test(s)) return true;
+        if (/P\d{1,3}$/.test(s)) return true;
+        return false;
       };
 
       const isBroken = item => {
+        const subject = cleanCSVField(item.subject);
+        const correct = cleanCSVField(item.correct).toUpperCase().slice(0,1);
+        const question = cleanCSVField(item.question);
+        const A = cleanCSVField(item.A);
+        const B = cleanCSVField(item.B);
+        const C = cleanCSVField(item.C);
+        const D = cleanCSVField(item.D);
+        const explanation = cleanCSVField(item.explanation);
         const fields = [item.subject, item.topic, item.question, item.A, item.B, item.C, item.D, item.correct, item.explanation];
-        if (!allowedSubjects.has(String(item.subject || "").trim())) return true;
-        if (!"ABCD".includes(String(item.correct || "").trim().toUpperCase())) return true;
-        if (!item.question || !item.A || !item.B || !item.C || !item.D) return true;
-        if (String(item.question || "").trim().length < 15) return true;
-        if (fields.some(hasSmartQuote) || fields.some(hasBadWrappingQuote)) return true;
+
+        if (!allowedSubjects.has(subject)) return true;
+        if (!"ABCD".includes(correct)) return true;
+        if (!question || looksCutOff(question)) return true;
+        if (!A || !B || !C || !D) return true;
+        if ([A, B, C, D].some(choice => String(choice).trim().length < 2)) return true;
+        if (fields.some(rawHasWrappingQuote)) return true;
+        if (fields.some(v => /[“”]/.test(String(v || "")))) return true;
+        if (String(item.deckId || "").includes("undefined")) return true;
+
+        // Fix cleanable fields if item is valid but had normal extra spaces.
+        item.subject = subject;
+        item.correct = correct;
+        item.question = question;
+        item.A = A;
+        item.B = B;
+        item.C = C;
+        item.D = D;
+        item.explanation = explanation;
+        item.topic = cleanCSVField(item.topic);
+
         return false;
       };
 
@@ -1848,6 +1968,26 @@
       renderMCQList();
       buildQuizQueue(false);
       showToast(`Removed ${removed} broken MCQ${removed === 1 ? "" : "s"}`);
+    }
+
+    async function loadCsvFileIntoBox() {
+      const file = el.csvFileInput.files[0];
+      if (!file) {
+        showToast("Choose a CSV file first");
+        return;
+      }
+
+      try {
+        const text = await file.text();
+        el.importText.value = normalizeImportText(text);
+        const firstLine = el.importText.value.split(/\n/)[0]?.toLowerCase() || "";
+        if (firstLine.includes("correct") && firstLine.includes("explanation")) {
+          el.importType.value = "mcq";
+        }
+        showToast("CSV loaded into import box");
+      } catch {
+        showToast("Could not read CSV file");
+      }
     }
 
     function clearAllData() {
@@ -1935,6 +2075,7 @@ Notes:`;
       el.mcqDeckFilter.addEventListener("change", renderMCQList); el.mcqSearch.addEventListener("input", renderMCQList);
       el.saveMCQBtn.addEventListener("click", saveMCQEditor); el.resetMCQBtn.addEventListener("click", resetMCQEditor); el.deleteMCQBtn.addEventListener("click", deleteSelectedMCQ);
 
+      el.loadCsvFileBtn.addEventListener("click", loadCsvFileIntoBox);
       el.importCsvBtn.addEventListener("click", importItems); el.clearImportBtn.addEventListener("click", () => { el.importText.value = ""; }); el.extractPdfBtn.addEventListener("click", extractPDFText);
       el.promptType.addEventListener("change", updatePrompt); el.copyPromptBtn.addEventListener("click", copyPrompt);
 
