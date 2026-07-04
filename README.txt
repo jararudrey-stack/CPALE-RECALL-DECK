@@ -1,27 +1,23 @@
-CPALE Recall Deck v4.1
+CPALE Recall Deck v4.2
 
-This fixes the Finish button after quiz completion and removes the "Option #" wording.
+This redoes the Finish fix.
 
 Visible confirmation:
-- The Quiz screen title now shows "v4.1 controls".
+- The Quiz screen title shows "v4.2 controls".
 
-Active quiz buttons:
+Button labels:
 - Exit and Save
-  Saves the current quiz progress so you can finish it later.
-
 - Exit and Not Save
-  Removes the current quiz attempt and clears the quiz session.
-
 - Restart
-  Restarts the same quiz from item 1 and clears your current answers.
-
-After quiz completion:
 - Finish
-  Clears the completed quiz session, removes it from the quiz screen, and exits to the Dashboard.
 
-Fix included:
-- Finish now uses a stronger clearing function.
-- Finish also has a fail-safe click handler so it still works even if the normal listener does not attach.
+Fix:
+- Finish now uses direct clearing logic:
+  1. Stops the timer
+  2. Clears quizQueue, quizIndex, quizAnswers, and timer state
+  3. Removes saved quiz session storage
+  4. Exits to Dashboard
+- It also has a delegated fallback listener in case the normal click handler does not attach.
 
 How to update:
 1. Download and extract this ZIP.
@@ -31,7 +27,7 @@ How to update:
    - service-worker.js
    - README.txt
 3. Commit changes.
-4. Open your site with:
-   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=41
+4. Open:
+   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=42
 
-If you do not see "v4.1 controls" beside the Quiz title, the old cached version is still loading.
+If you do not see "v4.2 controls" beside the Quiz title, you are still seeing the cached old version.
