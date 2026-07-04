@@ -577,19 +577,30 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 7px 10px;
+      padding: 8px 11px;
       border-radius: 999px;
       background: rgba(255,255,255,.07);
       border: 1px solid var(--line);
       color: #fde68a;
-      font-weight: 900;
-      font-size: .88rem;
+      font-weight: 950;
+      font-size: .9rem;
     }
 
     .quiz-timer-text.danger {
       color: #fecdd3;
-      background: rgba(251,113,133,.12);
-      border-color: rgba(251,113,133,.32);
+      background: rgba(251,113,133,.13);
+      border-color: rgba(251,113,133,.35);
+    }
+
+    .quiz-settings-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 520px) {
+      .quiz-settings-row { grid-template-columns: 1fr; }
     }
 
     .score-box {
@@ -777,11 +788,12 @@
                 <option value="all">All questions</option>
               </select>
             </div>
-            <div style="margin-top:10px;">
+            <div class="quiz-settings-row">
               <select id="quizTimerMode">
                 <option value="untimed" selected>Untimed quiz</option>
                 <option value="timed">Timed quiz: 1 minute per question</option>
               </select>
+              <button class="secondary" id="enableSoundBtn">Enable sound</button>
             </div>
             <div class="three-col" style="margin-top:10px;">
               <button id="beginQuizBtn">Start quiz</button>
@@ -833,6 +845,10 @@
               <button class="secondary" id="prevQuizBtn">Previous</button>
               <button class="warn" id="exitQuizBtn">Exit and save</button>
               <button class="blue" id="nextQuizBtn">Next</button>
+            </div>
+            <div class="two-col" style="margin-top:10px;">
+              <button class="secondary" id="exitRetryQuizBtn">Exit & retry this quiz later</button>
+              <button class="danger" id="clearSavedQuizBtn">Clear saved quiz</button>
             </div>
           </div>
         </div>
@@ -1137,7 +1153,8 @@
     let selectedCardId = null;
     let selectedMCQId = null;
 
-    const QUIZ_SESSION_KEY = "cpale_quiz_session_v3_5";
+    const QUIZ_SESSION_KEY = "cpale_quiz_session_v3_6";
+    const QUIZ_RETRY_KEY = "cpale_quiz_retry_v3_6";
     const QUIZ_TIME_LIMIT_SECONDS = 60;
     const TIMEOUT_ANSWER = "__TIMEOUT__";
 
@@ -1151,6 +1168,7 @@
     let quizTimerDeadline = 0;
     let quizTimerRemainingById = {};
     let audioContext = null;
+    let soundEnabled = false;
 
     const $ = (id) => document.getElementById(id);
 
@@ -1167,11 +1185,11 @@
       cardHint: $("cardHint"), cardCounter: $("cardCounter"), prevCardBtn: $("prevCardBtn"), revealCardBtn: $("revealCardBtn"), againCardBtn: $("againCardBtn"), hardCardBtn: $("hardCardBtn"), goodCardBtn: $("goodCardBtn"),
       queueSummary: $("queueSummary"), queueList: $("queueList"),
 
-      quizDeckFilter: $("quizDeckFilter"), quizSubjectFilter: $("quizSubjectFilter"), quizCount: $("quizCount"), quizTimerMode: $("quizTimerMode"), beginQuizBtn: $("beginQuizBtn"), resumeQuizBtn: $("resumeQuizBtn"), retryMissedBtn: $("retryMissedBtn"),
+      quizDeckFilter: $("quizDeckFilter"), quizSubjectFilter: $("quizSubjectFilter"), quizCount: $("quizCount"), quizTimerMode: $("quizTimerMode"), enableSoundBtn: $("enableSoundBtn"), beginQuizBtn: $("beginQuizBtn"), resumeQuizBtn: $("resumeQuizBtn"), retryMissedBtn: $("retryMissedBtn"),
       quizCard: $("quizCard"), quizActiveArea: $("quizActiveArea"), quizSubjectTag: $("quizSubjectTag"), quizTopicTag: $("quizTopicTag"), quizCounter: $("quizCounter"),
       quizProgressBar: $("quizProgressBar"), quizProgressText: $("quizProgressText"), quizProgressPercent: $("quizProgressPercent"), quizTimerText: $("quizTimerText"),
       quizQuestion: $("quizQuestion"), choiceGrid: $("choiceGrid"), quizExplanation: $("quizExplanation"), quizResults: $("quizResults"), scoreText: $("scoreText"), scoreDetails: $("scoreDetails"),
-      reviewMissedBtn: $("reviewMissedBtn"), newQuizBtn: $("newQuizBtn"), quizHint: $("quizHint"), quizScoreLive: $("quizScoreLive"), prevQuizBtn: $("prevQuizBtn"), exitQuizBtn: $("exitQuizBtn"), nextQuizBtn: $("nextQuizBtn"),
+      reviewMissedBtn: $("reviewMissedBtn"), newQuizBtn: $("newQuizBtn"), quizHint: $("quizHint"), quizScoreLive: $("quizScoreLive"), prevQuizBtn: $("prevQuizBtn"), exitQuizBtn: $("exitQuizBtn"), exitRetryQuizBtn: $("exitRetryQuizBtn"), clearSavedQuizBtn: $("clearSavedQuizBtn"), nextQuizBtn: $("nextQuizBtn"),
       quizQueueSummary: $("quizQueueSummary"), quizQueueList: $("quizQueueList"),
 
       deckGrid: $("deckGrid"), newDeckSubject: $("newDeckSubject"), newDeckName: $("newDeckName"), addDeckBtn: $("addDeckBtn"),
@@ -1323,7 +1341,7 @@
       const name = profile.name || "Student";
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
-      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v3.5` : "Flashcards + CPALE-style multiple choice quizzes. v3.5";
+      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v3.6` : "Flashcards + CPALE-style multiple choice quizzes. v3.6";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
@@ -1575,17 +1593,88 @@
       }
     }
 
+    function saveRetryQuizSession() {
+      if (!quizQueue.length) {
+        showToast("No quiz to retry");
+        return;
+      }
+
+      const retry = {
+        queueIds: quizQueue.map(q => q.id),
+        quizTimedMode,
+        startedAt: nowISO()
+      };
+
+      localStorage.setItem(QUIZ_RETRY_KEY, JSON.stringify(retry));
+      showToast("Quiz saved for retry");
+    }
+
+    function loadRetryQuizSession() {
+      try {
+        const retry = JSON.parse(localStorage.getItem(QUIZ_RETRY_KEY));
+        if (!retry || !Array.isArray(retry.queueIds) || !retry.queueIds.length) return false;
+
+        const map = new Map(db.mcqs.map(q => [q.id, q]));
+        quizQueue = retry.queueIds.map(id => map.get(id)).filter(Boolean);
+        if (!quizQueue.length) {
+          localStorage.removeItem(QUIZ_RETRY_KEY);
+          return false;
+        }
+
+        quizTimedMode = !!retry.quizTimedMode;
+        if (el.quizTimerMode) el.quizTimerMode.value = quizTimedMode ? "timed" : "untimed";
+        quizIndex = 0;
+        quizAnswers = {};
+        quizTimerRemainingById = {};
+        quizSessionStartedAt = nowISO();
+        saveQuizSession(false);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function retrySavedQuizSession() {
+      if (loadRetryQuizSession()) {
+        showScreen("quiz");
+        renderQuiz();
+        showToast("Retry quiz loaded");
+      } else {
+        buildQuizQueue(true);
+      }
+    }
+
+    function exitAndRetryQuizLater() {
+      if (!quizQueue.length) {
+        showToast("No quiz to save for retry");
+        return;
+      }
+
+      saveRetryQuizSession();
+      resetQuizRuntime();
+      localStorage.removeItem(QUIZ_SESSION_KEY);
+      showScreen("dashboard");
+    }
+
+    function clearSavedQuizSessions() {
+      localStorage.removeItem(QUIZ_SESSION_KEY);
+      localStorage.removeItem(QUIZ_RETRY_KEY);
+      resetQuizRuntime();
+      showToast("Saved quiz cleared");
+      updateQuizProgressUI();
+    }
+
     function exitQuizSession() {
       if (quizQueue.length && !quizIsComplete()) {
         saveQuizSession(false);
         showToast("Quiz saved. Resume anytime.");
       }
-      clearQuestionTimer();
+      resetQuizRuntime();
       showScreen("dashboard");
     }
 
     function buildQuizQueue(useMissed = false) {
-      clearQuestionTimer();
+      resetQuizRuntime();
       unlockAudio();
       enableTimedModeFromSelect();
 
@@ -1620,15 +1709,33 @@
     function unlockAudio() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
+        if (!AudioCtx) return false;
         if (!audioContext) audioContext = new AudioCtx();
-        if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
-      } catch {}
+        if (audioContext.state === "suspended") {
+          audioContext.resume().catch(() => {});
+        }
+        soundEnabled = true;
+        if (el.enableSoundBtn) el.enableSoundBtn.textContent = "Sound enabled";
+        return true;
+      } catch {
+        return false;
+      }
     }
 
-    function playTone(frequency = 880, duration = 0.12, type = "sine", volume = 0.06, delay = 0) {
+    function enableSoundManually() {
+      const ok = unlockAudio();
+      if (ok) {
+        playTone(660, 0.08, "sine", 0.05, 0);
+        playTone(990, 0.08, "sine", 0.04, 0.08);
+        showToast("Sound enabled");
+      } else {
+        showToast("Sound not supported in this browser");
+      }
+    }
+
+    function playTone(frequency = 880, duration = 0.12, type = "sine", volume = 0.075, delay = 0) {
       try {
-        unlockAudio();
+        if (!soundEnabled) return;
         if (!audioContext) return;
         const start = audioContext.currentTime + delay;
         const oscillator = audioContext.createOscillator();
@@ -1637,27 +1744,26 @@
         oscillator.type = type;
         oscillator.frequency.setValueAtTime(frequency, start);
         gain.gain.setValueAtTime(0.0001, start);
-        gain.gain.exponentialRampToValueAtTime(volume, start + 0.015);
+        gain.gain.exponentialRampToValueAtTime(volume, start + 0.01);
         gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
 
         oscillator.connect(gain);
         gain.connect(audioContext.destination);
         oscillator.start(start);
-        oscillator.stop(start + duration + 0.02);
+        oscillator.stop(start + duration + 0.03);
       } catch {}
     }
 
     function correctFeedback() {
-      playTone(880, 0.11, "sine", 0.055, 0);
-      playTone(1320, 0.13, "sine", 0.045, 0.10);
+      playTone(880, 0.10, "sine", 0.075, 0);
+      playTone(1320, 0.12, "sine", 0.06, 0.09);
+      try { if (navigator.vibrate) navigator.vibrate(35); } catch {}
     }
 
     function wrongFeedback() {
-      try {
-        if (navigator.vibrate) navigator.vibrate([90, 40, 120]);
-      } catch {}
-      playTone(180, 0.13, "sawtooth", 0.045, 0);
-      playTone(130, 0.18, "sawtooth", 0.035, 0.12);
+      try { if (navigator.vibrate) navigator.vibrate([100, 40, 130]); } catch {}
+      playTone(180, 0.13, "sawtooth", 0.06, 0);
+      playTone(120, 0.18, "sawtooth", 0.05, 0.12);
     }
 
     function clearQuestionTimer() {
@@ -1667,19 +1773,26 @@
       }
     }
 
-    function captureCurrentTimerRemaining() {
-      const item = currentQuizItem();
-      if (!item || !quizTimedMode || quizAnswers[item.id]) return;
-      if (!quizTimerDeadline) return;
+    function isActualChoice(answer) {
+      return ["A", "B", "C", "D"].includes(answer);
+    }
 
-      const remaining = Math.max(0, Math.ceil((quizTimerDeadline - Date.now()) / 1000));
-      quizTimerRemainingById[item.id] = remaining;
+    function enableTimedModeFromSelect() {
+      quizTimedMode = !!(el.quizTimerMode && el.quizTimerMode.value === "timed");
     }
 
     function setTimerText(text, danger = false) {
       if (!el.quizTimerText) return;
       el.quizTimerText.textContent = text;
       el.quizTimerText.classList.toggle("danger", !!danger);
+    }
+
+    function captureCurrentTimerRemaining() {
+      const item = currentQuizItem();
+      if (!item || !quizTimedMode || quizAnswers[item.id] || !quizTimerDeadline) return;
+
+      const remaining = Math.max(0, Math.ceil((quizTimerDeadline - Date.now()) / 1000));
+      quizTimerRemainingById[item.id] = remaining;
     }
 
     function updateTimerDisplay() {
@@ -1695,8 +1808,10 @@
         return;
       }
 
-      if (quizAnswers[item.id]) {
-        setTimerText(quizAnswers[item.id] === TIMEOUT_ANSWER ? "Time expired" : "Answered");
+      const answered = quizAnswers[item.id];
+      if (answered) {
+        if (answered === TIMEOUT_ANSWER) setTimerText("Time expired", true);
+        else setTimerText("Answered");
         return;
       }
 
@@ -1706,17 +1821,19 @@
       setTimerText(`Time left: ${mins}:${secs}`, remaining <= 10);
     }
 
-    function startQuestionTimerIfNeeded() {
+    function startQuestionTimer() {
       clearQuestionTimer();
-      const item = currentQuizItem();
 
+      const item = currentQuizItem();
       if (!quizTimedMode || !item || quizAnswers[item.id]) {
         updateTimerDisplay();
         return;
       }
 
       let remaining = quizTimerRemainingById[item.id];
-      if (remaining === undefined || remaining === null) remaining = QUIZ_TIME_LIMIT_SECONDS;
+      if (remaining === undefined || remaining === null || Number.isNaN(Number(remaining))) {
+        remaining = QUIZ_TIME_LIMIT_SECONDS;
+      }
       remaining = Math.max(0, Number(remaining));
 
       if (remaining <= 0) {
@@ -1750,8 +1867,8 @@
       if (!item || quizAnswers[item.id]) return;
 
       clearQuestionTimer();
-      quizTimerRemainingById[item.id] = 0;
       quizAnswers[item.id] = TIMEOUT_ANSWER;
+      quizTimerRemainingById[item.id] = 0;
 
       item.attempts = (item.attempts || 0) + 1;
       item.lastAnswered = nowISO();
@@ -1763,22 +1880,20 @@
       renderQuiz();
     }
 
-    function isActualChoice(answer) {
-      return ["A", "B", "C", "D"].includes(answer);
-    }
-
-    function enableTimedModeFromSelect() {
-      quizTimedMode = el.quizTimerMode && el.quizTimerMode.value === "timed";
+    function resetQuizRuntime() {
+      clearQuestionTimer();
+      quizTimerDeadline = 0;
     }
 
     function renderQuiz() {
+      resetQuizRuntime();
       const item = currentQuizItem();
       el.quizResults.classList.add("hidden");
       el.quizActiveArea.classList.remove("hidden");
-      clearQuestionTimer();
       el.prevQuizBtn.disabled = !quizQueue.length || quizIndex === 0;
       el.nextQuizBtn.disabled = !quizQueue.length;
       el.exitQuizBtn.disabled = !quizQueue.length;
+      el.exitRetryQuizBtn.disabled = !quizQueue.length;
       updateQuizProgressUI();
 
       const answeredNow = validQuizAnsweredCount();
@@ -1823,9 +1938,9 @@
       if (answered) {
         el.quizExplanation.classList.remove("hidden");
         const isRight = answered === item.correct;
-        const timeout = answered === TIMEOUT_ANSWER;
-        el.quizExplanation.innerHTML = `<strong>${timeout ? "Time is up." : (isRight ? "Correct." : "Incorrect.")} Answer: ${escapeHTML(item.correct)}</strong><br>${escapeHTML(item.explanation || "No explanation provided.")}`;
-        el.quizHint.textContent = timeout ? "The correct answer has been revealed. Proceed to the next item." : (isRight ? "Good. Proceed to the next item." : "Read the rationale. This is your trap to master.");
+        const timedOut = answered === TIMEOUT_ANSWER;
+        el.quizExplanation.innerHTML = `<strong>${timedOut ? "Time is up." : (isRight ? "Correct." : "Incorrect.")} Answer: ${escapeHTML(item.correct)}</strong><br>${escapeHTML(item.explanation || "No explanation provided.")}`;
+        el.quizHint.textContent = timedOut ? "The correct answer has been revealed. Tap Next to proceed." : (isRight ? "Good. Tap Next to proceed." : "Read the rationale. This is your trap to master.");
       } else {
         el.quizExplanation.classList.add("hidden");
         el.quizExplanation.textContent = "";
@@ -1836,13 +1951,13 @@
       const correctItems = quizCorrectCount();
       el.quizScoreLive.textContent = `Score: ${correctItems}/${answeredItems}`;
       updateQuizProgressUI();
-      startQuestionTimerIfNeeded();
+      startQuestionTimer();
     }
 
     function answerQuiz(letter) {
       unlockAudio();
       const item = currentQuizItem(); if (!item || quizAnswers[item.id]) return;
-      clearQuestionTimer();
+      resetQuizRuntime();
       quizAnswers[item.id] = letter;
       quizTimerRemainingById[item.id] = 0;
 
@@ -1863,6 +1978,7 @@
     function nextQuiz() {
       if (!quizQueue.length) return;
       captureCurrentTimerRemaining();
+      resetQuizRuntime();
       if (quizIndex < quizQueue.length - 1) {
         quizIndex++;
         saveQuizSession(false);
@@ -1875,13 +1991,14 @@
     function prevQuiz() {
       if (!quizQueue.length || quizIndex === 0) return;
       captureCurrentTimerRemaining();
+      resetQuizRuntime();
       quizIndex--;
       saveQuizSession(false);
       renderQuiz();
     }
 
     function showQuizResults() {
-      clearQuestionTimer();
+      resetQuizRuntime();
       const answeredItems = validQuizAnsweredCount();
       const correctItems = quizCorrectCount();
       const pct = quizQueue.length ? Math.round((correctItems / quizQueue.length) * 100) : 0;
@@ -1896,8 +2013,10 @@
       el.prevQuizBtn.disabled = true;
       el.nextQuizBtn.disabled = true;
       el.exitQuizBtn.disabled = true;
+      el.exitRetryQuizBtn.disabled = true;
       localStorage.removeItem(QUIZ_SESSION_KEY);
       updateQuizProgressUI();
+      updateTimerDisplay();
       saveDB(true);
     }
 
@@ -2411,7 +2530,7 @@ Notes:`;
       if (activeScreen === "quiz" && name !== "quiz" && quizQueue.length && !quizIsComplete()) {
         captureCurrentTimerRemaining();
         saveQuizSession(false);
-        clearQuestionTimer();
+        resetQuizRuntime();
       }
       activeScreen = name;
       document.querySelectorAll(".screen").forEach(screen => screen.classList.toggle("active", screen.id === name));
@@ -2448,8 +2567,9 @@ Notes:`;
       el.reviewCard.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); revealed ? nextReviewCard() : revealCurrentCard(); } });
       el.prevCardBtn.addEventListener("click", prevReviewCard); el.revealCardBtn.addEventListener("click", revealCurrentCard); el.againCardBtn.addEventListener("click", () => rateReview("again")); el.hardCardBtn.addEventListener("click", () => rateReview("hard")); el.goodCardBtn.addEventListener("click", () => rateReview("good"));
 
-      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false));
-      el.prevQuizBtn.addEventListener("click", prevQuiz); el.exitQuizBtn.addEventListener("click", exitQuizSession); el.nextQuizBtn.addEventListener("click", nextQuiz); el.quizTimerMode.addEventListener("change", () => { enableTimedModeFromSelect(); updateTimerDisplay(); }); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
+      el.enableSoundBtn.addEventListener("click", enableSoundManually);
+      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", retrySavedQuizSession); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false));
+      el.prevQuizBtn.addEventListener("click", prevQuiz); el.exitQuizBtn.addEventListener("click", exitQuizSession); el.exitRetryQuizBtn.addEventListener("click", exitAndRetryQuizLater); el.clearSavedQuizBtn.addEventListener("click", clearSavedQuizSessions); el.nextQuizBtn.addEventListener("click", nextQuiz); el.quizTimerMode.addEventListener("change", () => { enableTimedModeFromSelect(); updateTimerDisplay(); }); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
 
       el.addDeckBtn.addEventListener("click", addDeck);
       el.cardDeckFilter.addEventListener("change", renderCardsList); el.cardSearch.addEventListener("input", renderCardsList);
@@ -2481,6 +2601,7 @@ Notes:`;
       loadQuizSession();
     }
     renderQuiz();
+    updateTimerDisplay();
   </script>
 </body>
 </html>
