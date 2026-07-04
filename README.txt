@@ -1,43 +1,37 @@
-CPALE Recall Deck v2
+CPALE Recall Deck v3
 
-What this version includes:
-- Local profile / local "login"
-- Decks by CPALE subject and topic
-- Dashboard with due cards, total cards, streak, accuracy, and mastered cards
-- Review mode with spaced repetition
-- Filters: due cards, all cards, weak cards, mastered cards
-- Add, edit, and delete cards
-- Create custom decks
-- CSV import/export
-- JSON backup/restore
-- PDF-to-text helper for text-based PDFs
-- GPT prompt for turning notes into importable flashcards
-- Mobile-friendly layout
-- PWA files included for hosting online and adding to iPhone Home Screen
+New in v3:
+- CPALE-style multiple choice quiz mode
+- New Quiz tab
+- New MCQs tab for adding/editing/deleting MCQ items
+- MCQ CSV import/export
+- Quiz score tracking
+- Explanation after every answer
+- Retry missed questions
+- Full JSON backup includes decks, flashcards, MCQs, quiz progress, and profile
+- Automatically migrates most v2 local data and adds sample MCQs
 
-Important:
-- This is still a static/local app. The "login" is only a local profile.
-- Your cards are stored in the browser's localStorage.
-- Export CSV or JSON backups regularly.
-- PDF extraction works best for text-based PDFs, not scanned pages/images.
-- The PDF helper uses a public PDF.js CDN, so it needs internet access when extracting PDFs.
+How to update your GitHub website:
+1. Download and extract this ZIP.
+2. In your GitHub repository, upload/replace:
+   - index.html
+   - manifest.webmanifest
+   - service-worker.js
+   - README.txt
+3. Commit changes.
+4. Open your GitHub Pages site.
+5. If the old version still appears, refresh Safari or remove the site from Home Screen and add it again.
 
-How to use on iPhone:
-1. Host the folder online using GitHub Pages, Netlify, or Vercel.
-2. Open the site in Safari.
-3. Tap Share.
-4. Tap Add to Home Screen.
-
-How to import from ChatGPT:
-1. Copy your notes or extracted PDF text.
-2. Ask ChatGPT using the prompt inside the Import screen.
-3. Copy the CSV output.
-4. Paste it into Import.
-5. Tap Import CSV / Q&A.
-
-CSV format:
-subject,deck,topic,question,answer
+MCQ CSV import format:
+subject,deck,topic,question,A,B,C,D,correct,explanation
 
 Example:
-FAR,Inventory,PAS 2,What is NRV?,Estimated selling price less costs to complete and sell.
-RFBT,Obligations,Civil Code,What are the elements of obligation?,Active subject; passive subject; prestation; juridical tie.
+RFBT,RFBT General,Obligations,"D obliged himself to give C either his car, motorcycle, or P300,000 at D's choice. Before choice, the car is lost by fortuitous event. What is the effect?","The obligation is extinguished.","D may still choose between the motorcycle and P300,000.","C may demand the value of the car plus damages.","The obligation becomes purely monetary.","B","Alternative obligation is not extinguished if other prestations remain before choice."
+
+How to generate MCQs with ChatGPT:
+Use the prompt inside the Import screen. Choose MCQ CSV prompt, copy it, paste your CPALE notes after it, then import the generated CSV into the website.
+
+Important:
+- Data saves locally in the browser.
+- Export full JSON regularly for backup.
+- For best safety before updating, export JSON from the current website first.

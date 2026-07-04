@@ -156,7 +156,7 @@
 
     .stat-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(6, 1fr);
       gap: 10px;
       margin-bottom: 16px;
     }
@@ -182,7 +182,7 @@
       line-height: 1.25;
     }
 
-    .hero-card {
+    .hero-card, .quiz-card {
       min-height: 420px;
       border-radius: 30px;
       background:
@@ -193,11 +193,11 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      cursor: pointer;
       user-select: none;
       transition: transform .15s ease, border-color .15s ease;
     }
 
+    .hero-card { cursor: pointer; }
     .hero-card:active { transform: scale(.992); }
     .hero-card.revealed { border-color: rgba(250,204,21,.7); }
 
@@ -236,9 +236,9 @@
     }
 
     .question {
-      font-size: clamp(1.35rem, 5.4vw, 2.35rem);
-      line-height: 1.12;
-      letter-spacing: -.05em;
+      font-size: clamp(1.24rem, 4.8vw, 2.1rem);
+      line-height: 1.16;
+      letter-spacing: -.045em;
       margin: 0;
       white-space: pre-wrap;
     }
@@ -492,16 +492,72 @@
 
     .modal-head h2 { margin: 0; }
 
-    .ghost-link {
-      color: #fde68a;
-      text-decoration: underline;
-      cursor: pointer;
-      font-weight: 850;
+    .choice-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
     }
 
-    input[type="file"] {
-      padding: 10px;
-      background: rgba(255,255,255,.055);
+    .choice {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 10px;
+      align-items: start;
+      width: 100%;
+      text-align: left;
+      background: rgba(255,255,255,.065);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 13px;
+      line-height: 1.38;
+    }
+
+    .choice .letter {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.10);
+      font-weight: 950;
+      color: #fff7cc;
+    }
+
+    .choice.correct {
+      background: rgba(34,197,94,.17);
+      border-color: rgba(34,197,94,.6);
+    }
+
+    .choice.wrong {
+      background: rgba(251,113,133,.17);
+      border-color: rgba(251,113,133,.6);
+    }
+
+    .explanation-box {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(56,189,248,.3);
+      background: rgba(56,189,248,.09);
+      line-height: 1.45;
+    }
+
+    .score-box {
+      text-align: center;
+      padding: 24px;
+    }
+
+    .score-box b {
+      font-size: clamp(2.4rem, 12vw, 5rem);
+      letter-spacing: -.06em;
+      display: block;
+    }
+
+    .mcq-editor-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
     }
 
     @media (max-width: 960px) {
@@ -513,14 +569,14 @@
       .actions { grid-template-columns: 1fr 1fr; }
       .actions button:first-child { grid-column: span 2; }
       .two-col, .three-col { grid-template-columns: 1fr; }
-      .hero-card { min-height: 380px; padding: 20px; }
+      .hero-card, .quiz-card { min-height: 380px; padding: 20px; }
     }
 
     @media (max-width: 520px) {
       .app { padding: 13px; }
       .decks { grid-template-columns: 1fr; }
       .pad { padding: 14px; }
-      .hero-card { min-height: 350px; border-radius: 24px; }
+      .hero-card, .quiz-card { min-height: 350px; border-radius: 24px; }
       .user-pill { width: 100%; justify-content: space-between; }
     }
   </style>
@@ -529,9 +585,9 @@
   <div id="loginScreen" class="login-wrap hidden">
     <div class="login-card">
       <h1>CPALE Recall Deck</h1>
-      <p class="muted">A private flashcard app for active recall, spaced repetition, streaks, and deck-based CPALE review.</p>
+      <p class="muted">A private flashcard and MCQ quiz app for active recall, spaced repetition, and CPALE-style practice.</p>
       <div class="notice small">
-        This version uses a local profile. Your cards are saved only on this device/browser unless you export them.
+        This version uses a local profile. Your cards and quizzes are saved only on this device/browser unless you export them.
       </div>
       <div class="divider"></div>
       <div class="stack">
@@ -551,7 +607,7 @@
     <header class="topbar">
       <div class="brand">
         <h1>CPALE Recall Deck</h1>
-        <p id="subtitle">Active recall, spaced repetition, and exam-focused flashcards.</p>
+        <p id="subtitle">Flashcards + CPALE-style multiple choice quizzes.</p>
       </div>
       <button class="user-pill" id="profileBtn" title="Edit profile">
         <span class="avatar" id="avatar">R</span>
@@ -562,8 +618,10 @@
     <nav class="nav">
       <button data-screen="dashboard" class="active">Dashboard</button>
       <button data-screen="review">Review</button>
+      <button data-screen="quiz">Quiz</button>
       <button data-screen="decks">Decks</button>
       <button data-screen="cards">Cards</button>
+      <button data-screen="mcq">MCQs</button>
       <button data-screen="import">Import</button>
       <button data-screen="backup">Backup</button>
     </nav>
@@ -572,14 +630,16 @@
       <div class="panel pad">
         <h2 class="section-title">Today’s dashboard</h2>
         <div class="stat-grid">
-          <div class="stat"><b id="dashDue">0</b><span>Due today</span></div>
-          <div class="stat"><b id="dashTotal">0</b><span>Total cards</span></div>
+          <div class="stat"><b id="dashDue">0</b><span>Due flashcards</span></div>
+          <div class="stat"><b id="dashTotal">0</b><span>Total flashcards</span></div>
+          <div class="stat"><b id="dashMCQ">0</b><span>MCQ items</span></div>
           <div class="stat"><b id="dashStreak">0</b><span>Day streak</span></div>
-          <div class="stat"><b id="dashAccuracy">0%</b><span>Recall accuracy</span></div>
-          <div class="stat"><b id="dashMastered">0</b><span>Mastered cards</span></div>
+          <div class="stat"><b id="dashAccuracy">0%</b><span>Flashcard accuracy</span></div>
+          <div class="stat"><b id="dashQuizAccuracy">0%</b><span>Quiz accuracy</span></div>
         </div>
-        <div class="two-col">
+        <div class="three-col">
           <button id="startDueBtn">Start due review</button>
+          <button class="blue" id="startQuizBtn">Start MCQ quiz</button>
           <button class="secondary" data-screen-link="import">Import cards</button>
         </div>
       </div>
@@ -592,8 +652,7 @@
         <aside class="panel pad">
           <h2 class="section-title">Study rule</h2>
           <p class="muted small">
-            For CPALE mastery, do not just reread. Try to answer first, reveal, then rate honestly.
-            The app pushes missed cards back to Box 1 and delays mastered cards longer.
+            Use flashcards for mastery. Use MCQ quizzes for CPALE-style application. When you miss a question, read the explanation and convert the trap into a flashcard.
           </p>
           <div class="divider"></div>
           <p class="muted small" id="examCountdown">Set your target exam in profile.</p>
@@ -653,6 +712,73 @@
       </div>
     </section>
 
+    <section id="quiz" class="screen">
+      <div class="grid">
+        <div>
+          <div class="panel pad">
+            <h2 class="section-title">CPALE-style MCQ quiz</h2>
+            <div class="three-col">
+              <select id="quizDeckFilter"></select>
+              <select id="quizSubjectFilter"></select>
+              <select id="quizCount">
+                <option value="5">5 questions</option>
+                <option value="10" selected>10 questions</option>
+                <option value="20">20 questions</option>
+                <option value="50">50 questions</option>
+                <option value="all">All questions</option>
+              </select>
+            </div>
+            <div class="two-col" style="margin-top:10px;">
+              <button id="beginQuizBtn">Start quiz</button>
+              <button class="secondary" id="retryMissedBtn">Retry missed from last quiz</button>
+            </div>
+          </div>
+
+          <div style="height:12px;"></div>
+
+          <div class="panel pad">
+            <div id="quizCard" class="quiz-card">
+              <div id="quizActiveArea">
+                <div class="tags">
+                  <span class="tag" id="quizSubjectTag">Subject</span>
+                  <span class="tag blue" id="quizTopicTag">Topic</span>
+                  <span class="tag purple" id="quizCounter">0 / 0</span>
+                </div>
+                <p class="question" id="quizQuestion">Start a quiz to begin.</p>
+                <div class="choice-grid" id="choiceGrid"></div>
+                <div class="explanation-box hidden" id="quizExplanation"></div>
+              </div>
+
+              <div class="score-box hidden" id="quizResults">
+                <b id="scoreText">0%</b>
+                <p class="muted" id="scoreDetails">Quiz complete.</p>
+                <div class="two-col">
+                  <button id="reviewMissedBtn">Review missed</button>
+                  <button class="secondary" id="newQuizBtn">New quiz</button>
+                </div>
+              </div>
+
+              <div class="card-foot">
+                <span id="quizHint">Choose an answer. Explanation appears after you answer.</span>
+                <span id="quizScoreLive">Score: 0/0</span>
+              </div>
+            </div>
+            <div class="two-col" style="margin-top:13px;">
+              <button class="secondary" id="prevQuizBtn">Previous</button>
+              <button class="blue" id="nextQuizBtn">Next</button>
+            </div>
+          </div>
+        </div>
+
+        <aside class="panel pad">
+          <h2 class="section-title">Quiz queue</h2>
+          <p class="muted small" id="quizQueueSummary">No quiz started.</p>
+          <div class="divider"></div>
+          <div id="quizQueueList" class="list"></div>
+        </aside>
+      </div>
+    </section>
+
     <section id="decks" class="screen">
       <div class="grid">
         <div class="panel pad">
@@ -683,7 +809,7 @@
     <section id="cards" class="screen">
       <div class="grid">
         <div class="panel pad">
-          <h2 class="section-title">All cards</h2>
+          <h2 class="section-title">All flashcards</h2>
           <div class="two-col">
             <select id="cardDeckFilter"></select>
             <input id="cardSearch" type="search" placeholder="Search cards..." />
@@ -693,7 +819,7 @@
         </div>
 
         <aside class="panel pad">
-          <h2 class="section-title">Add / edit card</h2>
+          <h2 class="section-title">Add / edit flashcard</h2>
           <div class="stack">
             <select id="editDeck"></select>
             <input id="editTopic" placeholder="Topic e.g. PAS 16, VAT, Obligations" />
@@ -709,23 +835,59 @@
       </div>
     </section>
 
+    <section id="mcq" class="screen">
+      <div class="grid">
+        <div class="panel pad">
+          <h2 class="section-title">All MCQ items</h2>
+          <div class="two-col">
+            <select id="mcqDeckFilter"></select>
+            <input id="mcqSearch" type="search" placeholder="Search MCQs..." />
+          </div>
+          <div class="divider"></div>
+          <div id="mcqList" class="list"></div>
+        </div>
+
+        <aside class="panel pad">
+          <h2 class="section-title">Add / edit MCQ</h2>
+          <div class="mcq-editor-grid">
+            <select id="mcqEditDeck"></select>
+            <input id="mcqEditTopic" placeholder="Topic e.g. Obligations, VAT, Inventory" />
+            <textarea id="mcqEditQuestion" placeholder="CPALE-style question stem"></textarea>
+            <input id="mcqA" placeholder="A. Choice A" />
+            <input id="mcqB" placeholder="B. Choice B" />
+            <input id="mcqC" placeholder="C. Choice C" />
+            <input id="mcqD" placeholder="D. Choice D" />
+            <select id="mcqCorrect">
+              <option value="A">Correct answer: A</option>
+              <option value="B">Correct answer: B</option>
+              <option value="C">Correct answer: C</option>
+              <option value="D">Correct answer: D</option>
+            </select>
+            <textarea id="mcqExplanation" placeholder="Explanation / rationale / CPALE trap"></textarea>
+            <div class="two-col">
+              <button id="saveMCQBtn">Save MCQ</button>
+              <button class="secondary" id="resetMCQBtn">New blank</button>
+            </div>
+            <button class="danger hidden" id="deleteMCQBtn">Delete selected MCQ</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
     <section id="import" class="screen">
       <div class="grid">
         <div class="panel pad">
-          <h2 class="section-title">Import cards</h2>
-          <p class="muted small">Best format: CSV with subject, deck, topic, question, answer. You can also paste Q/A text.</p>
+          <h2 class="section-title">Import flashcards or MCQs</h2>
+          <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
           <div class="stack">
+            <select id="importType">
+              <option value="cards">Flashcards CSV / Q&A</option>
+              <option value="mcq">MCQ CSV</option>
+            </select>
             <select id="importTargetDeck"></select>
-            <textarea id="importText" placeholder="Paste CSV or Q/A text here.
-
-CSV example:
-FAR,Inventory,PAS 2,What is NRV?,Estimated selling price less costs to complete and sell.
-
-Q/A example:
-Q: What are the elements of obligation?
-A: Active subject, passive subject, prestation, and juridical tie."></textarea>
+            <textarea id="importText" placeholder="Paste CSV or Q/A text here."></textarea>
             <div class="two-col">
-              <button id="importCsvBtn">Import CSV / Q&A</button>
+              <button id="importCsvBtn">Import</button>
               <button class="secondary" id="clearImportBtn">Clear</button>
             </div>
           </div>
@@ -735,7 +897,7 @@ A: Active subject, passive subject, prestation, and juridical tie."></textarea>
           <h2 class="section-title">PDF to text helper</h2>
           <p class="muted small">
             Upload a text-based PDF. This extracts text into the box above. It does not understand images/scans.
-            After extraction, ask ChatGPT to convert the text into flashcard CSV for cleaner results.
+            After extraction, ask ChatGPT to convert the text into flashcard or MCQ CSV.
           </p>
           <div class="stack">
             <input id="pdfInput" type="file" accept="application/pdf" />
@@ -744,18 +906,13 @@ A: Active subject, passive subject, prestation, and juridical tie."></textarea>
         </div>
 
         <aside class="panel pad">
-          <h2 class="section-title">Prompt to generate cards</h2>
-          <p class="muted small">Use this with GPT-5.5 when converting your CPALE notes into importable cards.</p>
-          <textarea readonly id="cardPrompt">Convert the notes below into CPALE active-recall flashcards. Make the cards concept-based and exam-oriented. Output only CSV rows with this exact header:
-subject,deck,topic,question,answer
-
-Rules:
-- Keep each question specific.
-- Include common CPALE traps where useful.
-- Answers should be concise but complete.
-- Use subjects only: FAR, AFAR, MAS, Auditing Theory, Auditing Problems, Taxation, RFBT.
-
-Notes:</textarea>
+          <h2 class="section-title">Prompt generator</h2>
+          <p class="muted small">Use this with GPT-5.5 to generate importable CPALE MCQs.</p>
+          <select id="promptType">
+            <option value="mcq">MCQ CSV prompt</option>
+            <option value="cards">Flashcard CSV prompt</option>
+          </select>
+          <textarea readonly id="cardPrompt"></textarea>
           <button class="secondary" id="copyPromptBtn">Copy prompt</button>
         </aside>
       </div>
@@ -767,10 +924,12 @@ Notes:</textarea>
           <h2 class="section-title">Backup and restore</h2>
           <p class="muted small">Export often. Browser storage can be cleared if you delete website data or change browsers.</p>
           <div class="three-col">
-            <button id="exportCsvBtn">Export CSV</button>
-            <button class="secondary" id="exportJsonBtn">Export JSON</button>
-            <button class="danger" id="clearAllBtn">Clear all data</button>
+            <button id="exportCsvBtn">Export flashcards CSV</button>
+            <button class="blue" id="exportMCQCsvBtn">Export MCQ CSV</button>
+            <button class="secondary" id="exportJsonBtn">Export full JSON</button>
           </div>
+          <div style="height:10px;"></div>
+          <button class="danger" id="clearAllBtn">Clear all data</button>
           <div class="divider"></div>
           <h2 class="section-title">Restore JSON backup</h2>
           <input id="jsonRestoreFile" type="file" accept="application/json" />
@@ -780,8 +939,7 @@ Notes:</textarea>
         <aside class="panel pad">
           <h2 class="section-title">Install on iPhone</h2>
           <p class="muted small">
-            After hosting online, open the website in Safari, tap Share, then tap Add to Home Screen.
-            It will feel like a simple app.
+            Open the website in Safari, tap Share, then tap Add to Home Screen.
           </p>
           <div class="divider"></div>
           <button class="secondary" id="resetProfileBtn">Reset local profile</button>
@@ -812,8 +970,10 @@ Notes:</textarea>
   <div id="toast" class="toast">Saved</div>
 
   <script>
-    const STORE = "cpale_recall_deck_v2";
-    const PROFILE = "cpale_recall_profile_v2";
+    const STORE = "cpale_recall_deck_v3";
+    const OLD_STORE = "cpale_recall_deck_v2";
+    const PROFILE = "cpale_recall_profile_v3";
+    const OLD_PROFILE = "cpale_recall_profile_v2";
 
     const today = () => new Date().toISOString().slice(0, 10);
     const nowISO = () => new Date().toISOString();
@@ -840,6 +1000,59 @@ Notes:</textarea>
       ["RFBT", "RFBT General", "Obligations", "What are the elements of an obligation?", "Active subject, passive subject, prestation, and juridical tie."]
     ];
 
+    const sampleMCQ = [
+      {
+        subject: "RFBT", deckName: "RFBT General", topic: "Obligations",
+        question: "D obliged himself to give C either his specific car, his specific motorcycle, or P300,000, at D’s choice. Before D communicates his choice, the car is destroyed by fortuitous event. What is the effect on the obligation?",
+        A: "The obligation is extinguished because one object was lost without debtor’s fault.",
+        B: "D may still choose between the motorcycle and P300,000.",
+        C: "C may demand the value of the car plus damages.",
+        D: "The obligation becomes a pure monetary obligation for P300,000.",
+        correct: "B",
+        explanation: "This is an alternative obligation where the right of choice belongs to the debtor. Loss of one prestation before choice generally does not extinguish the obligation because the debtor may still perform any of the remaining prestations. CPALE trap: do not treat it as a specific determinate obligation."
+      },
+      {
+        subject: "Taxation", deckName: "Taxation General", topic: "VAT",
+        question: "A VAT-registered seller made VAT-exempt sales. Which statement is most accurate regarding input VAT directly attributable to the exempt sales?",
+        A: "It is creditable against output VAT.",
+        B: "It is refundable because the seller is VAT-registered.",
+        C: "It is generally not creditable as input VAT.",
+        D: "It is automatically treated as zero-rated input VAT.",
+        correct: "C",
+        explanation: "Input VAT related to VAT-exempt sales is generally not creditable against output VAT. CPALE trap: VAT-registered status alone does not make exempt-sale input VAT creditable."
+      },
+      {
+        subject: "FAR", deckName: "FAR General", topic: "Inventories",
+        question: "An inventory item has cost of P100, replacement cost of P92, estimated selling price of P110, costs to complete of P5, and selling costs of P8. What is the carrying amount under PAS 2?",
+        A: "P92",
+        B: "P97",
+        C: "P100",
+        D: "P110",
+        correct: "B",
+        explanation: "Inventory is measured at the lower of cost and NRV. NRV = 110 - 5 - 8 = 97. Lower of cost 100 and NRV 97 is 97. CPALE trap: do not use replacement cost as NRV under PAS 2."
+      },
+      {
+        subject: "Auditing Theory", deckName: "Auditing Theory General", topic: "Audit Risk",
+        question: "If inherent risk and control risk are assessed as high, what happens to acceptable detection risk?",
+        A: "It increases because the auditor relies more on substantive procedures.",
+        B: "It decreases, so the auditor must obtain more persuasive audit evidence.",
+        C: "It remains the same because audit risk is independent of detection risk.",
+        D: "It becomes zero because material misstatement is certain.",
+        correct: "B",
+        explanation: "Audit risk = risk of material misstatement × detection risk. If inherent and control risks are high, acceptable detection risk must be lower to keep audit risk at an acceptably low level. CPALE trap: high RMM means more work, not less."
+      },
+      {
+        subject: "MAS", deckName: "MAS General", topic: "CVP",
+        question: "A company sells a product for P500 with variable cost of P300 per unit and fixed costs of P200,000. What is the break-even point in units?",
+        A: "400 units",
+        B: "667 units",
+        C: "1,000 units",
+        D: "2,500 units",
+        correct: "C",
+        explanation: "Contribution margin per unit = 500 - 300 = 200. Break-even units = fixed costs / CM per unit = 200,000 / 200 = 1,000 units."
+      }
+    ];
+
     let db = loadDB();
     let profile = loadProfile();
     let activeScreen = "dashboard";
@@ -847,92 +1060,51 @@ Notes:</textarea>
     let reviewIndex = 0;
     let revealed = false;
     let selectedCardId = null;
+    let selectedMCQId = null;
+
+    let quizQueue = [];
+    let quizIndex = 0;
+    let quizAnswers = {};
+    let lastMissedIds = [];
 
     const $ = (id) => document.getElementById(id);
 
     const el = {
-      loginScreen: $("loginScreen"),
-      mainApp: $("mainApp"),
-      profileName: $("profileName"),
-      targetExam: $("targetExam"),
-      startBtn: $("startBtn"),
-      userLabel: $("userLabel"),
-      avatar: $("avatar"),
-      subtitle: $("subtitle"),
-      profileBtn: $("profileBtn"),
-      profileModal: $("profileModal"),
-      profileNameEdit: $("profileNameEdit"),
-      targetExamEdit: $("targetExamEdit"),
-      saveProfileBtn: $("saveProfileBtn"),
-      closeProfileBtn: $("closeProfileBtn"),
-      toast: $("toast"),
+      loginScreen: $("loginScreen"), mainApp: $("mainApp"), profileName: $("profileName"), targetExam: $("targetExam"), startBtn: $("startBtn"),
+      userLabel: $("userLabel"), avatar: $("avatar"), subtitle: $("subtitle"), profileBtn: $("profileBtn"), profileModal: $("profileModal"),
+      profileNameEdit: $("profileNameEdit"), targetExamEdit: $("targetExamEdit"), saveProfileBtn: $("saveProfileBtn"), closeProfileBtn: $("closeProfileBtn"), toast: $("toast"),
 
-      dashDue: $("dashDue"),
-      dashTotal: $("dashTotal"),
-      dashStreak: $("dashStreak"),
-      dashAccuracy: $("dashAccuracy"),
-      dashMastered: $("dashMastered"),
-      dashboardDecks: $("dashboardDecks"),
-      examCountdown: $("examCountdown"),
-      startDueBtn: $("startDueBtn"),
+      dashDue: $("dashDue"), dashTotal: $("dashTotal"), dashMCQ: $("dashMCQ"), dashStreak: $("dashStreak"), dashAccuracy: $("dashAccuracy"), dashQuizAccuracy: $("dashQuizAccuracy"),
+      dashboardDecks: $("dashboardDecks"), examCountdown: $("examCountdown"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
 
-      reviewDeckFilter: $("reviewDeckFilter"),
-      reviewMode: $("reviewMode"),
-      reviewCard: $("reviewCard"),
-      cardSubject: $("cardSubject"),
-      cardDeck: $("cardDeck"),
-      cardBox: $("cardBox"),
-      cardQuestion: $("cardQuestion"),
-      cardAnswer: $("cardAnswer"),
-      cardHint: $("cardHint"),
-      cardCounter: $("cardCounter"),
-      prevCardBtn: $("prevCardBtn"),
-      revealCardBtn: $("revealCardBtn"),
-      againCardBtn: $("againCardBtn"),
-      hardCardBtn: $("hardCardBtn"),
-      goodCardBtn: $("goodCardBtn"),
-      queueSummary: $("queueSummary"),
-      queueList: $("queueList"),
+      reviewDeckFilter: $("reviewDeckFilter"), reviewMode: $("reviewMode"), reviewCard: $("reviewCard"),
+      cardSubject: $("cardSubject"), cardDeck: $("cardDeck"), cardBox: $("cardBox"), cardQuestion: $("cardQuestion"), cardAnswer: $("cardAnswer"),
+      cardHint: $("cardHint"), cardCounter: $("cardCounter"), prevCardBtn: $("prevCardBtn"), revealCardBtn: $("revealCardBtn"), againCardBtn: $("againCardBtn"), hardCardBtn: $("hardCardBtn"), goodCardBtn: $("goodCardBtn"),
+      queueSummary: $("queueSummary"), queueList: $("queueList"),
 
-      deckGrid: $("deckGrid"),
-      newDeckSubject: $("newDeckSubject"),
-      newDeckName: $("newDeckName"),
-      addDeckBtn: $("addDeckBtn"),
+      quizDeckFilter: $("quizDeckFilter"), quizSubjectFilter: $("quizSubjectFilter"), quizCount: $("quizCount"), beginQuizBtn: $("beginQuizBtn"), retryMissedBtn: $("retryMissedBtn"),
+      quizCard: $("quizCard"), quizActiveArea: $("quizActiveArea"), quizSubjectTag: $("quizSubjectTag"), quizTopicTag: $("quizTopicTag"), quizCounter: $("quizCounter"),
+      quizQuestion: $("quizQuestion"), choiceGrid: $("choiceGrid"), quizExplanation: $("quizExplanation"), quizResults: $("quizResults"), scoreText: $("scoreText"), scoreDetails: $("scoreDetails"),
+      reviewMissedBtn: $("reviewMissedBtn"), newQuizBtn: $("newQuizBtn"), quizHint: $("quizHint"), quizScoreLive: $("quizScoreLive"), prevQuizBtn: $("prevQuizBtn"), nextQuizBtn: $("nextQuizBtn"),
+      quizQueueSummary: $("quizQueueSummary"), quizQueueList: $("quizQueueList"),
 
-      cardDeckFilter: $("cardDeckFilter"),
-      cardSearch: $("cardSearch"),
-      cardList: $("cardList"),
-      editDeck: $("editDeck"),
-      editTopic: $("editTopic"),
-      editQuestion: $("editQuestion"),
-      editAnswer: $("editAnswer"),
-      saveCardBtn: $("saveCardBtn"),
-      resetEditorBtn: $("resetEditorBtn"),
-      deleteCardBtn: $("deleteCardBtn"),
+      deckGrid: $("deckGrid"), newDeckSubject: $("newDeckSubject"), newDeckName: $("newDeckName"), addDeckBtn: $("addDeckBtn"),
 
-      importTargetDeck: $("importTargetDeck"),
-      importText: $("importText"),
-      importCsvBtn: $("importCsvBtn"),
-      clearImportBtn: $("clearImportBtn"),
-      pdfInput: $("pdfInput"),
-      extractPdfBtn: $("extractPdfBtn"),
-      cardPrompt: $("cardPrompt"),
-      copyPromptBtn: $("copyPromptBtn"),
+      cardDeckFilter: $("cardDeckFilter"), cardSearch: $("cardSearch"), cardList: $("cardList"), editDeck: $("editDeck"), editTopic: $("editTopic"), editQuestion: $("editQuestion"), editAnswer: $("editAnswer"), saveCardBtn: $("saveCardBtn"), resetEditorBtn: $("resetEditorBtn"), deleteCardBtn: $("deleteCardBtn"),
 
-      exportCsvBtn: $("exportCsvBtn"),
-      exportJsonBtn: $("exportJsonBtn"),
-      clearAllBtn: $("clearAllBtn"),
-      jsonRestoreFile: $("jsonRestoreFile"),
-      restoreJsonBtn: $("restoreJsonBtn"),
-      resetProfileBtn: $("resetProfileBtn")
+      mcqDeckFilter: $("mcqDeckFilter"), mcqSearch: $("mcqSearch"), mcqList: $("mcqList"), mcqEditDeck: $("mcqEditDeck"), mcqEditTopic: $("mcqEditTopic"), mcqEditQuestion: $("mcqEditQuestion"),
+      mcqA: $("mcqA"), mcqB: $("mcqB"), mcqC: $("mcqC"), mcqD: $("mcqD"), mcqCorrect: $("mcqCorrect"), mcqExplanation: $("mcqExplanation"), saveMCQBtn: $("saveMCQBtn"), resetMCQBtn: $("resetMCQBtn"), deleteMCQBtn: $("deleteMCQBtn"),
+
+      importType: $("importType"), importTargetDeck: $("importTargetDeck"), importText: $("importText"), importCsvBtn: $("importCsvBtn"), clearImportBtn: $("clearImportBtn"),
+      pdfInput: $("pdfInput"), extractPdfBtn: $("extractPdfBtn"), promptType: $("promptType"), cardPrompt: $("cardPrompt"), copyPromptBtn: $("copyPromptBtn"),
+
+      exportCsvBtn: $("exportCsvBtn"), exportMCQCsvBtn: $("exportMCQCsvBtn"), exportJsonBtn: $("exportJsonBtn"), clearAllBtn: $("clearAllBtn"), jsonRestoreFile: $("jsonRestoreFile"), restoreJsonBtn: $("restoreJsonBtn"), resetProfileBtn: $("resetProfileBtn")
     };
 
     function loadProfile() {
       try {
-        return JSON.parse(localStorage.getItem(PROFILE)) || null;
-      } catch {
-        return null;
-      }
+        return JSON.parse(localStorage.getItem(PROFILE)) || JSON.parse(localStorage.getItem(OLD_PROFILE)) || null;
+      } catch { return null; }
     }
 
     function saveProfile() {
@@ -943,55 +1115,69 @@ Notes:</textarea>
     function loadDB() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORE));
-        if (saved && Array.isArray(saved.decks) && Array.isArray(saved.cards)) return saved;
+        if (saved && Array.isArray(saved.decks) && Array.isArray(saved.cards)) return ensureV3(saved);
       } catch {}
+      try {
+        const old = JSON.parse(localStorage.getItem(OLD_STORE));
+        if (old && Array.isArray(old.decks) && Array.isArray(old.cards)) return ensureV3(old);
+      } catch {}
+
       const decks = defaultDecks.slice();
       const cards = sampleCards.map(([subject, deckName, topic, question, answer]) => {
         const deck = decks.find(d => d.name === deckName) || decks[0];
         return makeCard(deck.id, subject, topic, question, answer);
       });
+      const mcqs = sampleMCQ.map(item => makeMCQFromSample(item, decks));
       return {
-        decks,
-        cards,
-        stats: {
-          reviews: 0,
-          correct: 0,
-          studiedDates: [],
-          lastStudied: "",
-          createdAt: nowISO()
-        }
+        decks, cards, mcqs,
+        stats: { reviews: 0, correct: 0, quizAnswered: 0, quizCorrect: 0, studiedDates: [], lastStudied: "", createdAt: nowISO() }
       };
     }
 
-    function saveDB() {
+    function ensureV3(data) {
+      data.decks = data.decks || defaultDecks.slice();
+      data.cards = data.cards || [];
+      data.mcqs = data.mcqs || [];
+      data.stats = data.stats || {};
+      data.stats.reviews = data.stats.reviews || 0;
+      data.stats.correct = data.stats.correct || 0;
+      data.stats.quizAnswered = data.stats.quizAnswered || 0;
+      data.stats.quizCorrect = data.stats.quizCorrect || 0;
+      data.stats.studiedDates = data.stats.studiedDates || [];
+      data.stats.createdAt = data.stats.createdAt || nowISO();
+
+      if (!data.mcqs.length) {
+        sampleMCQ.forEach(item => data.mcqs.push(makeMCQFromSample(item, data.decks)));
+      }
+      localStorage.setItem(STORE, JSON.stringify(data));
+      return data;
+    }
+
+    function saveDB(silent = false) {
       localStorage.setItem(STORE, JSON.stringify(db));
       updateAll();
+      if (!silent) showToast("Saved");
     }
 
     function makeCard(deckId, subject, topic, question, answer) {
-      return {
-        id: uid(),
-        deckId,
-        subject: subject || "FAR",
-        topic: topic || "",
-        question: question || "",
-        answer: answer || "",
-        box: 1,
-        nextDue: today(),
-        attempts: 0,
-        correct: 0,
-        createdAt: nowISO(),
-        updatedAt: nowISO()
-      };
+      return { id: uid(), deckId, subject: subject || "FAR", topic: topic || "", question: question || "", answer: answer || "", box: 1, nextDue: today(), attempts: 0, correct: 0, createdAt: nowISO(), updatedAt: nowISO() };
+    }
+
+    function makeMCQ(deckId, subject, topic, question, A, B, C, D, correct, explanation) {
+      return { id: uid(), deckId, subject: subject || "FAR", topic: topic || "", question: question || "", A: A || "", B: B || "", C: C || "", D: D || "", correct: (correct || "A").toUpperCase(), explanation: explanation || "", attempts: 0, correctCount: 0, lastAnswered: "", createdAt: nowISO(), updatedAt: nowISO() };
+    }
+
+    function makeMCQFromSample(item, decks) {
+      let deck = decks.find(d => d.name === item.deckName && d.subject === item.subject);
+      if (!deck) {
+        deck = { id: uid(), subject: item.subject, name: item.deckName };
+        decks.push(deck);
+      }
+      return makeMCQ(deck.id, item.subject, item.topic, item.question, item.A, item.B, item.C, item.D, item.correct, item.explanation);
     }
 
     function escapeHTML(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+      return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
     }
 
     function showToast(message) {
@@ -1007,46 +1193,34 @@ Notes:</textarea>
       return d.toISOString().slice(0, 10);
     }
 
-    function isDue(card) {
-      return card.nextDue <= today();
-    }
-
-    function getDeck(id) {
-      return db.decks.find(d => d.id === id) || db.decks[0];
-    }
-
-    function deckCards(deckId) {
-      return db.cards.filter(c => c.deckId === deckId);
-    }
-
-    function dueCards() {
-      return db.cards.filter(isDue);
-    }
-
-    function accuracy() {
-      if (!db.stats.reviews) return 0;
-      return Math.round((db.stats.correct / db.stats.reviews) * 100);
-    }
+    function isDue(card) { return card.nextDue <= today(); }
+    function getDeck(id) { return db.decks.find(d => d.id === id) || db.decks[0] || { id: "", subject: "FAR", name: "General" }; }
+    function deckCards(deckId) { return db.cards.filter(c => c.deckId === deckId); }
+    function dueCards() { return db.cards.filter(isDue); }
+    function accuracy() { return db.stats.reviews ? Math.round((db.stats.correct / db.stats.reviews) * 100) : 0; }
+    function quizAccuracy() { return db.stats.quizAnswered ? Math.round((db.stats.quizCorrect / db.stats.quizAnswered) * 100) : 0; }
 
     function currentStreak() {
       const dates = Array.from(new Set(db.stats.studiedDates || [])).sort();
       if (!dates.length) return 0;
-
       let streak = 0;
       let cursor = new Date(today());
       const set = new Set(dates);
-
       while (set.has(cursor.toISOString().slice(0, 10))) {
         streak++;
         cursor.setDate(cursor.getDate() - 1);
       }
-
       return streak;
     }
 
-    function markStudied(correct) {
-      db.stats.reviews++;
-      if (correct) db.stats.correct++;
+    function markStudied(correct, isQuiz = false) {
+      if (isQuiz) {
+        db.stats.quizAnswered++;
+        if (correct) db.stats.quizCorrect++;
+      } else {
+        db.stats.reviews++;
+        if (correct) db.stats.correct++;
+      }
       const t = today();
       if (!db.stats.studiedDates.includes(t)) db.stats.studiedDates.push(t);
       db.stats.lastStudied = t;
@@ -1058,73 +1232,49 @@ Notes:</textarea>
         el.mainApp.classList.add("hidden");
         return;
       }
-
       el.loginScreen.classList.add("hidden");
       el.mainApp.classList.remove("hidden");
-
       const name = profile.name || "Student";
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
-      el.subtitle.textContent = profile.targetExam
-        ? `Target: ${profile.targetExam}. Review smarter, not just longer.`
-        : "Active recall, spaced repetition, and exam-focused flashcards.";
-
+      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer.` : "Flashcards + CPALE-style multiple choice quizzes.";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
     }
 
     function renderCountdown() {
-      const map = {
-        "October 2026 CPALE": "2026-10-01",
-        "May 2027 CPALE": "2027-05-01",
-        "October 2027 CPALE": "2027-10-01"
-      };
-
+      const map = { "October 2026 CPALE": "2026-10-01", "May 2027 CPALE": "2027-05-01", "October 2027 CPALE": "2027-10-01" };
       const target = profile && map[profile.targetExam];
-      if (!target) {
-        el.examCountdown.textContent = "Set your target exam in profile.";
-        return;
-      }
-
+      if (!target) { el.examCountdown.textContent = "Set your target exam in profile."; return; }
       const days = Math.ceil((new Date(target) - new Date(today())) / 86400000);
-      if (days >= 0) {
-        el.examCountdown.textContent = `${days} days until ${profile.targetExam}. Make today count.`;
-      } else {
-        el.examCountdown.textContent = `${profile.targetExam} has passed. Update your target in profile.`;
-      }
+      el.examCountdown.textContent = days >= 0 ? `${days} days until ${profile.targetExam}. Make today count.` : `${profile.targetExam} has passed. Update your target in profile.`;
     }
 
     function renderDashboard() {
       el.dashDue.textContent = dueCards().length;
       el.dashTotal.textContent = db.cards.length;
+      el.dashMCQ.textContent = db.mcqs.length;
       el.dashStreak.textContent = currentStreak();
       el.dashAccuracy.textContent = `${accuracy()}%`;
-      el.dashMastered.textContent = db.cards.filter(c => c.box >= 5).length;
+      el.dashQuizAccuracy.textContent = `${quizAccuracy()}%`;
 
       const subjects = [...new Set(db.decks.map(d => d.subject))];
       el.dashboardDecks.innerHTML = subjects.map(subject => {
         const cards = db.cards.filter(c => c.subject === subject);
+        const mcqs = db.mcqs.filter(q => q.subject === subject);
         const due = cards.filter(isDue).length;
         const mastered = cards.filter(c => c.box >= 5).length;
         const pct = cards.length ? Math.round((mastered / cards.length) * 100) : 0;
-        return `
-          <div class="deck" data-subject-start="${escapeHTML(subject)}">
-            <strong>${escapeHTML(subject)}</strong>
-            <span class="muted tiny">${cards.length} cards · ${due} due · ${mastered} mastered</span>
-            <div class="progress"><div class="bar" style="width:${pct}%"></div></div>
-          </div>
-        `;
+        return `<div class="deck" data-subject-start="${escapeHTML(subject)}"><strong>${escapeHTML(subject)}</strong><span class="muted tiny">${cards.length} cards · ${due} due · ${mcqs.length} MCQs</span><div class="progress"><div class="bar" style="width:${pct}%"></div></div></div>`;
       }).join("");
 
       el.dashboardDecks.querySelectorAll("[data-subject-start]").forEach(node => {
         node.addEventListener("click", () => {
           const subject = node.dataset.subjectStart;
-          const deck = db.decks.find(d => d.subject === subject);
-          el.reviewDeckFilter.value = deck ? deck.id : "all";
-          el.reviewMode.value = "due";
-          buildReviewQueue();
-          showScreen("review");
+          el.quizSubjectFilter.value = subject;
+          buildQuizQueue();
+          showScreen("quiz");
         });
       });
     }
@@ -1134,44 +1284,47 @@ Notes:</textarea>
       return all + db.decks.map(d => `<option value="${escapeHTML(d.id)}">${escapeHTML(d.subject)} · ${escapeHTML(d.name)}</option>`).join("");
     }
 
-    function renderDeckOptions() {
-      const existingReview = el.reviewDeckFilter.value || "all";
-      const existingCard = el.cardDeckFilter.value || "all";
-      const existingEdit = el.editDeck.value || db.decks[0]?.id;
-      const existingImport = el.importTargetDeck.value || db.decks[0]?.id;
+    function subjectOptionHTML(includeAll = true) {
+      const subjects = [...new Set(db.decks.map(d => d.subject).concat(db.mcqs.map(q => q.subject)))].sort();
+      const all = includeAll ? `<option value="all">All subjects</option>` : "";
+      return all + subjects.map(s => `<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("");
+    }
 
+    function renderDeckOptions() {
+      const ids = ["reviewDeckFilter","cardDeckFilter","editDeck","importTargetDeck","quizDeckFilter","mcqDeckFilter","mcqEditDeck"];
+      const oldVals = {};
+      ids.forEach(id => oldVals[id] = el[id].value);
       el.reviewDeckFilter.innerHTML = deckOptionHTML(true);
       el.cardDeckFilter.innerHTML = deckOptionHTML(true);
       el.editDeck.innerHTML = deckOptionHTML(false);
       el.importTargetDeck.innerHTML = deckOptionHTML(false);
-
-      el.reviewDeckFilter.value = db.decks.some(d => d.id === existingReview) ? existingReview : "all";
-      el.cardDeckFilter.value = db.decks.some(d => d.id === existingCard) ? existingCard : "all";
-      el.editDeck.value = db.decks.some(d => d.id === existingEdit) ? existingEdit : db.decks[0]?.id;
-      el.importTargetDeck.value = db.decks.some(d => d.id === existingImport) ? existingImport : db.decks[0]?.id;
+      el.quizDeckFilter.innerHTML = deckOptionHTML(true);
+      el.mcqDeckFilter.innerHTML = deckOptionHTML(true);
+      el.mcqEditDeck.innerHTML = deckOptionHTML(false);
+      el.quizSubjectFilter.innerHTML = subjectOptionHTML(true);
+      ids.forEach(id => {
+        const allowAll = ["reviewDeckFilter","cardDeckFilter","quizDeckFilter","mcqDeckFilter"].includes(id);
+        const val = oldVals[id];
+        el[id].value = (allowAll && val === "all") || db.decks.some(d => d.id === val) ? val : (allowAll ? "all" : db.decks[0]?.id);
+      });
     }
 
     function renderDecks() {
       el.deckGrid.innerHTML = db.decks.map(deck => {
         const cards = deckCards(deck.id);
+        const mcqs = db.mcqs.filter(q => q.deckId === deck.id);
         const due = cards.filter(isDue).length;
         const mastered = cards.filter(c => c.box >= 5).length;
         const pct = cards.length ? Math.round((mastered / cards.length) * 100) : 0;
-        return `
-          <div class="deck" data-deck-id="${escapeHTML(deck.id)}">
-            <strong>${escapeHTML(deck.name)}</strong>
-            <span class="muted tiny">${escapeHTML(deck.subject)} · ${cards.length} cards · ${due} due</span>
-            <div class="progress"><div class="bar" style="width:${pct}%"></div></div>
-          </div>
-        `;
+        return `<div class="deck" data-deck-id="${escapeHTML(deck.id)}"><strong>${escapeHTML(deck.name)}</strong><span class="muted tiny">${escapeHTML(deck.subject)} · ${cards.length} cards · ${mcqs.length} MCQs · ${due} due</span><div class="progress"><div class="bar" style="width:${pct}%"></div></div></div>`;
       }).join("");
 
       el.deckGrid.querySelectorAll("[data-deck-id]").forEach(node => {
         node.addEventListener("click", () => {
-          el.reviewDeckFilter.value = node.dataset.deckId;
-          el.reviewMode.value = "due";
-          buildReviewQueue();
-          showScreen("review");
+          el.quizDeckFilter.value = node.dataset.deckId;
+          el.quizSubjectFilter.value = "all";
+          buildQuizQueue();
+          showScreen("quiz");
         });
       });
     }
@@ -1179,7 +1332,6 @@ Notes:</textarea>
     function buildReviewQueue() {
       const deckId = el.reviewDeckFilter.value || "all";
       const mode = el.reviewMode.value || "due";
-
       reviewQueue = db.cards.filter(card => {
         const deckMatch = deckId === "all" || card.deckId === deckId;
         if (!deckMatch) return false;
@@ -1187,67 +1339,32 @@ Notes:</textarea>
         if (mode === "weak") return card.box <= 2;
         if (mode === "mastered") return card.box >= 5;
         return true;
-      });
-
-      reviewQueue.sort((a, b) => {
-        if (a.nextDue !== b.nextDue) return a.nextDue.localeCompare(b.nextDue);
-        if (a.box !== b.box) return a.box - b.box;
-        return a.subject.localeCompare(b.subject);
-      });
-
+      }).sort((a, b) => a.nextDue.localeCompare(b.nextDue) || a.box - b.box || a.subject.localeCompare(b.subject));
       reviewIndex = Math.min(reviewIndex, Math.max(0, reviewQueue.length - 1));
       revealed = false;
       renderReview();
     }
 
-    function currentReviewCard() {
-      return reviewQueue[reviewIndex];
-    }
+    function currentReviewCard() { return reviewQueue[reviewIndex]; }
 
     function renderReview() {
       const card = currentReviewCard();
-
       el.queueSummary.textContent = `${reviewQueue.length} card${reviewQueue.length === 1 ? "" : "s"} in this queue.`;
-      el.queueList.innerHTML = reviewQueue.length ? reviewQueue.map((card, idx) => `
-        <div class="list-item" data-queue-index="${idx}">
-          <strong>${escapeHTML(card.question)}</strong>
-          <span>${escapeHTML(card.subject)} · ${escapeHTML(getDeck(card.deckId).name)} · Box ${card.box}</span>
-        </div>
-      `).join("") : `<div class="muted small">No cards match this review mode.</div>`;
-
-      el.queueList.querySelectorAll("[data-queue-index]").forEach(node => {
-        node.addEventListener("click", () => {
-          reviewIndex = Number(node.dataset.queueIndex);
-          revealed = false;
-          renderReview();
-        });
-      });
+      el.queueList.innerHTML = reviewQueue.length ? reviewQueue.map((card, idx) => `<div class="list-item" data-queue-index="${idx}"><strong>${escapeHTML(card.question)}</strong><span>${escapeHTML(card.subject)} · ${escapeHTML(getDeck(card.deckId).name)} · Box ${card.box}</span></div>`).join("") : `<div class="muted small">No cards match this review mode.</div>`;
+      el.queueList.querySelectorAll("[data-queue-index]").forEach(node => node.addEventListener("click", () => { reviewIndex = Number(node.dataset.queueIndex); revealed = false; renderReview(); }));
 
       if (!card) {
-        el.cardSubject.textContent = "No cards";
-        el.cardDeck.textContent = "Queue empty";
-        el.cardBox.textContent = "Box 0";
-        el.cardQuestion.textContent = "No cards are due in this filter.";
-        el.cardAnswer.classList.add("hidden");
-        el.cardAnswer.textContent = "";
-        el.cardHint.textContent = "Try All cards or add/import more cards.";
-        el.cardCounter.textContent = "0 / 0";
-        el.reviewCard.classList.remove("revealed");
-        setReviewButtons(false);
-        return;
+        el.cardSubject.textContent = "No cards"; el.cardDeck.textContent = "Queue empty"; el.cardBox.textContent = "Box 0";
+        el.cardQuestion.textContent = "No cards are due in this filter."; el.cardAnswer.classList.add("hidden"); el.cardAnswer.textContent = "";
+        el.cardHint.textContent = "Try All cards or add/import more cards."; el.cardCounter.textContent = "0 / 0"; el.reviewCard.classList.remove("revealed");
+        setReviewButtons(false); return;
       }
 
       const deck = getDeck(card.deckId);
-      el.cardSubject.textContent = card.subject;
-      el.cardDeck.textContent = deck.name;
-      el.cardBox.textContent = `Box ${card.box} · Due ${card.nextDue}`;
-      el.cardQuestion.textContent = card.question;
-      el.cardAnswer.textContent = card.answer;
-      el.cardAnswer.classList.toggle("hidden", !revealed);
-      el.cardHint.textContent = revealed ? "Rate your recall honestly." : "Tap to reveal the answer.";
-      el.cardCounter.textContent = `${reviewIndex + 1} / ${reviewQueue.length}`;
-      el.reviewCard.classList.toggle("revealed", revealed);
-      setReviewButtons(true);
+      el.cardSubject.textContent = card.subject; el.cardDeck.textContent = deck.name; el.cardBox.textContent = `Box ${card.box} · Due ${card.nextDue}`;
+      el.cardQuestion.textContent = card.question; el.cardAnswer.textContent = card.answer; el.cardAnswer.classList.toggle("hidden", !revealed);
+      el.cardHint.textContent = revealed ? "Rate your recall honestly." : "Tap to reveal the answer."; el.cardCounter.textContent = `${reviewIndex + 1} / ${reviewQueue.length}`;
+      el.reviewCard.classList.toggle("revealed", revealed); setReviewButtons(true);
     }
 
     function setReviewButtons(hasCard) {
@@ -1258,56 +1375,145 @@ Notes:</textarea>
       el.goodCardBtn.disabled = !hasCard || !revealed;
     }
 
-    function revealCurrentCard() {
-      if (!currentReviewCard()) return;
-      revealed = true;
-      renderReview();
-    }
-
-    function nextReviewCard() {
-      if (!reviewQueue.length) return;
-      reviewIndex = (reviewIndex + 1) % reviewQueue.length;
-      revealed = false;
-      renderReview();
-    }
-
-    function prevReviewCard() {
-      if (!reviewQueue.length) return;
-      reviewIndex = (reviewIndex - 1 + reviewQueue.length) % reviewQueue.length;
-      revealed = false;
-      renderReview();
-    }
+    function revealCurrentCard() { if (!currentReviewCard()) return; revealed = true; renderReview(); }
+    function nextReviewCard() { if (!reviewQueue.length) return; reviewIndex = (reviewIndex + 1) % reviewQueue.length; revealed = false; renderReview(); }
+    function prevReviewCard() { if (!reviewQueue.length) return; reviewIndex = (reviewIndex - 1 + reviewQueue.length) % reviewQueue.length; revealed = false; renderReview(); }
 
     function rateReview(rating) {
-      const card = currentReviewCard();
-      if (!card) return;
+      const card = currentReviewCard(); if (!card) return;
+      card.attempts++; const correct = rating === "hard" || rating === "good"; if (correct) card.correct++;
+      if (rating === "again") { card.box = 1; card.nextDue = today(); }
+      else if (rating === "hard") { card.box = Math.max(1, Math.min(3, card.box)); card.nextDue = addDays(card.box <= 1 ? 1 : 2); }
+      else if (rating === "good") { card.box = Math.min(5, card.box + 1); const intervals = { 1: 1, 2: 3, 3: 7, 4: 14, 5: 30 }; card.nextDue = addDays(intervals[card.box] || 1); }
+      card.updatedAt = nowISO(); markStudied(correct, false); localStorage.setItem(STORE, JSON.stringify(db)); showToast("Progress saved"); buildReviewQueue();
+    }
 
-      card.attempts++;
-      const correct = rating === "hard" || rating === "good";
-      if (correct) card.correct++;
+    function buildQuizQueue(useMissed = false) {
+      if (useMissed) {
+        quizQueue = db.mcqs.filter(q => lastMissedIds.includes(q.id));
+      } else {
+        const deckId = el.quizDeckFilter.value || "all";
+        const subject = el.quizSubjectFilter.value || "all";
+        quizQueue = db.mcqs.filter(q => (deckId === "all" || q.deckId === deckId) && (subject === "all" || q.subject === subject));
+        shuffle(quizQueue);
+        const count = el.quizCount.value;
+        if (count !== "all") quizQueue = quizQueue.slice(0, Number(count));
+      }
+      quizIndex = 0;
+      quizAnswers = {};
+      renderQuiz();
+    }
 
-      if (rating === "again") {
-        card.box = 1;
-        card.nextDue = today();
-      } else if (rating === "hard") {
-        card.box = Math.max(1, Math.min(3, card.box));
-        card.nextDue = addDays(card.box <= 1 ? 1 : 2);
-      } else if (rating === "good") {
-        card.box = Math.min(5, card.box + 1);
-        const intervals = { 1: 1, 2: 3, 3: 7, 4: 14, 5: 30 };
-        card.nextDue = addDays(intervals[card.box] || 1);
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function currentQuizItem() { return quizQueue[quizIndex]; }
+
+    function renderQuiz() {
+      const item = currentQuizItem();
+      el.quizResults.classList.add("hidden");
+      el.quizActiveArea.classList.remove("hidden");
+      el.prevQuizBtn.disabled = !quizQueue.length || quizIndex === 0;
+      el.nextQuizBtn.disabled = !quizQueue.length;
+
+      el.quizQueueSummary.textContent = quizQueue.length ? `${quizQueue.length} question${quizQueue.length === 1 ? "" : "s"} in this quiz.` : "No quiz started.";
+      el.quizQueueList.innerHTML = quizQueue.length ? quizQueue.map((q, idx) => {
+        const ans = quizAnswers[q.id];
+        const mark = ans ? (ans === q.correct ? "✓ " : "✕ ") : "";
+        return `<div class="list-item" data-quiz-index="${idx}"><strong>${escapeHTML(mark + q.question)}</strong><span>${escapeHTML(q.subject)} · ${escapeHTML(q.topic || getDeck(q.deckId).name)} · Correct: ${escapeHTML(q.correct)}</span></div>`;
+      }).join("") : `<div class="muted small">Start a quiz to see questions here.</div>`;
+      el.quizQueueList.querySelectorAll("[data-quiz-index]").forEach(node => node.addEventListener("click", () => { quizIndex = Number(node.dataset.quizIndex); renderQuiz(); }));
+
+      if (!item) {
+        el.quizSubjectTag.textContent = "No MCQs"; el.quizTopicTag.textContent = "Add or import"; el.quizCounter.textContent = "0 / 0";
+        el.quizQuestion.textContent = "No MCQ items available for this filter.";
+        el.choiceGrid.innerHTML = ""; el.quizExplanation.classList.add("hidden"); el.quizHint.textContent = "Go to MCQs or Import to add questions.";
+        el.quizScoreLive.textContent = "Score: 0/0";
+        return;
       }
 
-      card.updatedAt = nowISO();
-      markStudied(correct);
+      const answered = quizAnswers[item.id];
+      el.quizSubjectTag.textContent = item.subject;
+      el.quizTopicTag.textContent = item.topic || getDeck(item.deckId).name;
+      el.quizCounter.textContent = `${quizIndex + 1} / ${quizQueue.length}`;
+      el.quizQuestion.textContent = item.question;
+
+      el.choiceGrid.innerHTML = ["A","B","C","D"].map(letter => {
+        let cls = "choice";
+        if (answered) {
+          if (letter === item.correct) cls += " correct";
+          else if (letter === answered) cls += " wrong";
+        }
+        return `<button class="${cls}" data-choice="${letter}" ${answered ? "disabled" : ""}><span class="letter">${letter}</span><span>${escapeHTML(item[letter])}</span></button>`;
+      }).join("");
+
+      el.choiceGrid.querySelectorAll("[data-choice]").forEach(btn => {
+        btn.addEventListener("click", () => answerQuiz(btn.dataset.choice));
+      });
+
+      if (answered) {
+        el.quizExplanation.classList.remove("hidden");
+        const isRight = answered === item.correct;
+        el.quizExplanation.innerHTML = `<strong>${isRight ? "Correct." : "Incorrect."} Answer: ${escapeHTML(item.correct)}</strong><br>${escapeHTML(item.explanation || "No explanation provided.")}`;
+        el.quizHint.textContent = isRight ? "Good. Proceed to the next item." : "Read the rationale. This is your trap to master.";
+      } else {
+        el.quizExplanation.classList.add("hidden");
+        el.quizExplanation.textContent = "";
+        el.quizHint.textContent = "Choose an answer. Explanation appears after you answer.";
+      }
+
+      const answeredItems = Object.keys(quizAnswers).length;
+      const correctItems = quizQueue.filter(q => quizAnswers[q.id] === q.correct).length;
+      el.quizScoreLive.textContent = `Score: ${correctItems}/${answeredItems}`;
+    }
+
+    function answerQuiz(letter) {
+      const item = currentQuizItem(); if (!item || quizAnswers[item.id]) return;
+      quizAnswers[item.id] = letter;
+      const correct = letter === item.correct;
+      item.attempts = (item.attempts || 0) + 1;
+      if (correct) item.correctCount = (item.correctCount || 0) + 1;
+      item.lastAnswered = nowISO();
+      markStudied(correct, true);
       localStorage.setItem(STORE, JSON.stringify(db));
-      showToast(rating === "again" ? "Marked again" : "Progress saved");
+      renderQuiz();
+    }
 
-      buildReviewQueue();
-      if (reviewQueue.length) {
-        reviewIndex = Math.min(reviewIndex, reviewQueue.length - 1);
-        renderReview();
+    function nextQuiz() {
+      if (!quizQueue.length) return;
+      if (quizIndex < quizQueue.length - 1) {
+        quizIndex++;
+        renderQuiz();
+      } else {
+        showQuizResults();
       }
+    }
+
+    function prevQuiz() {
+      if (!quizQueue.length || quizIndex === 0) return;
+      quizIndex--;
+      renderQuiz();
+    }
+
+    function showQuizResults() {
+      const answeredItems = Object.keys(quizAnswers).length;
+      const correctItems = quizQueue.filter(q => quizAnswers[q.id] === q.correct).length;
+      const pct = quizQueue.length ? Math.round((correctItems / quizQueue.length) * 100) : 0;
+      lastMissedIds = quizQueue.filter(q => quizAnswers[q.id] !== q.correct).map(q => q.id);
+
+      el.quizActiveArea.classList.add("hidden");
+      el.quizResults.classList.remove("hidden");
+      el.scoreText.textContent = `${pct}%`;
+      el.scoreDetails.textContent = `${correctItems} correct out of ${quizQueue.length}. ${lastMissedIds.length} missed question${lastMissedIds.length === 1 ? "" : "s"}.`;
+      el.quizHint.textContent = "Quiz complete.";
+      el.quizScoreLive.textContent = `Final: ${correctItems}/${quizQueue.length}`;
+      el.prevQuizBtn.disabled = true;
+      el.nextQuizBtn.disabled = true;
+      saveDB(true);
     }
 
     function filteredCardsForList() {
@@ -1315,199 +1521,166 @@ Notes:</textarea>
       const search = (el.cardSearch.value || "").trim().toLowerCase();
       return db.cards.filter(card => {
         const deckMatch = deckId === "all" || card.deckId === deckId;
-        const searchMatch = !search ||
-          card.question.toLowerCase().includes(search) ||
-          card.answer.toLowerCase().includes(search) ||
-          card.subject.toLowerCase().includes(search) ||
-          (card.topic || "").toLowerCase().includes(search) ||
-          getDeck(card.deckId).name.toLowerCase().includes(search);
+        const searchMatch = !search || card.question.toLowerCase().includes(search) || card.answer.toLowerCase().includes(search) || card.subject.toLowerCase().includes(search) || (card.topic || "").toLowerCase().includes(search) || getDeck(card.deckId).name.toLowerCase().includes(search);
         return deckMatch && searchMatch;
       }).sort((a, b) => a.subject.localeCompare(b.subject) || getDeck(a.deckId).name.localeCompare(getDeck(b.deckId).name));
     }
 
     function renderCardsList() {
       const cards = filteredCardsForList();
-      el.cardList.innerHTML = cards.length ? cards.map(card => `
-        <div class="list-item" data-card-id="${escapeHTML(card.id)}">
-          <strong>${escapeHTML(card.question)}</strong>
-          <span>${escapeHTML(card.subject)} · ${escapeHTML(getDeck(card.deckId).name)} · ${escapeHTML(card.topic || "No topic")} · Box ${card.box}</span>
-        </div>
-      `).join("") : `<div class="muted small">No cards found.</div>`;
-
-      el.cardList.querySelectorAll("[data-card-id]").forEach(node => {
-        node.addEventListener("click", () => loadCardIntoEditor(node.dataset.cardId));
-      });
+      el.cardList.innerHTML = cards.length ? cards.map(card => `<div class="list-item" data-card-id="${escapeHTML(card.id)}"><strong>${escapeHTML(card.question)}</strong><span>${escapeHTML(card.subject)} · ${escapeHTML(getDeck(card.deckId).name)} · ${escapeHTML(card.topic || "No topic")} · Box ${card.box}</span></div>`).join("") : `<div class="muted small">No cards found.</div>`;
+      el.cardList.querySelectorAll("[data-card-id]").forEach(node => node.addEventListener("click", () => loadCardIntoEditor(node.dataset.cardId)));
     }
 
     function loadCardIntoEditor(cardId) {
-      const card = db.cards.find(c => c.id === cardId);
-      if (!card) return;
-      selectedCardId = card.id;
-      el.editDeck.value = card.deckId;
-      el.editTopic.value = card.topic || "";
-      el.editQuestion.value = card.question;
-      el.editAnswer.value = card.answer;
-      el.deleteCardBtn.classList.remove("hidden");
-      showToast("Card loaded");
+      const card = db.cards.find(c => c.id === cardId); if (!card) return;
+      selectedCardId = card.id; el.editDeck.value = card.deckId; el.editTopic.value = card.topic || ""; el.editQuestion.value = card.question; el.editAnswer.value = card.answer; el.deleteCardBtn.classList.remove("hidden"); showToast("Card loaded");
     }
 
-    function resetEditor() {
-      selectedCardId = null;
-      el.editDeck.value = db.decks[0]?.id || "";
-      el.editTopic.value = "";
-      el.editQuestion.value = "";
-      el.editAnswer.value = "";
-      el.deleteCardBtn.classList.add("hidden");
-    }
+    function resetEditor() { selectedCardId = null; el.editDeck.value = db.decks[0]?.id || ""; el.editTopic.value = ""; el.editQuestion.value = ""; el.editAnswer.value = ""; el.deleteCardBtn.classList.add("hidden"); }
 
     function saveEditorCard() {
-      const deck = getDeck(el.editDeck.value);
-      const topic = el.editTopic.value.trim();
-      const question = el.editQuestion.value.trim();
-      const answer = el.editAnswer.value.trim();
-
-      if (!deck || !question || !answer) {
-        showToast("Deck, question, and answer are required");
-        return;
-      }
-
-      if (selectedCardId) {
-        const card = db.cards.find(c => c.id === selectedCardId);
-        if (!card) return;
-        card.deckId = deck.id;
-        card.subject = deck.subject;
-        card.topic = topic;
-        card.question = question;
-        card.answer = answer;
-        card.updatedAt = nowISO();
-        showToast("Card updated");
-      } else {
-        db.cards.unshift(makeCard(deck.id, deck.subject, topic, question, answer));
-        showToast("Card added");
-      }
-
-      saveDB();
-      resetEditor();
+      const deck = getDeck(el.editDeck.value); const topic = el.editTopic.value.trim(); const question = el.editQuestion.value.trim(); const answer = el.editAnswer.value.trim();
+      if (!deck || !question || !answer) { showToast("Deck, question, and answer are required"); return; }
+      if (selectedCardId) { const card = db.cards.find(c => c.id === selectedCardId); if (!card) return; Object.assign(card, { deckId: deck.id, subject: deck.subject, topic, question, answer, updatedAt: nowISO() }); showToast("Card updated"); }
+      else { db.cards.unshift(makeCard(deck.id, deck.subject, topic, question, answer)); showToast("Card added"); }
+      saveDB(true); resetEditor();
     }
 
     function deleteSelectedCard() {
-      if (!selectedCardId) return;
-      if (!confirm("Delete this card?")) return;
-      db.cards = db.cards.filter(c => c.id !== selectedCardId);
-      selectedCardId = null;
-      saveDB();
-      resetEditor();
-      showToast("Card deleted");
+      if (!selectedCardId) return; if (!confirm("Delete this card?")) return;
+      db.cards = db.cards.filter(c => c.id !== selectedCardId); selectedCardId = null; saveDB(); resetEditor(); showToast("Card deleted");
+    }
+
+    function filteredMCQForList() {
+      const deckId = el.mcqDeckFilter.value || "all";
+      const search = (el.mcqSearch.value || "").trim().toLowerCase();
+      return db.mcqs.filter(q => {
+        const deckMatch = deckId === "all" || q.deckId === deckId;
+        const searchMatch = !search || q.question.toLowerCase().includes(search) || q.explanation.toLowerCase().includes(search) || q.subject.toLowerCase().includes(search) || (q.topic || "").toLowerCase().includes(search);
+        return deckMatch && searchMatch;
+      }).sort((a, b) => a.subject.localeCompare(b.subject) || (a.topic || "").localeCompare(b.topic || ""));
+    }
+
+    function renderMCQList() {
+      const items = filteredMCQForList();
+      el.mcqList.innerHTML = items.length ? items.map(q => `<div class="list-item" data-mcq-id="${escapeHTML(q.id)}"><strong>${escapeHTML(q.question)}</strong><span>${escapeHTML(q.subject)} · ${escapeHTML(getDeck(q.deckId).name)} · ${escapeHTML(q.topic || "No topic")} · Answer: ${escapeHTML(q.correct)}</span></div>`).join("") : `<div class="muted small">No MCQs found.</div>`;
+      el.mcqList.querySelectorAll("[data-mcq-id]").forEach(node => node.addEventListener("click", () => loadMCQIntoEditor(node.dataset.mcqId)));
+    }
+
+    function loadMCQIntoEditor(id) {
+      const q = db.mcqs.find(x => x.id === id); if (!q) return;
+      selectedMCQId = q.id; el.mcqEditDeck.value = q.deckId; el.mcqEditTopic.value = q.topic || ""; el.mcqEditQuestion.value = q.question;
+      el.mcqA.value = q.A; el.mcqB.value = q.B; el.mcqC.value = q.C; el.mcqD.value = q.D; el.mcqCorrect.value = q.correct; el.mcqExplanation.value = q.explanation || "";
+      el.deleteMCQBtn.classList.remove("hidden"); showToast("MCQ loaded");
+    }
+
+    function resetMCQEditor() {
+      selectedMCQId = null; el.mcqEditDeck.value = db.decks[0]?.id || ""; el.mcqEditTopic.value = ""; el.mcqEditQuestion.value = ""; el.mcqA.value = ""; el.mcqB.value = ""; el.mcqC.value = ""; el.mcqD.value = ""; el.mcqCorrect.value = "A"; el.mcqExplanation.value = ""; el.deleteMCQBtn.classList.add("hidden");
+    }
+
+    function saveMCQEditor() {
+      const deck = getDeck(el.mcqEditDeck.value);
+      const topic = el.mcqEditTopic.value.trim(); const question = el.mcqEditQuestion.value.trim();
+      const A = el.mcqA.value.trim(), B = el.mcqB.value.trim(), C = el.mcqC.value.trim(), D = el.mcqD.value.trim(), correct = el.mcqCorrect.value, explanation = el.mcqExplanation.value.trim();
+      if (!deck || !question || !A || !B || !C || !D || !correct) { showToast("Complete the question and A-D choices"); return; }
+      if (selectedMCQId) {
+        const q = db.mcqs.find(x => x.id === selectedMCQId); if (!q) return;
+        Object.assign(q, { deckId: deck.id, subject: deck.subject, topic, question, A, B, C, D, correct, explanation, updatedAt: nowISO() });
+        showToast("MCQ updated");
+      } else {
+        db.mcqs.unshift(makeMCQ(deck.id, deck.subject, topic, question, A, B, C, D, correct, explanation));
+        showToast("MCQ added");
+      }
+      saveDB(true); resetMCQEditor();
+    }
+
+    function deleteSelectedMCQ() {
+      if (!selectedMCQId) return; if (!confirm("Delete this MCQ?")) return;
+      db.mcqs = db.mcqs.filter(q => q.id !== selectedMCQId); selectedMCQId = null; saveDB(); resetMCQEditor(); showToast("MCQ deleted");
     }
 
     function addDeck() {
-      const subject = el.newDeckSubject.value;
-      const name = el.newDeckName.value.trim();
-      if (!name) {
-        showToast("Enter a deck name");
-        return;
-      }
-      db.decks.push({ id: uid(), subject, name });
-      el.newDeckName.value = "";
-      saveDB();
-      showToast("Deck added");
+      const subject = el.newDeckSubject.value; const name = el.newDeckName.value.trim();
+      if (!name) { showToast("Enter a deck name"); return; }
+      db.decks.push({ id: uid(), subject, name }); el.newDeckName.value = ""; saveDB(); showToast("Deck added");
     }
 
     function parseCSV(text) {
-      const rows = [];
-      let row = [];
-      let field = "";
-      let inQuotes = false;
-
+      const rows = []; let row = []; let field = ""; let inQuotes = false;
       for (let i = 0; i < text.length; i++) {
         const char = text[i], next = text[i + 1];
-        if (char === '"' && inQuotes && next === '"') {
-          field += '"'; i++;
-        } else if (char === '"') {
-          inQuotes = !inQuotes;
-        } else if (char === "," && !inQuotes) {
-          row.push(field.trim()); field = "";
-        } else if ((char === "\n" || char === "\r") && !inQuotes) {
-          if (char === "\r" && next === "\n") i++;
-          row.push(field.trim());
-          if (row.some(cell => cell)) rows.push(row);
-          row = []; field = "";
-        } else {
-          field += char;
-        }
+        if (char === '"' && inQuotes && next === '"') { field += '"'; i++; }
+        else if (char === '"') inQuotes = !inQuotes;
+        else if (char === "," && !inQuotes) { row.push(field.trim()); field = ""; }
+        else if ((char === "\n" || char === "\r") && !inQuotes) { if (char === "\r" && next === "\n") i++; row.push(field.trim()); if (row.some(cell => cell)) rows.push(row); row = []; field = ""; }
+        else field += char;
       }
-      row.push(field.trim());
-      if (row.some(cell => cell)) rows.push(row);
-      return rows;
+      row.push(field.trim()); if (row.some(cell => cell)) rows.push(row); return rows;
+    }
+
+    function importItems() {
+      const type = el.importType.value;
+      if (type === "mcq") importMCQCSV();
+      else importCards();
     }
 
     function importCards() {
-      const text = el.importText.value.trim();
-      if (!text) {
-        showToast("Paste cards first");
-        return;
-      }
-
-      let imported = 0;
-      const targetDeck = getDeck(el.importTargetDeck.value);
-
+      const text = el.importText.value.trim(); if (!text) { showToast("Paste cards first"); return; }
+      let imported = 0; const targetDeck = getDeck(el.importTargetDeck.value);
       if (text.includes(",") && text.split("\n")[0].toLowerCase().includes("question")) {
-        const rows = parseCSV(text);
-        const header = rows.shift().map(h => h.toLowerCase());
-        const idx = (name) => header.indexOf(name);
-
+        const rows = parseCSV(text); const header = rows.shift().map(h => h.toLowerCase().trim()); const idx = (name) => header.indexOf(name);
         rows.forEach(row => {
-          const subjectRaw = row[idx("subject")] || targetDeck.subject;
-          const deckName = row[idx("deck")] || targetDeck.name;
-          const topic = row[idx("topic")] || "";
-          const question = row[idx("question")];
-          const answer = row[idx("answer")];
-
+          const subjectRaw = row[idx("subject")] || targetDeck.subject, deckName = row[idx("deck")] || targetDeck.name, topic = row[idx("topic")] || "", question = row[idx("question")], answer = row[idx("answer")];
           if (!question || !answer) return;
-
           let deck = db.decks.find(d => d.name.toLowerCase() === deckName.toLowerCase() && d.subject === subjectRaw);
-          if (!deck) {
-            deck = { id: uid(), subject: subjectRaw, name: deckName };
-            db.decks.push(deck);
-          }
-
-          db.cards.push(makeCard(deck.id, deck.subject, topic, question, answer));
-          imported++;
+          if (!deck) { deck = { id: uid(), subject: subjectRaw, name: deckName }; db.decks.push(deck); }
+          db.cards.push(makeCard(deck.id, deck.subject, topic, question, answer)); imported++;
         });
-      } else if (text.includes("\n") && text.match(/Q\s*:/i) && text.match(/A\s*:/i)) {
+      } else if (text.match(/Q\s*:/i) && text.match(/A\s*:/i)) {
         const chunks = text.split(/\n(?=Q\s*:)/i);
-        chunks.forEach(chunk => {
-          const q = chunk.match(/Q\s*:\s*([\s\S]*?)(?=\nA\s*:)/i);
-          const a = chunk.match(/A\s*:\s*([\s\S]*)/i);
-          if (q && a) {
-            db.cards.push(makeCard(targetDeck.id, targetDeck.subject, "", q[1].trim(), a[1].trim()));
-            imported++;
-          }
-        });
+        chunks.forEach(chunk => { const q = chunk.match(/Q\s*:\s*([\s\S]*?)(?=\nA\s*:)/i); const a = chunk.match(/A\s*:\s*([\s\S]*)/i); if (q && a) { db.cards.push(makeCard(targetDeck.id, targetDeck.subject, "", q[1].trim(), a[1].trim())); imported++; } });
       } else {
         const rows = parseCSV(text);
         rows.forEach(row => {
-          if (row.length >= 5) {
-            const [subjectRaw, deckName, topic, question, answer] = row;
-            if (!question || !answer) return;
-            let deck = db.decks.find(d => d.name.toLowerCase() === deckName.toLowerCase() && d.subject === subjectRaw);
-            if (!deck) {
-              deck = { id: uid(), subject: subjectRaw, name: deckName };
-              db.decks.push(deck);
-            }
-            db.cards.push(makeCard(deck.id, deck.subject, topic, question, answer));
-            imported++;
-          } else if (row.length >= 3) {
-            const [subjectRaw, question, answer] = row;
-            if (!question || !answer) return;
-            db.cards.push(makeCard(targetDeck.id, subjectRaw || targetDeck.subject, "", question, answer));
-            imported++;
-          }
+          if (row.length >= 5) { const [subjectRaw, deckName, topic, question, answer] = row; if (!question || !answer) return; let deck = db.decks.find(d => d.name.toLowerCase() === deckName.toLowerCase() && d.subject === subjectRaw); if (!deck) { deck = { id: uid(), subject: subjectRaw, name: deckName }; db.decks.push(deck); } db.cards.push(makeCard(deck.id, deck.subject, topic, question, answer)); imported++; }
+          else if (row.length >= 3) { const [subjectRaw, question, answer] = row; if (!question || !answer) return; db.cards.push(makeCard(targetDeck.id, subjectRaw || targetDeck.subject, "", question, answer)); imported++; }
         });
       }
+      saveDB(); showToast(`Imported ${imported} card${imported === 1 ? "" : "s"}`);
+    }
 
-      saveDB();
-      showToast(`Imported ${imported} card${imported === 1 ? "" : "s"}`);
+    function importMCQCSV() {
+      const text = el.importText.value.trim(); if (!text) { showToast("Paste MCQ CSV first"); return; }
+      let imported = 0; const targetDeck = getDeck(el.importTargetDeck.value);
+      const rows = parseCSV(text);
+      let header = [];
+      if (rows.length && rows[0].join(",").toLowerCase().includes("correct")) header = rows.shift().map(h => h.toLowerCase().trim());
+      const getVal = (row, names, fallbackIndex) => {
+        for (const name of names) {
+          const i = header.indexOf(name);
+          if (i >= 0) return row[i];
+        }
+        return row[fallbackIndex];
+      };
+      rows.forEach(row => {
+        const subjectRaw = getVal(row, ["subject"], 0) || targetDeck.subject;
+        const deckName = getVal(row, ["deck"], 1) || targetDeck.name;
+        const topic = getVal(row, ["topic"], 2) || "";
+        const question = getVal(row, ["question"], 3);
+        const A = getVal(row, ["a", "choicea", "choice_a"], 4);
+        const B = getVal(row, ["b", "choiceb", "choice_b"], 5);
+        const C = getVal(row, ["c", "choicec", "choice_c"], 6);
+        const D = getVal(row, ["d", "choiced", "choice_d"], 7);
+        const correct = (getVal(row, ["correct", "answer"], 8) || "A").trim().toUpperCase().slice(0,1);
+        const explanation = getVal(row, ["explanation", "rationale"], 9) || "";
+        if (!question || !A || !B || !C || !D || !"ABCD".includes(correct)) return;
+        let deck = db.decks.find(d => d.name.toLowerCase() === deckName.toLowerCase() && d.subject === subjectRaw);
+        if (!deck) { deck = { id: uid(), subject: subjectRaw, name: deckName }; db.decks.push(deck); }
+        db.mcqs.push(makeMCQ(deck.id, deck.subject, topic, question, A, B, C, D, correct, explanation));
+        imported++;
+      });
+      saveDB(); showToast(`Imported ${imported} MCQ item${imported === 1 ? "" : "s"}`);
     }
 
     function csvEscape(value) {
@@ -1516,110 +1689,93 @@ Notes:</textarea>
     }
 
     function exportCSV() {
-      const rows = [
-        ["subject", "deck", "topic", "question", "answer", "box", "nextDue", "attempts", "correct"],
-        ...db.cards.map(c => [c.subject, getDeck(c.deckId).name, c.topic, c.question, c.answer, c.box, c.nextDue, c.attempts, c.correct])
-      ];
-      downloadFile("cpale-flashcards-v2.csv", rows.map(r => r.map(csvEscape).join(",")).join("\n"), "text/csv");
+      const rows = [["subject", "deck", "topic", "question", "answer", "box", "nextDue", "attempts", "correct"], ...db.cards.map(c => [c.subject, getDeck(c.deckId).name, c.topic, c.question, c.answer, c.box, c.nextDue, c.attempts, c.correct])];
+      downloadFile("cpale-flashcards-v3.csv", rows.map(r => r.map(csvEscape).join(",")).join("\n"), "text/csv");
     }
 
-    function exportJSON() {
-      downloadFile("cpale-flashcards-backup.json", JSON.stringify({ profile, db }, null, 2), "application/json");
+    function exportMCQCSV() {
+      const rows = [["subject", "deck", "topic", "question", "A", "B", "C", "D", "correct", "explanation", "attempts", "correctCount"], ...db.mcqs.map(q => [q.subject, getDeck(q.deckId).name, q.topic, q.question, q.A, q.B, q.C, q.D, q.correct, q.explanation, q.attempts, q.correctCount])];
+      downloadFile("cpale-mcq-v3.csv", rows.map(r => r.map(csvEscape).join(",")).join("\n"), "text/csv");
     }
+
+    function exportJSON() { downloadFile("cpale-recall-deck-full-backup-v3.json", JSON.stringify({ profile, db }, null, 2), "application/json"); }
 
     function downloadFile(filename, content, type) {
-      const blob = new Blob([content], { type });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast("Exported");
+      const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const a = document.createElement("a");
+      a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); showToast("Exported");
     }
 
     async function restoreJSON() {
-      const file = el.jsonRestoreFile.files[0];
-      if (!file) {
-        showToast("Choose a JSON backup first");
-        return;
-      }
+      const file = el.jsonRestoreFile.files[0]; if (!file) { showToast("Choose a JSON backup first"); return; }
       try {
-        const text = await file.text();
-        const restored = JSON.parse(text);
+        const text = await file.text(); const restored = JSON.parse(text);
         if (restored.db && Array.isArray(restored.db.decks) && Array.isArray(restored.db.cards)) {
-          db = restored.db;
-          if (restored.profile) profile = restored.profile;
-          localStorage.setItem(STORE, JSON.stringify(db));
-          localStorage.setItem(PROFILE, JSON.stringify(profile));
-          updateAll();
-          renderProfile();
-          showToast("Backup restored");
-        } else {
-          showToast("Invalid backup file");
-        }
-      } catch {
-        showToast("Could not restore backup");
-      }
+          db = ensureV3(restored.db); if (restored.profile) profile = restored.profile;
+          localStorage.setItem(STORE, JSON.stringify(db)); localStorage.setItem(PROFILE, JSON.stringify(profile)); updateAll(); renderProfile(); showToast("Backup restored");
+        } else showToast("Invalid backup file");
+      } catch { showToast("Could not restore backup"); }
     }
 
     async function extractPDFText() {
-      const file = el.pdfInput.files[0];
-      if (!file) {
-        showToast("Choose a PDF first");
-        return;
-      }
-
+      const file = el.pdfInput.files[0]; if (!file) { showToast("Choose a PDF first"); return; }
       showToast("Loading PDF reader...");
-
       try {
         if (!window.pdfjsLib) {
           await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
           pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
         }
-
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let text = "";
-
+        const arrayBuffer = await file.arrayBuffer(); const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise; let text = "";
         for (let pageNo = 1; pageNo <= pdf.numPages; pageNo++) {
-          const page = await pdf.getPage(pageNo);
-          const content = await page.getTextContent();
-          text += "\n\n--- Page " + pageNo + " ---\n";
-          text += content.items.map(item => item.str).join(" ");
+          const page = await pdf.getPage(pageNo); const content = await page.getTextContent();
+          text += "\n\n--- Page " + pageNo + " ---\n" + content.items.map(item => item.str).join(" ");
         }
-
-        el.importText.value = (el.importText.value ? el.importText.value + "\n\n" : "") + text.trim();
-        showToast("PDF text extracted");
-      } catch (err) {
-        console.error(err);
-        showToast("PDF extraction failed. Try copy-pasting text instead.");
-      }
+        el.importText.value = (el.importText.value ? el.importText.value + "\n\n" : "") + text.trim(); showToast("PDF text extracted");
+      } catch (err) { console.error(err); showToast("PDF extraction failed. Try copy-pasting text instead."); }
     }
 
     function loadScript(src) {
-      return new Promise((resolve, reject) => {
-        const s = document.createElement("script");
-        s.src = src;
-        s.onload = resolve;
-        s.onerror = reject;
-        document.head.appendChild(s);
-      });
+      return new Promise((resolve, reject) => { const s = document.createElement("script"); s.src = src; s.onload = resolve; s.onerror = reject; document.head.appendChild(s); });
     }
 
     function clearAllData() {
-      if (!confirm("Delete all decks, cards, and stats from this browser?")) return;
-      localStorage.removeItem(STORE);
-      db = loadDB();
-      updateAll();
-      showToast("Data reset to samples");
+      if (!confirm("Delete all decks, cards, MCQs, and stats from this browser?")) return;
+      localStorage.removeItem(STORE); db = loadDB(); updateAll(); showToast("Data reset to samples");
     }
 
-    function copyPrompt() {
-      el.cardPrompt.select();
-      navigator.clipboard?.writeText(el.cardPrompt.value);
-      showToast("Prompt copied");
+    function promptText(type) {
+      if (type === "mcq") {
+        return `Convert the notes below into CPALE-style multiple choice questions. Output only CSV rows with this exact header:
+
+subject,deck,topic,question,A,B,C,D,correct,explanation
+
+Rules:
+- Make the questions situational and exam-oriented.
+- Use four choices only: A, B, C, D.
+- Make distractors realistic.
+- Include the correct letter only in the correct column.
+- Explanation must explain the reasoning and mention the CPALE trap if useful.
+- Use subjects only: FAR, AFAR, MAS, Auditing Theory, Auditing Problems, Taxation, RFBT.
+- Do not use markdown.
+
+Notes:`;
+      }
+      return `Convert the notes below into CPALE active-recall flashcards. Output only CSV rows with this exact header:
+
+subject,deck,topic,question,answer
+
+Rules:
+- Keep each question specific.
+- Include common CPALE traps where useful.
+- Answers should be concise but complete.
+- Use subjects only: FAR, AFAR, MAS, Auditing Theory, Auditing Problems, Taxation, RFBT.
+- Do not use markdown.
+
+Notes:`;
     }
+
+    function updatePrompt() { el.cardPrompt.value = promptText(el.promptType.value); }
+
+    function copyPrompt() { el.cardPrompt.select(); navigator.clipboard?.writeText(el.cardPrompt.value); showToast("Prompt copied"); }
 
     function showScreen(name) {
       activeScreen = name;
@@ -1627,86 +1783,51 @@ Notes:</textarea>
       document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.screen === name));
       if (name === "review") buildReviewQueue();
       if (name === "cards") renderCardsList();
+      if (name === "mcq") renderMCQList();
+      if (name === "quiz") renderQuiz();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function updateAll() {
-      renderDeckOptions();
-      renderDashboard();
-      renderDecks();
-      renderCardsList();
+      renderDeckOptions(); renderDashboard(); renderDecks(); renderCardsList(); renderMCQList();
       if (activeScreen === "review") buildReviewQueue();
-      renderCountdown();
+      if (activeScreen === "quiz") renderQuiz();
+      renderCountdown(); updatePrompt();
     }
 
     function bindEvents() {
-      el.startBtn.addEventListener("click", () => {
-        const name = el.profileName.value.trim() || "Student";
-        profile = { name, targetExam: el.targetExam.value || "", createdAt: nowISO() };
-        saveProfile();
-        updateAll();
-      });
-
+      el.startBtn.addEventListener("click", () => { const name = el.profileName.value.trim() || "Student"; profile = { name, targetExam: el.targetExam.value || "", createdAt: nowISO() }; saveProfile(); updateAll(); });
       document.querySelectorAll(".nav button").forEach(btn => btn.addEventListener("click", () => showScreen(btn.dataset.screen)));
       document.querySelectorAll("[data-screen-link]").forEach(btn => btn.addEventListener("click", () => showScreen(btn.dataset.screenLink)));
 
-      el.profileBtn.addEventListener("click", () => {
-        el.profileNameEdit.value = profile?.name || "";
-        el.targetExamEdit.value = profile?.targetExam || "";
-        el.profileModal.classList.add("show");
-      });
+      el.profileBtn.addEventListener("click", () => { el.profileNameEdit.value = profile?.name || ""; el.targetExamEdit.value = profile?.targetExam || ""; el.profileModal.classList.add("show"); });
       el.closeProfileBtn.addEventListener("click", () => el.profileModal.classList.remove("show"));
-      el.saveProfileBtn.addEventListener("click", () => {
-        profile.name = el.profileNameEdit.value.trim() || "Student";
-        profile.targetExam = el.targetExamEdit.value || "";
-        saveProfile();
-        el.profileModal.classList.remove("show");
-        showToast("Profile saved");
-      });
+      el.saveProfileBtn.addEventListener("click", () => { profile.name = el.profileNameEdit.value.trim() || "Student"; profile.targetExam = el.targetExamEdit.value || ""; saveProfile(); el.profileModal.classList.remove("show"); showToast("Profile saved"); });
 
-      el.startDueBtn.addEventListener("click", () => {
-        el.reviewDeckFilter.value = "all";
-        el.reviewMode.value = "due";
-        showScreen("review");
-      });
+      el.startDueBtn.addEventListener("click", () => { el.reviewDeckFilter.value = "all"; el.reviewMode.value = "due"; showScreen("review"); });
+      el.startQuizBtn.addEventListener("click", () => showScreen("quiz"));
 
-      el.reviewDeckFilter.addEventListener("change", buildReviewQueue);
-      el.reviewMode.addEventListener("change", buildReviewQueue);
+      el.reviewDeckFilter.addEventListener("change", buildReviewQueue); el.reviewMode.addEventListener("change", buildReviewQueue);
       el.reviewCard.addEventListener("click", () => revealed ? null : revealCurrentCard());
-      el.reviewCard.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          revealed ? nextReviewCard() : revealCurrentCard();
-        }
-      });
-      el.prevCardBtn.addEventListener("click", prevReviewCard);
-      el.revealCardBtn.addEventListener("click", revealCurrentCard);
-      el.againCardBtn.addEventListener("click", () => rateReview("again"));
-      el.hardCardBtn.addEventListener("click", () => rateReview("hard"));
-      el.goodCardBtn.addEventListener("click", () => rateReview("good"));
+      el.reviewCard.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); revealed ? nextReviewCard() : revealCurrentCard(); } });
+      el.prevCardBtn.addEventListener("click", prevReviewCard); el.revealCardBtn.addEventListener("click", revealCurrentCard); el.againCardBtn.addEventListener("click", () => rateReview("again")); el.hardCardBtn.addEventListener("click", () => rateReview("hard")); el.goodCardBtn.addEventListener("click", () => rateReview("good"));
+
+      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.retryMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false));
+      el.prevQuizBtn.addEventListener("click", prevQuiz); el.nextQuizBtn.addEventListener("click", nextQuiz); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
 
       el.addDeckBtn.addEventListener("click", addDeck);
-      el.cardDeckFilter.addEventListener("change", renderCardsList);
-      el.cardSearch.addEventListener("input", renderCardsList);
-      el.saveCardBtn.addEventListener("click", saveEditorCard);
-      el.resetEditorBtn.addEventListener("click", resetEditor);
-      el.deleteCardBtn.addEventListener("click", deleteSelectedCard);
+      el.cardDeckFilter.addEventListener("change", renderCardsList); el.cardSearch.addEventListener("input", renderCardsList);
+      el.saveCardBtn.addEventListener("click", saveEditorCard); el.resetEditorBtn.addEventListener("click", resetEditor); el.deleteCardBtn.addEventListener("click", deleteSelectedCard);
 
-      el.importCsvBtn.addEventListener("click", importCards);
-      el.clearImportBtn.addEventListener("click", () => { el.importText.value = ""; });
-      el.extractPdfBtn.addEventListener("click", extractPDFText);
-      el.copyPromptBtn.addEventListener("click", copyPrompt);
+      el.mcqDeckFilter.addEventListener("change", renderMCQList); el.mcqSearch.addEventListener("input", renderMCQList);
+      el.saveMCQBtn.addEventListener("click", saveMCQEditor); el.resetMCQBtn.addEventListener("click", resetMCQEditor); el.deleteMCQBtn.addEventListener("click", deleteSelectedMCQ);
 
-      el.exportCsvBtn.addEventListener("click", exportCSV);
-      el.exportJsonBtn.addEventListener("click", exportJSON);
-      el.restoreJsonBtn.addEventListener("click", restoreJSON);
+      el.importCsvBtn.addEventListener("click", importItems); el.clearImportBtn.addEventListener("click", () => { el.importText.value = ""; }); el.extractPdfBtn.addEventListener("click", extractPDFText);
+      el.promptType.addEventListener("change", updatePrompt); el.copyPromptBtn.addEventListener("click", copyPrompt);
+
+      el.exportCsvBtn.addEventListener("click", exportCSV); el.exportMCQCsvBtn.addEventListener("click", exportMCQCSV); el.exportJsonBtn.addEventListener("click", exportJSON); el.restoreJsonBtn.addEventListener("click", restoreJSON);
       el.clearAllBtn.addEventListener("click", clearAllData);
-      el.resetProfileBtn.addEventListener("click", () => {
-        if (!confirm("Reset your local profile? Cards will remain.")) return;
-        localStorage.removeItem(PROFILE);
-        profile = null;
-        renderProfile();
-      });
+      el.resetProfileBtn.addEventListener("click", () => { if (!confirm("Reset your local profile? Cards and MCQs will remain.")) return; localStorage.removeItem(PROFILE); profile = null; renderProfile(); });
     }
 
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
@@ -1717,6 +1838,7 @@ Notes:</textarea>
     renderProfile();
     updateAll();
     buildReviewQueue();
+    renderQuiz();
   </script>
 </body>
 </html>
