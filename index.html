@@ -929,6 +929,9 @@
             <button class="secondary" id="exportJsonBtn">Export full JSON</button>
           </div>
           <div style="height:10px;"></div>
+          <button class="purple" id="removeDuplicateMCQBtn">Remove duplicate MCQs</button>
+          <p class="muted tiny" style="margin:8px 0 0;">Keeps one copy of MCQs with the same subject, deck, topic, question, choices, correct answer, and explanation.</p>
+          <div style="height:10px;"></div>
           <button class="danger" id="clearAllBtn">Clear all data</button>
           <div class="divider"></div>
           <h2 class="section-title">Restore JSON backup</h2>
@@ -1098,7 +1101,7 @@
       importType: $("importType"), importTargetDeck: $("importTargetDeck"), importText: $("importText"), importCsvBtn: $("importCsvBtn"), clearImportBtn: $("clearImportBtn"),
       pdfInput: $("pdfInput"), extractPdfBtn: $("extractPdfBtn"), promptType: $("promptType"), cardPrompt: $("cardPrompt"), copyPromptBtn: $("copyPromptBtn"),
 
-      exportCsvBtn: $("exportCsvBtn"), exportMCQCsvBtn: $("exportMCQCsvBtn"), exportJsonBtn: $("exportJsonBtn"), clearAllBtn: $("clearAllBtn"), jsonRestoreFile: $("jsonRestoreFile"), restoreJsonBtn: $("restoreJsonBtn"), resetProfileBtn: $("resetProfileBtn")
+      exportCsvBtn: $("exportCsvBtn"), exportMCQCsvBtn: $("exportMCQCsvBtn"), exportJsonBtn: $("exportJsonBtn"), removeDuplicateMCQBtn: $("removeDuplicateMCQBtn"), clearAllBtn: $("clearAllBtn"), jsonRestoreFile: $("jsonRestoreFile"), restoreJsonBtn: $("restoreJsonBtn"), resetProfileBtn: $("resetProfileBtn")
     };
 
     function loadProfile() {
@@ -1737,6 +1740,58 @@
       return new Promise((resolve, reject) => { const s = document.createElement("script"); s.src = src; s.onload = resolve; s.onerror = reject; document.head.appendChild(s); });
     }
 
+    function normalizeForDuplicate(value) {
+      return String(value || "")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .replace(/[“”]/g, '"')
+        .replace(/[‘’]/g, "'")
+        .trim();
+    }
+
+    function removeDuplicateMCQs() {
+      if (!db.mcqs || !db.mcqs.length) {
+        showToast("No MCQs to check");
+        return;
+      }
+
+      const confirmed = confirm("Remove duplicate MCQs now? This keeps the first copy and deletes repeated copies. Export a full JSON backup first if you want extra safety.");
+      if (!confirmed) return;
+
+      const seen = new Set();
+      const unique = [];
+      let removed = 0;
+
+      db.mcqs.forEach(item => {
+        const deck = getDeck(item.deckId);
+        const key = [
+          normalizeForDuplicate(item.subject),
+          normalizeForDuplicate(deck.name),
+          normalizeForDuplicate(item.topic),
+          normalizeForDuplicate(item.question),
+          normalizeForDuplicate(item.A),
+          normalizeForDuplicate(item.B),
+          normalizeForDuplicate(item.C),
+          normalizeForDuplicate(item.D),
+          normalizeForDuplicate(item.correct),
+          normalizeForDuplicate(item.explanation)
+        ].join("|");
+
+        if (seen.has(key)) {
+          removed++;
+        } else {
+          seen.add(key);
+          unique.push(item);
+        }
+      });
+
+      db.mcqs = unique;
+      saveDB(true);
+      renderMCQList();
+      buildQuizQueue(false);
+      showToast(`Removed ${removed} duplicate MCQ${removed === 1 ? "" : "s"}`);
+    }
+
     function clearAllData() {
       if (!confirm("Delete all decks, cards, MCQs, and stats from this browser?")) return;
       localStorage.removeItem(STORE); db = loadDB(); updateAll(); showToast("Data reset to samples");
@@ -1826,6 +1881,7 @@ Notes:`;
       el.promptType.addEventListener("change", updatePrompt); el.copyPromptBtn.addEventListener("click", copyPrompt);
 
       el.exportCsvBtn.addEventListener("click", exportCSV); el.exportMCQCsvBtn.addEventListener("click", exportMCQCSV); el.exportJsonBtn.addEventListener("click", exportJSON); el.restoreJsonBtn.addEventListener("click", restoreJSON);
+      el.removeDuplicateMCQBtn.addEventListener("click", removeDuplicateMCQs);
       el.clearAllBtn.addEventListener("click", clearAllData);
       el.resetProfileBtn.addEventListener("click", () => { if (!confirm("Reset your local profile? Cards and MCQs will remain.")) return; localStorage.removeItem(PROFILE); profile = null; renderProfile(); });
     }

@@ -1,37 +1,31 @@
-CPALE Recall Deck v3
+CPALE Recall Deck v3.1
 
-New in v3:
-- CPALE-style multiple choice quiz mode
-- New Quiz tab
-- New MCQs tab for adding/editing/deleting MCQ items
-- MCQ CSV import/export
-- Quiz score tracking
-- Explanation after every answer
-- Retry missed questions
-- Full JSON backup includes decks, flashcards, MCQs, quiz progress, and profile
-- Automatically migrates most v2 local data and adds sample MCQs
+New in v3.1:
+- Added a Backup tab button: Remove duplicate MCQs
+- The button keeps one copy of each repeated MCQ and deletes duplicate copies
+- Duplicate detection compares:
+  subject, deck, topic, question, A, B, C, D, correct answer, and explanation
+- Full JSON backup/export still works
 
 How to update your GitHub website:
 1. Download and extract this ZIP.
-2. In your GitHub repository, upload/replace:
+2. In your GitHub repository, replace/upload:
    - index.html
    - manifest.webmanifest
    - service-worker.js
    - README.txt
 3. Commit changes.
-4. Open your GitHub Pages site.
-5. If the old version still appears, refresh Safari or remove the site from Home Screen and add it again.
+4. Open your GitHub Pages website.
+5. If the old version still appears, refresh Safari. If installed on Home Screen, remove it and add it again.
 
-MCQ CSV import format:
-subject,deck,topic,question,A,B,C,D,correct,explanation
-
-Example:
-RFBT,RFBT General,Obligations,"D obliged himself to give C either his car, motorcycle, or P300,000 at D's choice. Before choice, the car is lost by fortuitous event. What is the effect?","The obligation is extinguished.","D may still choose between the motorcycle and P300,000.","C may demand the value of the car plus damages.","The obligation becomes purely monetary.","B","Alternative obligation is not extinguished if other prestations remain before choice."
-
-How to generate MCQs with ChatGPT:
-Use the prompt inside the Import screen. Choose MCQ CSV prompt, copy it, paste your CPALE notes after it, then import the generated CSV into the website.
+How to remove duplicate MCQs:
+1. Open your website.
+2. Go to Backup.
+3. Optional but recommended: tap Export full JSON first.
+4. Tap Remove duplicate MCQs.
+5. Confirm.
+6. The app will show how many duplicate MCQs were removed.
 
 Important:
-- Data saves locally in the browser.
-- Export full JSON regularly for backup.
-- For best safety before updating, export JSON from the current website first.
+- Your website saves data locally in your browser.
+- Always export full JSON before major changes.
