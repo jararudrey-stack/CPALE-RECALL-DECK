@@ -599,6 +599,19 @@
       margin-top: 10px;
     }
 
+    .quiz-session-options {
+      margin-top: 13px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .quiz-session-options .session-title {
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 850;
+      margin: 2px 0 -2px;
+    }
+
     @media (max-width: 520px) {
       .quiz-settings-row { grid-template-columns: 1fr; }
     }
@@ -830,10 +843,12 @@
               <div class="score-box hidden" id="quizResults">
                 <b id="scoreText">0%</b>
                 <p class="muted" id="scoreDetails">Quiz complete.</p>
-                <div class="three-col">
-                  <button id="reviewMissedBtn">Review missed</button>
-                  <button class="secondary" id="newQuizBtn">New quiz</button>
-                  <button class="warn" id="finishExitQuizBtn">Finish & exit</button>
+                <div class="stack">
+                  <button class="warn" id="finishExitQuizBtn">Option 4: Finish</button>
+                  <div class="two-col">
+                    <button id="reviewMissedBtn">Review missed</button>
+                    <button class="secondary" id="newQuizBtn">New quiz</button>
+                  </div>
                 </div>
               </div>
 
@@ -842,14 +857,17 @@
                 <span id="quizScoreLive">Score: 0/0</span>
               </div>
             </div>
-            <div class="three-col" style="margin-top:13px;">
-              <button class="secondary" id="prevQuizBtn">Previous</button>
-              <button class="warn" id="exitQuizBtn">Exit and save</button>
-              <button class="blue" id="nextQuizBtn">Next</button>
-            </div>
-            <div class="two-col" style="margin-top:10px;">
-              <button class="secondary" id="exitRetryQuizBtn">Exit & retry this quiz later</button>
-              <button class="danger" id="clearSavedQuizBtn">Clear saved quiz</button>
+            <div id="quizSessionOptions" class="quiz-session-options">
+              <div class="two-col">
+                <button class="secondary" id="prevQuizBtn">Previous</button>
+                <button class="blue" id="nextQuizBtn">Next</button>
+              </div>
+              <div class="session-title">Quiz session options</div>
+              <div class="three-col">
+                <button class="warn" id="exitQuizBtn">Option 1: Exit and Save</button>
+                <button class="danger" id="exitNoSaveQuizBtn">Option 2: Exit and Not Save</button>
+                <button class="secondary" id="restartQuizBtn">Option 3: Restart</button>
+              </div>
             </div>
           </div>
         </div>
@@ -1190,7 +1208,7 @@
       quizCard: $("quizCard"), quizActiveArea: $("quizActiveArea"), quizSubjectTag: $("quizSubjectTag"), quizTopicTag: $("quizTopicTag"), quizCounter: $("quizCounter"),
       quizProgressBar: $("quizProgressBar"), quizProgressText: $("quizProgressText"), quizProgressPercent: $("quizProgressPercent"), quizTimerText: $("quizTimerText"),
       quizQuestion: $("quizQuestion"), choiceGrid: $("choiceGrid"), quizExplanation: $("quizExplanation"), quizResults: $("quizResults"), scoreText: $("scoreText"), scoreDetails: $("scoreDetails"),
-      reviewMissedBtn: $("reviewMissedBtn"), newQuizBtn: $("newQuizBtn"), finishExitQuizBtn: $("finishExitQuizBtn"), quizHint: $("quizHint"), quizScoreLive: $("quizScoreLive"), prevQuizBtn: $("prevQuizBtn"), exitQuizBtn: $("exitQuizBtn"), exitRetryQuizBtn: $("exitRetryQuizBtn"), clearSavedQuizBtn: $("clearSavedQuizBtn"), nextQuizBtn: $("nextQuizBtn"),
+      reviewMissedBtn: $("reviewMissedBtn"), newQuizBtn: $("newQuizBtn"), finishExitQuizBtn: $("finishExitQuizBtn"), quizHint: $("quizHint"), quizScoreLive: $("quizScoreLive"), prevQuizBtn: $("prevQuizBtn"), exitQuizBtn: $("exitQuizBtn"), exitNoSaveQuizBtn: $("exitNoSaveQuizBtn"), restartQuizBtn: $("restartQuizBtn"), quizSessionOptions: $("quizSessionOptions"), nextQuizBtn: $("nextQuizBtn"),
       quizQueueSummary: $("quizQueueSummary"), quizQueueList: $("quizQueueList"),
 
       deckGrid: $("deckGrid"), newDeckSubject: $("newDeckSubject"), newDeckName: $("newDeckName"), addDeckBtn: $("addDeckBtn"),
@@ -1342,7 +1360,7 @@
       const name = profile.name || "Student";
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
-      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v3.7` : "Flashcards + CPALE-style multiple choice quizzes. v3.7";
+      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v3.8` : "Flashcards + CPALE-style multiple choice quizzes. v3.8";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
@@ -1674,6 +1692,40 @@
       showScreen("dashboard");
     }
 
+    function exitQuizWithoutSaving() {
+      if (!quizQueue.length) {
+        showScreen("dashboard");
+        return;
+      }
+
+      const confirmed = confirm("Exit without saving this quiz session? Your current quiz progress will be removed.");
+      if (!confirmed) return;
+
+      clearCurrentQuizSession();
+      showScreen("dashboard");
+      showToast("Quiz session removed");
+    }
+
+    function restartCurrentQuiz() {
+      if (!quizQueue.length) {
+        showToast("No quiz to restart");
+        return;
+      }
+
+      const confirmed = confirm("Restart this quiz from item 1? Your answers in this current attempt will be cleared.");
+      if (!confirmed) return;
+
+      resetQuizRuntime();
+      quizIndex = 0;
+      quizAnswers = {};
+      quizTimerRemainingById = {};
+      quizTimerDeadline = 0;
+      quizSessionStartedAt = nowISO();
+      saveQuizSession(false);
+      renderQuiz();
+      showToast("Quiz restarted");
+    }
+
     function buildQuizQueue(useMissed = false) {
       resetQuizRuntime();
       unlockAudio();
@@ -1894,7 +1946,9 @@
       el.prevQuizBtn.disabled = !quizQueue.length || quizIndex === 0;
       el.nextQuizBtn.disabled = !quizQueue.length;
       el.exitQuizBtn.disabled = !quizQueue.length;
-      el.exitRetryQuizBtn.disabled = !quizQueue.length;
+      el.exitNoSaveQuizBtn.disabled = !quizQueue.length;
+      el.restartQuizBtn.disabled = !quizQueue.length;
+      el.quizSessionOptions.classList.remove("hidden");
       updateQuizProgressUI();
 
       const answeredNow = validQuizAnsweredCount();
@@ -2006,6 +2060,7 @@
       quizTimerRemainingById = {};
       quizTimerDeadline = 0;
       localStorage.removeItem(QUIZ_SESSION_KEY);
+      localStorage.removeItem(QUIZ_RETRY_KEY);
       updateQuizProgressUI();
       updateTimerDisplay();
       renderQuiz();
@@ -2014,7 +2069,7 @@
     function finishAndExitQuiz() {
       clearCurrentQuizSession();
       showScreen("dashboard");
-      showToast("Quiz finished and cleared");
+      showToast("Quiz finished");
     }
 
     function showQuizResults() {
@@ -2033,7 +2088,9 @@
       el.prevQuizBtn.disabled = true;
       el.nextQuizBtn.disabled = true;
       el.exitQuizBtn.disabled = true;
-      el.exitRetryQuizBtn.disabled = true;
+      el.exitNoSaveQuizBtn.disabled = true;
+      el.restartQuizBtn.disabled = true;
+      el.quizSessionOptions.classList.add("hidden");
       localStorage.removeItem(QUIZ_SESSION_KEY);
       updateQuizProgressUI();
       updateTimerDisplay();
@@ -2589,7 +2646,7 @@ Notes:`;
 
       el.enableSoundBtn.addEventListener("click", enableSoundManually);
       el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", retrySavedQuizSession); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.finishExitQuizBtn.addEventListener("click", finishAndExitQuiz);
-      el.prevQuizBtn.addEventListener("click", prevQuiz); el.exitQuizBtn.addEventListener("click", exitQuizSession); el.exitRetryQuizBtn.addEventListener("click", exitAndRetryQuizLater); el.clearSavedQuizBtn.addEventListener("click", clearSavedQuizSessions); el.nextQuizBtn.addEventListener("click", nextQuiz); el.quizTimerMode.addEventListener("change", () => { enableTimedModeFromSelect(); updateTimerDisplay(); }); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
+      el.prevQuizBtn.addEventListener("click", prevQuiz); el.exitQuizBtn.addEventListener("click", exitQuizSession); el.exitNoSaveQuizBtn.addEventListener("click", exitQuizWithoutSaving); el.restartQuizBtn.addEventListener("click", restartCurrentQuiz); el.nextQuizBtn.addEventListener("click", nextQuiz); el.quizTimerMode.addEventListener("change", () => { enableTimedModeFromSelect(); updateTimerDisplay(); }); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
 
       el.addDeckBtn.addEventListener("click", addDeck);
       el.cardDeckFilter.addEventListener("change", renderCardsList); el.cardSearch.addEventListener("input", renderCardsList);

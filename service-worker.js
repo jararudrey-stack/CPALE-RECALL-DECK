@@ -1,4 +1,4 @@
-const CACHE_NAME = "cpale-recall-deck-v3-7";
+const CACHE_NAME = "cpale-recall-deck-v3-8";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest"];
 
 self.addEventListener("install", event => {

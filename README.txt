@@ -1,16 +1,23 @@
-CPALE Recall Deck v3.7
+CPALE Recall Deck v3.8
 
-New in v3.7:
-- Added Finish & exit button after completing a quiz
-- After finishing a quiz, tapping Finish & exit clears the current quiz session from the Quiz screen
-- The completed quiz is removed from local unfinished-session storage
-- The app returns you to the Dashboard after finishing and exiting
-- Existing options remain:
-  - Review missed
-  - New quiz
-  - Exit and save
-  - Exit & retry this quiz later
-  - Clear saved quiz
+New in v3.8:
+- Reorganized MCQ quiz session controls neatly into the exact four-option flow:
+  Option 1: Exit and Save
+    Saves your current quiz progress so you can resume later.
+  Option 2: Exit and Not Save
+    Removes the current quiz session and clears the quiz from the screen.
+  Option 3: Restart
+    Restarts the same quiz from item 1 and clears your answers for the current attempt.
+  Option 4: Finish
+    Appears only after you complete the quiz. It terminates and clears the completed quiz session.
+
+Other existing features remain:
+- Resume saved quiz
+- Timed quiz: 1 minute per question
+- Sound/haptic feedback
+- Review missed
+- New quiz
+- Progress bar
 
 How to update:
 1. Download and extract this ZIP.
@@ -20,6 +27,6 @@ How to update:
    - service-worker.js
    - README.txt
 3. Commit changes.
-4. Open your site with ?v=37:
-   https://yourusername.github.io/CPALE-RECALL-DECK/?v=37
+4. Open your site with ?v=38:
+   https://yourusername.github.io/CPALE-RECALL-DECK/?v=38
 5. If using the Home Screen app, remove the old icon and add the updated site again.
