@@ -830,9 +830,10 @@
               <div class="score-box hidden" id="quizResults">
                 <b id="scoreText">0%</b>
                 <p class="muted" id="scoreDetails">Quiz complete.</p>
-                <div class="two-col">
+                <div class="three-col">
                   <button id="reviewMissedBtn">Review missed</button>
                   <button class="secondary" id="newQuizBtn">New quiz</button>
+                  <button class="warn" id="finishExitQuizBtn">Finish & exit</button>
                 </div>
               </div>
 
@@ -1189,7 +1190,7 @@
       quizCard: $("quizCard"), quizActiveArea: $("quizActiveArea"), quizSubjectTag: $("quizSubjectTag"), quizTopicTag: $("quizTopicTag"), quizCounter: $("quizCounter"),
       quizProgressBar: $("quizProgressBar"), quizProgressText: $("quizProgressText"), quizProgressPercent: $("quizProgressPercent"), quizTimerText: $("quizTimerText"),
       quizQuestion: $("quizQuestion"), choiceGrid: $("choiceGrid"), quizExplanation: $("quizExplanation"), quizResults: $("quizResults"), scoreText: $("scoreText"), scoreDetails: $("scoreDetails"),
-      reviewMissedBtn: $("reviewMissedBtn"), newQuizBtn: $("newQuizBtn"), quizHint: $("quizHint"), quizScoreLive: $("quizScoreLive"), prevQuizBtn: $("prevQuizBtn"), exitQuizBtn: $("exitQuizBtn"), exitRetryQuizBtn: $("exitRetryQuizBtn"), clearSavedQuizBtn: $("clearSavedQuizBtn"), nextQuizBtn: $("nextQuizBtn"),
+      reviewMissedBtn: $("reviewMissedBtn"), newQuizBtn: $("newQuizBtn"), finishExitQuizBtn: $("finishExitQuizBtn"), quizHint: $("quizHint"), quizScoreLive: $("quizScoreLive"), prevQuizBtn: $("prevQuizBtn"), exitQuizBtn: $("exitQuizBtn"), exitRetryQuizBtn: $("exitRetryQuizBtn"), clearSavedQuizBtn: $("clearSavedQuizBtn"), nextQuizBtn: $("nextQuizBtn"),
       quizQueueSummary: $("quizQueueSummary"), quizQueueList: $("quizQueueList"),
 
       deckGrid: $("deckGrid"), newDeckSubject: $("newDeckSubject"), newDeckName: $("newDeckName"), addDeckBtn: $("addDeckBtn"),
@@ -1341,7 +1342,7 @@
       const name = profile.name || "Student";
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
-      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v3.6` : "Flashcards + CPALE-style multiple choice quizzes. v3.6";
+      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v3.7` : "Flashcards + CPALE-style multiple choice quizzes. v3.7";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
@@ -1997,6 +1998,25 @@
       renderQuiz();
     }
 
+    function clearCurrentQuizSession() {
+      resetQuizRuntime();
+      quizQueue = [];
+      quizIndex = 0;
+      quizAnswers = {};
+      quizTimerRemainingById = {};
+      quizTimerDeadline = 0;
+      localStorage.removeItem(QUIZ_SESSION_KEY);
+      updateQuizProgressUI();
+      updateTimerDisplay();
+      renderQuiz();
+    }
+
+    function finishAndExitQuiz() {
+      clearCurrentQuizSession();
+      showScreen("dashboard");
+      showToast("Quiz finished and cleared");
+    }
+
     function showQuizResults() {
       resetQuizRuntime();
       const answeredItems = validQuizAnsweredCount();
@@ -2568,7 +2588,7 @@ Notes:`;
       el.prevCardBtn.addEventListener("click", prevReviewCard); el.revealCardBtn.addEventListener("click", revealCurrentCard); el.againCardBtn.addEventListener("click", () => rateReview("again")); el.hardCardBtn.addEventListener("click", () => rateReview("hard")); el.goodCardBtn.addEventListener("click", () => rateReview("good"));
 
       el.enableSoundBtn.addEventListener("click", enableSoundManually);
-      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", retrySavedQuizSession); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false));
+      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", retrySavedQuizSession); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.finishExitQuizBtn.addEventListener("click", finishAndExitQuiz);
       el.prevQuizBtn.addEventListener("click", prevQuiz); el.exitQuizBtn.addEventListener("click", exitQuizSession); el.exitRetryQuizBtn.addEventListener("click", exitAndRetryQuizLater); el.clearSavedQuizBtn.addEventListener("click", clearSavedQuizSessions); el.nextQuizBtn.addEventListener("click", nextQuiz); el.quizTimerMode.addEventListener("change", () => { enableTimedModeFromSelect(); updateTimerDisplay(); }); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
 
       el.addDeckBtn.addEventListener("click", addDeck);
