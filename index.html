@@ -543,6 +543,35 @@
       line-height: 1.45;
     }
 
+    .quiz-progress-wrap {
+      margin: 0 0 18px;
+    }
+
+    .quiz-progress-track {
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,.11);
+      border: 1px solid var(--line);
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width .25s ease;
+    }
+
+    .quiz-progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .86rem;
+      line-height: 1.25;
+    }
+
     .score-box {
       text-align: center;
       padding: 24px;
@@ -728,9 +757,10 @@
                 <option value="all">All questions</option>
               </select>
             </div>
-            <div class="two-col" style="margin-top:10px;">
+            <div class="three-col" style="margin-top:10px;">
               <button id="beginQuizBtn">Start quiz</button>
-              <button class="secondary" id="retryMissedBtn">Retry missed from last quiz</button>
+              <button class="secondary" id="resumeQuizBtn">Resume saved quiz</button>
+              <button class="secondary" id="retryMissedBtn">Retry missed</button>
             </div>
           </div>
 
@@ -743,6 +773,15 @@
                   <span class="tag" id="quizSubjectTag">Subject</span>
                   <span class="tag blue" id="quizTopicTag">Topic</span>
                   <span class="tag purple" id="quizCounter">0 / 0</span>
+                </div>
+                <div class="quiz-progress-wrap">
+                  <div class="quiz-progress-track">
+                    <div class="quiz-progress-fill" id="quizProgressBar"></div>
+                  </div>
+                  <div class="quiz-progress-label">
+                    <span id="quizProgressText">0 of 0 answered</span>
+                    <span id="quizProgressPercent">0%</span>
+                  </div>
                 </div>
                 <p class="question" id="quizQuestion">Start a quiz to begin.</p>
                 <div class="choice-grid" id="choiceGrid"></div>
@@ -763,8 +802,9 @@
                 <span id="quizScoreLive">Score: 0/0</span>
               </div>
             </div>
-            <div class="two-col" style="margin-top:13px;">
+            <div class="three-col" style="margin-top:13px;">
               <button class="secondary" id="prevQuizBtn">Previous</button>
+              <button class="warn" id="exitQuizBtn">Exit and save</button>
               <button class="blue" id="nextQuizBtn">Next</button>
             </div>
           </div>
@@ -1070,10 +1110,13 @@
     let selectedCardId = null;
     let selectedMCQId = null;
 
+    const QUIZ_SESSION_KEY = "cpale_quiz_session_v3_4";
+
     let quizQueue = [];
     let quizIndex = 0;
     let quizAnswers = {};
     let lastMissedIds = [];
+    let quizSessionStartedAt = "";
 
     const $ = (id) => document.getElementById(id);
 
@@ -1090,10 +1133,11 @@
       cardHint: $("cardHint"), cardCounter: $("cardCounter"), prevCardBtn: $("prevCardBtn"), revealCardBtn: $("revealCardBtn"), againCardBtn: $("againCardBtn"), hardCardBtn: $("hardCardBtn"), goodCardBtn: $("goodCardBtn"),
       queueSummary: $("queueSummary"), queueList: $("queueList"),
 
-      quizDeckFilter: $("quizDeckFilter"), quizSubjectFilter: $("quizSubjectFilter"), quizCount: $("quizCount"), beginQuizBtn: $("beginQuizBtn"), retryMissedBtn: $("retryMissedBtn"),
+      quizDeckFilter: $("quizDeckFilter"), quizSubjectFilter: $("quizSubjectFilter"), quizCount: $("quizCount"), beginQuizBtn: $("beginQuizBtn"), resumeQuizBtn: $("resumeQuizBtn"), retryMissedBtn: $("retryMissedBtn"),
       quizCard: $("quizCard"), quizActiveArea: $("quizActiveArea"), quizSubjectTag: $("quizSubjectTag"), quizTopicTag: $("quizTopicTag"), quizCounter: $("quizCounter"),
+      quizProgressBar: $("quizProgressBar"), quizProgressText: $("quizProgressText"), quizProgressPercent: $("quizProgressPercent"),
       quizQuestion: $("quizQuestion"), choiceGrid: $("choiceGrid"), quizExplanation: $("quizExplanation"), quizResults: $("quizResults"), scoreText: $("scoreText"), scoreDetails: $("scoreDetails"),
-      reviewMissedBtn: $("reviewMissedBtn"), newQuizBtn: $("newQuizBtn"), quizHint: $("quizHint"), quizScoreLive: $("quizScoreLive"), prevQuizBtn: $("prevQuizBtn"), nextQuizBtn: $("nextQuizBtn"),
+      reviewMissedBtn: $("reviewMissedBtn"), newQuizBtn: $("newQuizBtn"), quizHint: $("quizHint"), quizScoreLive: $("quizScoreLive"), prevQuizBtn: $("prevQuizBtn"), exitQuizBtn: $("exitQuizBtn"), nextQuizBtn: $("nextQuizBtn"),
       quizQueueSummary: $("quizQueueSummary"), quizQueueList: $("quizQueueList"),
 
       deckGrid: $("deckGrid"), newDeckSubject: $("newDeckSubject"), newDeckName: $("newDeckName"), addDeckBtn: $("addDeckBtn"),
@@ -1245,7 +1289,7 @@
       const name = profile.name || "Student";
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
-      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v3.3` : "Flashcards + CPALE-style multiple choice quizzes. v3.3";
+      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v3.4` : "Flashcards + CPALE-style multiple choice quizzes. v3.4";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
@@ -1396,6 +1440,108 @@
       card.updatedAt = nowISO(); markStudied(correct, false); localStorage.setItem(STORE, JSON.stringify(db)); showToast("Progress saved"); buildReviewQueue();
     }
 
+    function validQuizAnsweredCount() {
+      const ids = new Set(quizQueue.map(q => q.id));
+      return Object.keys(quizAnswers).filter(id => ids.has(id)).length;
+    }
+
+    function quizCorrectCount() {
+      return quizQueue.filter(q => quizAnswers[q.id] === q.correct).length;
+    }
+
+    function quizIsComplete() {
+      return quizQueue.length > 0 && validQuizAnsweredCount() >= quizQueue.length;
+    }
+
+    function updateQuizProgressUI() {
+      const total = quizQueue.length;
+      const answered = validQuizAnsweredCount();
+      const pct = total ? Math.round((answered / total) * 100) : 0;
+
+      if (el.quizProgressBar) el.quizProgressBar.style.width = `${pct}%`;
+      if (el.quizProgressText) el.quizProgressText.textContent = `${answered} of ${total} answered`;
+      if (el.quizProgressPercent) el.quizProgressPercent.textContent = `${pct}%`;
+      if (el.resumeQuizBtn) el.resumeQuizBtn.disabled = !hasSavedQuizSession();
+    }
+
+    function saveQuizSession(completed = false) {
+      if (!quizQueue.length) {
+        localStorage.removeItem(QUIZ_SESSION_KEY);
+        updateQuizProgressUI();
+        return;
+      }
+
+      if (completed || quizIsComplete()) {
+        localStorage.removeItem(QUIZ_SESSION_KEY);
+        updateQuizProgressUI();
+        return;
+      }
+
+      const session = {
+        queueIds: quizQueue.map(q => q.id),
+        quizIndex,
+        quizAnswers,
+        lastMissedIds,
+        startedAt: quizSessionStartedAt || nowISO(),
+        savedAt: nowISO(),
+        completed: false
+      };
+
+      localStorage.setItem(QUIZ_SESSION_KEY, JSON.stringify(session));
+      updateQuizProgressUI();
+    }
+
+    function hasSavedQuizSession() {
+      try {
+        const session = JSON.parse(localStorage.getItem(QUIZ_SESSION_KEY));
+        return !!(session && !session.completed && Array.isArray(session.queueIds) && session.queueIds.length);
+      } catch {
+        return false;
+      }
+    }
+
+    function loadQuizSession() {
+      try {
+        const session = JSON.parse(localStorage.getItem(QUIZ_SESSION_KEY));
+        if (!session || session.completed || !Array.isArray(session.queueIds) || !session.queueIds.length) return false;
+
+        const map = new Map(db.mcqs.map(q => [q.id, q]));
+        quizQueue = session.queueIds.map(id => map.get(id)).filter(Boolean);
+
+        if (!quizQueue.length) {
+          localStorage.removeItem(QUIZ_SESSION_KEY);
+          return false;
+        }
+
+        quizIndex = Math.min(Math.max(Number(session.quizIndex || 0), 0), quizQueue.length - 1);
+        quizAnswers = session.quizAnswers && typeof session.quizAnswers === "object" ? session.quizAnswers : {};
+        lastMissedIds = Array.isArray(session.lastMissedIds) ? session.lastMissedIds : [];
+        quizSessionStartedAt = session.startedAt || nowISO();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function resumeSavedQuizSession() {
+      if (loadQuizSession()) {
+        showScreen("quiz");
+        renderQuiz();
+        showToast("Resumed saved quiz");
+      } else {
+        showToast("No unfinished quiz found");
+        updateQuizProgressUI();
+      }
+    }
+
+    function exitQuizSession() {
+      if (quizQueue.length && !quizIsComplete()) {
+        saveQuizSession(false);
+        showToast("Quiz saved. Resume anytime.");
+      }
+      showScreen("dashboard");
+    }
+
     function buildQuizQueue(useMissed = false) {
       if (useMissed) {
         quizQueue = db.mcqs.filter(q => lastMissedIds.includes(q.id));
@@ -1409,6 +1555,8 @@
       }
       quizIndex = 0;
       quizAnswers = {};
+      quizSessionStartedAt = nowISO();
+      if (quizQueue.length) saveQuizSession(false);
       renderQuiz();
     }
 
@@ -1427,8 +1575,11 @@
       el.quizActiveArea.classList.remove("hidden");
       el.prevQuizBtn.disabled = !quizQueue.length || quizIndex === 0;
       el.nextQuizBtn.disabled = !quizQueue.length;
+      el.exitQuizBtn.disabled = !quizQueue.length;
+      updateQuizProgressUI();
 
-      el.quizQueueSummary.textContent = quizQueue.length ? `${quizQueue.length} question${quizQueue.length === 1 ? "" : "s"} in this quiz.` : "No quiz started.";
+      const answeredNow = validQuizAnsweredCount();
+      el.quizQueueSummary.textContent = quizQueue.length ? `${answeredNow}/${quizQueue.length} answered in this quiz. You may exit anytime; unfinished progress is saved.` : "No quiz started.";
       el.quizQueueList.innerHTML = quizQueue.length ? quizQueue.map((q, idx) => {
         const ans = quizAnswers[q.id];
         const mark = ans ? (ans === q.correct ? "✓ " : "✕ ") : "";
@@ -1441,6 +1592,7 @@
         el.quizQuestion.textContent = "No MCQ items available for this filter.";
         el.choiceGrid.innerHTML = ""; el.quizExplanation.classList.add("hidden"); el.quizHint.textContent = "Go to MCQs or Import to add questions.";
         el.quizScoreLive.textContent = "Score: 0/0";
+        updateQuizProgressUI();
         return;
       }
 
@@ -1474,9 +1626,10 @@
         el.quizHint.textContent = "Choose an answer. Explanation appears after you answer.";
       }
 
-      const answeredItems = Object.keys(quizAnswers).length;
-      const correctItems = quizQueue.filter(q => quizAnswers[q.id] === q.correct).length;
+      const answeredItems = validQuizAnsweredCount();
+      const correctItems = quizCorrectCount();
       el.quizScoreLive.textContent = `Score: ${correctItems}/${answeredItems}`;
+      updateQuizProgressUI();
     }
 
     function answerQuiz(letter) {
@@ -1488,6 +1641,7 @@
       item.lastAnswered = nowISO();
       markStudied(correct, true);
       localStorage.setItem(STORE, JSON.stringify(db));
+      saveQuizSession(false);
       renderQuiz();
     }
 
@@ -1495,6 +1649,7 @@
       if (!quizQueue.length) return;
       if (quizIndex < quizQueue.length - 1) {
         quizIndex++;
+        saveQuizSession(false);
         renderQuiz();
       } else {
         showQuizResults();
@@ -1504,12 +1659,13 @@
     function prevQuiz() {
       if (!quizQueue.length || quizIndex === 0) return;
       quizIndex--;
+      saveQuizSession(false);
       renderQuiz();
     }
 
     function showQuizResults() {
-      const answeredItems = Object.keys(quizAnswers).length;
-      const correctItems = quizQueue.filter(q => quizAnswers[q.id] === q.correct).length;
+      const answeredItems = validQuizAnsweredCount();
+      const correctItems = quizCorrectCount();
       const pct = quizQueue.length ? Math.round((correctItems / quizQueue.length) * 100) : 0;
       lastMissedIds = quizQueue.filter(q => quizAnswers[q.id] !== q.correct).map(q => q.id);
 
@@ -1521,6 +1677,9 @@
       el.quizScoreLive.textContent = `Final: ${correctItems}/${quizQueue.length}`;
       el.prevQuizBtn.disabled = true;
       el.nextQuizBtn.disabled = true;
+      el.exitQuizBtn.disabled = true;
+      localStorage.removeItem(QUIZ_SESSION_KEY);
+      updateQuizProgressUI();
       saveDB(true);
     }
 
@@ -2031,6 +2190,9 @@ Notes:`;
     function copyPrompt() { el.cardPrompt.select(); navigator.clipboard?.writeText(el.cardPrompt.value); showToast("Prompt copied"); }
 
     function showScreen(name) {
+      if (activeScreen === "quiz" && name !== "quiz" && quizQueue.length && !quizIsComplete()) {
+        saveQuizSession(false);
+      }
       activeScreen = name;
       document.querySelectorAll(".screen").forEach(screen => screen.classList.toggle("active", screen.id === name));
       document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.screen === name));
@@ -2045,6 +2207,7 @@ Notes:`;
       renderDeckOptions(); renderDashboard(); renderDecks(); renderCardsList(); renderMCQList();
       if (activeScreen === "review") buildReviewQueue();
       if (activeScreen === "quiz") renderQuiz();
+      updateQuizProgressUI();
       renderCountdown(); updatePrompt();
     }
 
@@ -2065,8 +2228,8 @@ Notes:`;
       el.reviewCard.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); revealed ? nextReviewCard() : revealCurrentCard(); } });
       el.prevCardBtn.addEventListener("click", prevReviewCard); el.revealCardBtn.addEventListener("click", revealCurrentCard); el.againCardBtn.addEventListener("click", () => rateReview("again")); el.hardCardBtn.addEventListener("click", () => rateReview("hard")); el.goodCardBtn.addEventListener("click", () => rateReview("good"));
 
-      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.retryMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false));
-      el.prevQuizBtn.addEventListener("click", prevQuiz); el.nextQuizBtn.addEventListener("click", nextQuiz); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
+      el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false));
+      el.prevQuizBtn.addEventListener("click", prevQuiz); el.exitQuizBtn.addEventListener("click", exitQuizSession); el.nextQuizBtn.addEventListener("click", nextQuiz); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
 
       el.addDeckBtn.addEventListener("click", addDeck);
       el.cardDeckFilter.addEventListener("change", renderCardsList); el.cardSearch.addEventListener("input", renderCardsList);
@@ -2094,6 +2257,9 @@ Notes:`;
     renderProfile();
     updateAll();
     buildReviewQueue();
+    if (hasSavedQuizSession()) {
+      loadQuizSession();
+    }
     renderQuiz();
   </script>
 </body>
