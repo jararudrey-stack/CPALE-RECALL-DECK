@@ -1,32 +1,36 @@
-CPALE Recall Deck v3.4
+CPALE Recall Deck v3.5
 
-New in v3.4:
-- You can exit an MCQ quiz anytime using "Exit and save"
-- Unfinished quiz sessions are saved locally
-- You can resume the last unfinished quiz using "Resume saved quiz"
-- The app auto-saves quiz progress when you answer, move next/previous, or leave the Quiz tab
-- Added a quiz progress bar showing how many questions have been answered in the current session
-- Progress display shows answered count and percentage
+New in v3.5:
+- Correct answer feedback: ping sound
+- Wrong answer feedback: haptic vibration where supported plus a low buzz sound
+- Optional timed MCQ quiz mode
+- Timed quiz gives exactly 1 minute per question
+- If time expires, the app automatically marks the item as timed out and reveals the correct answer
+- In timed mode, the Next button becomes available after you answer or after time expires
+- Timer state is saved when you exit and resume an unfinished quiz
+- Timer pauses when you exit and resumes with remaining time when you resume
+- Quiz progress bar from v3.4 remains
 
-How to update your GitHub website:
+Important iPhone note:
+- Haptic vibration depends on browser/device support. If iOS Safari does not allow vibration, the app still plays the wrong-answer buzz sound.
+- Sound starts after a user action such as Start quiz or selecting an answer.
+
+How to update GitHub:
 1. Download and extract this ZIP.
-2. In GitHub, replace/upload:
+2. Replace/upload these files in your GitHub repository:
    - index.html
    - manifest.webmanifest
    - service-worker.js
    - README.txt
 3. Commit changes.
-4. Open the website with ?v=34 at the end, for example:
-   https://yourusername.github.io/CPALE-RECALL-DECK/?v=34
-5. If using the Home Screen app, remove the old icon and add the updated site again.
+4. Open your site with ?v=35 at the end:
+   https://yourusername.github.io/CPALE-RECALL-DECK/?v=35
+5. If using the Home Screen app, delete the old icon and add the updated site again.
 
-How quiz saving works:
-- Start a quiz.
-- Answer some questions.
-- Tap Exit and save, or simply leave the Quiz tab.
-- Return to Quiz and tap Resume saved quiz.
-- Completed quizzes are not saved as unfinished sessions.
-
-Important:
-- Data is still saved locally in Safari/browser storage.
-- Export full JSON regularly from Backup.
+How to use timed MCQ:
+1. Go to Quiz.
+2. Change Untimed quiz to Timed quiz: 1 minute per question.
+3. Tap Start quiz.
+4. Answer before the timer expires.
+5. If the timer expires, the correct answer appears automatically.
+6. Tap Next to proceed.
