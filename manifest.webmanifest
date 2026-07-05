@@ -5,5 +5,5 @@
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#0f172a",
-  "description": "A CPALE recall app with smooth sliding page transitions."
+  "description": "A CPALE recall app with Firebase live learners-online presence."
 }

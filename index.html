@@ -1138,7 +1138,59 @@
       .hero-card, .quiz-card { min-height: 350px; border-radius: 24px; }
       .user-pill { width: 100%; justify-content: space-between; }
     }
-  </style>
+  
+    .online-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(34, 197, 94, .18);
+      background: rgba(34, 197, 94, .075);
+      color: #d1fae5;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: .8rem;
+      font-weight: 900;
+      letter-spacing: -.01em;
+      white-space: nowrap;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .online-chip.offline {
+      border-color: rgba(148, 163, 184, .16);
+      background: rgba(148, 163, 184, .06);
+      color: #cbd5e1;
+    }
+
+    .online-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, .10), 0 0 16px rgba(34, 197, 94, .32);
+      animation: onlinePulse 1.8s ease-in-out infinite;
+      flex: 0 0 auto;
+    }
+
+    .online-chip.offline .online-dot {
+      background: #94a3b8;
+      box-shadow: 0 0 0 4px rgba(148, 163, 184, .08);
+      animation: none;
+    }
+
+    @keyframes onlinePulse {
+      0%, 100% { transform: scale(1); opacity: .88; }
+      50% { transform: scale(1.28); opacity: 1; }
+    }
+
+    @media (max-width: 560px) {
+      .online-chip {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+</style>
 </head>
 <body>
   <div id="loginScreen" class="login-wrap hidden">
@@ -1190,6 +1242,10 @@
         <div class="countdown-layout">
           <div class="countdown-top-row">
             <span class="today-line" id="todayLabel">Today is loading...</span>
+            <span class="online-chip offline" id="onlineLearnersChip" aria-live="polite" title="Anonymous learners currently connected">
+              <span class="online-dot"></span>
+              <span id="onlineLearnersText">Connecting learners...</span>
+            </span>
             <div class="clock-chip" aria-label="Philippine time">
               <span id="liveClock">--:--:--</span>
               <span class="day-night-toggle" id="dayNightToggle" title="Daytime or nighttime in the Philippines">
@@ -1321,7 +1377,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.9 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v6.0 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1514,7 +1570,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v5.9 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v6.0 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -2363,7 +2419,7 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.9` : "Flashcards + CPALE-style multiple choice quizzes. v5.9";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v6.0` : "Flashcards + CPALE-style multiple choice quizzes. v6.0";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderTodayLine();
@@ -3927,5 +3983,89 @@ el.addDeckBtn.addEventListener("click", addDeck);
     renderCountdown();
     setInterval(renderCountdown, 1000);
   </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      push,
+      set,
+      onDisconnect,
+      onValue,
+      remove
+    } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDGEEyPn5RpiqGRzsTdsi6giB80r1bJ9Fg",
+      authDomain: "cpale-recall-deck.firebaseapp.com",
+      databaseURL: "https://cpale-recall-deck-default-rtdb.asia-southeast1.firebasedatabase.app/",
+      projectId: "cpale-recall-deck",
+      storageBucket: "cpale-recall-deck.firebasestorage.app",
+      messagingSenderId: "801674991745",
+      appId: "1:801674991745:web:163d40d80b34a8ceea9580",
+      measurementId: "G-47GEK2X667"
+    };
+
+    const ONLINE_WINDOW_MS = 2 * 60 * 1000;
+    const HEARTBEAT_MS = 30 * 1000;
+    const PRESENCE_PATH = "presence";
+
+    const onlineText = document.getElementById("onlineLearnersText");
+    const onlineChip = document.getElementById("onlineLearnersChip");
+
+    function setOnlineStatus(text, isOffline = false) {
+      if (onlineText) onlineText.textContent = text;
+      if (onlineChip) onlineChip.classList.toggle("offline", isOffline);
+    }
+
+    function learnersLabel(count) {
+      return `${count} learner${count === 1 ? "" : "s"} online`;
+    }
+
+    try {
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+      const sessionRef = push(ref(database, PRESENCE_PATH));
+      const presenceRef = ref(database, PRESENCE_PATH);
+
+      const writePresence = () => set(sessionRef, {
+        online: true,
+        lastSeen: Date.now()
+      });
+
+      onDisconnect(sessionRef).remove();
+      writePresence();
+
+      const heartbeat = setInterval(writePresence, HEARTBEAT_MS);
+
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) writePresence();
+      });
+
+      window.addEventListener("pagehide", () => {
+        clearInterval(heartbeat);
+        remove(sessionRef).catch(() => {});
+      });
+
+      onValue(presenceRef, snapshot => {
+        const data = snapshot.val() || {};
+        const cutoff = Date.now() - ONLINE_WINDOW_MS;
+
+        const count = Object.values(data).filter(item => {
+          return item && item.online === true && Number(item.lastSeen || 0) >= cutoff;
+        }).length;
+
+        setOnlineStatus(learnersLabel(count), false);
+      }, error => {
+        console.warn("Online learners count unavailable:", error);
+        setOnlineStatus("Online count unavailable", true);
+      });
+    } catch (error) {
+      console.warn("Firebase presence failed:", error);
+      setOnlineStatus("Online count unavailable", true);
+    }
+  </script>
+
 </body>
 </html>
