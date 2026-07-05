@@ -1,5 +1,5 @@
-const CACHE_NAME = "cpale-recall-deck-v6-0";
-const ASSETS = ["./", "./index.html", "./manifest.webmanifest"];
+const CACHE_NAME = "cpale-recall-deck-v6-1";
+const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./splash-eye.gif"];
 
 self.addEventListener("install", event => {
   self.skipWaiting();
