@@ -850,7 +850,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v4.9 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.0 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1043,7 +1043,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v4.9 grouping: new MCQs are merged into the existing subject + deck/topic when names match. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v5.0 grouping: new MCQs are merged into the existing subject + deck/topic when names match. Decks stay in upload order, with each subject’s General deck first, except Auditing which starts with your uploaded topics.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -1156,7 +1156,6 @@
       { id: "far-general", subject: "FAR", name: "FAR General", order: -1 },
       { id: "afar-general", subject: "AFAR", name: "AFAR General", order: -1 },
       { id: "mas-general", subject: "MAS", name: "MAS General", order: -1 },
-      { id: "at-general", subject: "Auditing", name: "Auditing General", order: -1 },
       { id: "tax-general", subject: "Taxation", name: "Taxation General", order: -1 },
       { id: "rfbt-general", subject: "RFBT", name: "RFBT General", order: -1 }
     ];
@@ -1166,7 +1165,6 @@
       ["FAR", "FAR General", "Inventories", "What is net realizable value?", "Estimated selling price in the ordinary course of business less estimated costs of completion and estimated costs necessary to make the sale."],
       ["AFAR", "AFAR General", "Partnership Liquidation", "Why do we prepare safe payments in partnership liquidation?", "To avoid overpaying partners by assuming possible losses and ensuring creditors and priority claims are protected before distributions."],
       ["MAS", "MAS General", "Cost-Volume-Profit", "What does contribution margin measure?", "Sales minus variable costs. It is the amount available to cover fixed costs and then profit."],
-      ["Auditing", "Auditing General", "Audit Risk", "What is audit risk?", "The risk that the auditor expresses an inappropriate opinion when the financial statements are materially misstated."],
       ["Taxation", "Taxation General", "VAT", "VAT zero-rated vs VAT-exempt: what is the key difference?", "Zero-rated sales are taxable at 0% and related input VAT may generally be credited/refunded. VAT-exempt sales are not subject to output VAT and related input VAT is generally not creditable."],
       ["RFBT", "RFBT General", "Obligations", "What are the elements of an obligation?", "Active subject, passive subject, prestation, and juridical tie."]
     ];
@@ -1201,16 +1199,6 @@
         D: "P110",
         correct: "B",
         explanation: "Inventory is measured at the lower of cost and NRV. NRV = 110 - 5 - 8 = 97. Lower of cost 100 and NRV 97 is 97. CPALE trap: do not use replacement cost as NRV under PAS 2."
-      },
-      {
-        subject: "Auditing", deckName: "Auditing General", topic: "Audit Risk",
-        question: "If inherent risk and control risk are assessed as high, what happens to acceptable detection risk?",
-        A: "It increases because the auditor relies more on substantive procedures.",
-        B: "It decreases, so the auditor must obtain more persuasive audit evidence.",
-        C: "It remains the same because audit risk is independent of detection risk.",
-        D: "It becomes zero because material misstatement is certain.",
-        correct: "B",
-        explanation: "Audit risk = risk of material misstatement × detection risk. If inherent and control risks are high, acceptable detection risk must be lower to keep audit risk at an acceptably low level. CPALE trap: high RMM means more work, not less."
       },
       {
         subject: "MAS", deckName: "MAS General", topic: "CVP",
@@ -1316,7 +1304,37 @@
           combinedKey.includes("information asymmetry")
         ) return "Introduction to Auditing";
 
-        if (combinedKey.includes("auditing problems")) return "Auditing General";
+        if (
+          combinedKey.includes("fs audit overview") ||
+          combinedKey.includes("overall objective") ||
+          combinedKey.includes("audit risk") ||
+          combinedKey.includes("risk of material misstatement") ||
+          combinedKey.includes("management assertion") ||
+          combinedKey.includes("assertions") ||
+          combinedKey.includes("materiality") ||
+          combinedKey.includes("professional skepticism") ||
+          combinedKey.includes("professional judgment") ||
+          combinedKey.includes("audit evidence")
+        ) return "FS Audit Overview";
+
+        if (
+          combinedKey.includes("quality management") ||
+          combinedKey.includes("isqm") ||
+          combinedKey.includes("engagement quality") ||
+          combinedKey.includes("quality review")
+        ) return "Quality Management";
+
+        if (
+          combinedKey.includes("pre engagement") ||
+          combinedKey.includes("engagement letter") ||
+          combinedKey.includes("opening balance") ||
+          combinedKey.includes("acceptance and continuance") ||
+          combinedKey.includes("psa 220")
+        ) return "Pre-Engagement";
+
+        if (combinedKey.includes("auditing problems")) return "Introduction to Auditing";
+
+        if (isGenericDeckNameV49(subject, deck)) return "Introduction to Auditing";
       }
 
       if (isGenericDeckNameV49(subject, deck)) return `${subject} General`;
@@ -1325,6 +1343,7 @@
 
     function isGeneralDeckV49(deck) {
       const subject = canonicalSubjectV49(deck?.subject);
+      if (subject === "Auditing") return false;
       return normalizeDeckKeyV49(deck?.name) === normalizeDeckKeyV49(`${subject} General`);
     }
 
@@ -1511,6 +1530,7 @@
 
         deck.subject = subject;
         deck.name = smartDeckNameV49(subject, deck.name, "");
+        if (deck.subject === "Auditing" && normalizeDeckKeyV49(deck.name) === normalizeDeckKeyV49("Auditing General")) return;
 
         if (!deck.createdAt) deck.createdAt = nowISO();
         if (isGeneralDeckV49(deck)) deck.order = -1;
@@ -1732,7 +1752,7 @@
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
       const displayTargetExamV46 = profile.targetExam === "October 2026 CPALE" ? "October 24, 2026 CPALE" : profile.targetExam;
-      el.subtitle.textContent = displayTargetExamV46 ? `Target: ${displayTargetExamV46}. Review smarter, not just longer. v4.9` : "Flashcards + CPALE-style multiple choice quizzes. v4.9";
+      el.subtitle.textContent = displayTargetExamV46 ? `Target: ${displayTargetExamV46}. Review smarter, not just longer. v5.0` : "Flashcards + CPALE-style multiple choice quizzes. v5.0";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
@@ -2262,6 +2282,22 @@
       quizTimerDeadline = 0;
     }
 
+    function scrollQuizToCenterV50() {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          try {
+            const target = el.quizCard || el.quizActiveArea;
+            if (target) target.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+          } catch {
+            try {
+              const target = el.quizCard || el.quizActiveArea;
+              if (target) target.scrollIntoView(true);
+            } catch {}
+          }
+        }, 40);
+      });
+    }
+
     function renderQuiz() {
       resetQuizRuntime();
       const item = currentQuizItem();
@@ -2282,7 +2318,7 @@
         const mark = ans ? (ans === q.correct ? "✓ " : (ans === TIMEOUT_ANSWER ? "⏱ " : "✕ ")) : "";
         return `<div class="list-item" data-quiz-index="${idx}"><strong>${escapeHTML(mark + q.question)}</strong><span>${escapeHTML(q.subject)} · ${escapeHTML(q.topic || getDeck(q.deckId).name)} · Correct: ${escapeHTML(q.correct)}</span></div>`;
       }).join("") : `<div class="muted small">Start a quiz to see questions here.</div>`;
-      el.quizQueueList.querySelectorAll("[data-quiz-index]").forEach(node => node.addEventListener("click", () => { quizIndex = Number(node.dataset.quizIndex); renderQuiz(); }));
+      el.quizQueueList.querySelectorAll("[data-quiz-index]").forEach(node => node.addEventListener("click", () => { quizIndex = Number(node.dataset.quizIndex); renderQuiz(); scrollQuizToCenterV50(); }));
 
       if (!item) {
         el.quizSubjectTag.textContent = "No MCQs"; el.quizTopicTag.textContent = "Add or import"; el.quizCounter.textContent = "0 / 0";
@@ -2368,6 +2404,7 @@
         quizIndex++;
         saveQuizSession(false);
         renderQuiz();
+        scrollQuizToCenterV50();
       } else {
         showQuizResults();
       }
@@ -2380,6 +2417,7 @@
       quizIndex--;
       saveQuizSession(false);
       renderQuiz();
+      scrollQuizToCenterV50();
     }
 
     function clearCurrentQuizSession() {
