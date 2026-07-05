@@ -1,16 +1,11 @@
-CPALE Recall Deck v6.2
+CPALE Recall Deck v6.3
 
-Redone opening splash:
-- Rebuilt the opening screen from the stable v6.0 app.
-- The splash is now embedded directly inside index.html, so there is no separate GIF file to forget uploading.
-- Sequence:
-  1. a normal eye appears
-  2. the eye blinks
-  3. a fiery eye appears to signify passion
-  4. it fades smoothly into the website
-- Edited the fiery-eye GIF background to match the website's dark navy/purple aesthetic.
-- Opening lasts about 2.5 seconds.
-- Includes a subtle sound attempt, but iPhone/Safari may block autoplay sound.
+Opening splash refinement:
+- Removed the separate normal-eye phase.
+- Kept only the original fiery-eye GIF with the adjusted dark background.
+- The opening splash now uses a much larger, full-screen presentation instead of a small boxed display.
+- Smooth fade-out into the dashboard remains.
+- Keeps Firebase live learners-online, smooth page transitions, and the bottle countdown.
 
 Files to upload:
 - index.html
@@ -23,6 +18,6 @@ How to update GitHub:
 2. Replace the four files listed above.
 3. Commit changes.
 4. Open:
-   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=62
+   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=63
 
 If Safari still shows the old version, refresh several times or clear website data for the GitHub Pages site.
