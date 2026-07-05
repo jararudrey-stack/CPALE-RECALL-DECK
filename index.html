@@ -156,40 +156,73 @@
 
 
     .countdown-panel {
-      margin-bottom: 16px;
-      background:
-        linear-gradient(135deg, rgba(250,204,21,.20), rgba(56,189,248,.10)),
-        var(--panel);
+      margin-bottom: 14px;
+      background: rgba(15, 23, 42, .72);
+      border: 1px solid rgba(148, 163, 184, .16);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, .18);
     }
 
-    .countdown-topline {
+    .countdown-cluster {
+      display: grid;
+      gap: 10px;
+    }
+
+    .today-line {
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 800;
+      letter-spacing: -.01em;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 8px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .countdown-label {
-      color: #fde68a;
-      font-size: .8rem;
+    .today-line strong {
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    .countdown-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(148, 163, 184, .28), transparent);
+      margin: 1px 0;
+    }
+
+    .countdown-mini-label {
+      color: #93c5fd;
+      font-size: .72rem;
       font-weight: 950;
+      letter-spacing: .11em;
       text-transform: uppercase;
-      letter-spacing: .08em;
     }
 
     .countdown-main {
-      font-size: clamp(1.65rem, 7vw, 3.3rem);
+      font-size: clamp(1.55rem, 6vw, 2.75rem);
       font-weight: 950;
-      letter-spacing: -.07em;
-      line-height: .95;
-      margin: 6px 0;
+      letter-spacing: -.055em;
+      line-height: 1;
+      margin: 2px 0 3px;
+      font-variant-numeric: tabular-nums;
     }
 
     .countdown-detail {
       color: var(--muted);
-      line-height: 1.45;
+      font-size: .86rem;
+      line-height: 1.4;
       margin: 0;
+    }
+
+    .countdown-subtle-pill {
+      border: 1px solid rgba(148, 163, 184, .18);
+      background: rgba(15, 23, 42, .55);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: .72rem;
+      font-weight: 900;
+      white-space: nowrap;
     }
 
     .stat-grid {
@@ -800,12 +833,18 @@
 
     <section id="dashboard" class="screen active">
       <div class="panel pad countdown-panel" id="examCountdownPanel">
-        <div class="countdown-topline">
-          <span class="countdown-label">Target exam countdown</span>
-          <span class="tag blue">Live</span>
+        <div class="countdown-cluster">
+          <div class="today-line">
+            <span id="todayLabel">Today is loading...</span>
+            <span class="countdown-subtle-pill">Philippine time</span>
+          </div>
+          <div class="countdown-divider"></div>
+          <div>
+            <div class="countdown-mini-label" id="examCountdownLabel">Target exam</div>
+            <div class="countdown-main" id="examCountdown">Set your target exam.</div>
+            <p class="countdown-detail" id="examCountdownSub">Choose a target exam date in your profile.</p>
+          </div>
         </div>
-        <div class="countdown-main" id="examCountdown">Set your target exam in profile.</div>
-        <p class="countdown-detail" id="examCountdownSub">Choose a target exam date to start the live countdown.</p>
       </div>
 
       <div class="panel pad">
@@ -897,7 +936,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.3 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.4 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1090,7 +1129,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v5.3 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v5.4 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -1657,7 +1696,7 @@
       profileNameEdit: $("profileNameEdit"), targetExamEdit: $("targetExamEdit"), saveProfileBtn: $("saveProfileBtn"), closeProfileBtn: $("closeProfileBtn"), toast: $("toast"),
 
       dashDue: $("dashDue"), dashTotal: $("dashTotal"), dashMCQ: $("dashMCQ"), dashStreak: $("dashStreak"), dashAccuracy: $("dashAccuracy"), dashQuizAccuracy: $("dashQuizAccuracy"),
-      dashboardDecks: $("dashboardDecks"), examCountdown: $("examCountdown"), examCountdownSub: $("examCountdownSub"), examCountdownPanel: $("examCountdownPanel"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
+      dashboardDecks: $("dashboardDecks"), examCountdown: $("examCountdown"), examCountdownSub: $("examCountdownSub"), examCountdownPanel: $("examCountdownPanel"), examCountdownLabel: $("examCountdownLabel"), todayLabel: $("todayLabel"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
 
       reviewDeckFilter: $("reviewDeckFilter"), reviewMode: $("reviewMode"), reviewCard: $("reviewCard"),
       cardSubject: $("cardSubject"), cardDeck: $("cardDeck"), cardBox: $("cardBox"), cardQuestion: $("cardQuestion"), cardAnswer: $("cardAnswer"),
@@ -1817,6 +1856,28 @@
       db.stats.lastStudied = t;
     }
 
+    function philippineDateParts() {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Manila",
+        weekday: "long",
+        month: "long",
+        day: "numeric"
+      }).formatToParts(new Date());
+
+      const get = type => parts.find(p => p.type === type)?.value || "";
+      return {
+        weekday: get("weekday"),
+        month: get("month"),
+        day: get("day")
+      };
+    }
+
+    function renderTodayLine() {
+      if (!el.todayLabel) return;
+      const pht = philippineDateParts();
+      el.todayLabel.innerHTML = `Today is <strong>${pht.weekday}, ${pht.month} ${pht.day}</strong>`;
+    }
+
     function normalizeTargetExamValue(value) {
       const raw = basicCleanV52(value);
       if (!raw || raw === "Target exam: choose later" || raw === "No target selected") return "";
@@ -1861,9 +1922,10 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.3` : "Flashcards + CPALE-style multiple choice quizzes. v5.3";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.4` : "Flashcards + CPALE-style multiple choice quizzes. v5.4";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
+      renderTodayLine();
       renderCountdown();
     }
 
@@ -1872,9 +1934,12 @@
 
       if (!el.examCountdown) return;
 
+      renderTodayLine();
+
       if (!info) {
+        if (el.examCountdownLabel) el.examCountdownLabel.textContent = "Target exam";
         el.examCountdown.textContent = "No target set";
-        if (el.examCountdownSub) el.examCountdownSub.textContent = "Open your profile and choose a target exam date to start the live countdown.";
+        if (el.examCountdownSub) el.examCountdownSub.textContent = "Choose a target exam date in your profile.";
         return;
       }
 
@@ -1882,10 +1947,12 @@
       const parts = formatCountdownParts(diff);
 
       if (diff >= 0) {
+        if (el.examCountdownLabel) el.examCountdownLabel.textContent = info.label;
         el.examCountdown.textContent = `${parts.days}d ${parts.hours}h ${parts.minutes}m ${parts.seconds}s`;
-        if (el.examCountdownSub) el.examCountdownSub.textContent = `until ${info.label}. Make today count.`;
+        if (el.examCountdownSub) el.examCountdownSub.textContent = "remaining until your target exam date.";
       } else {
-        el.examCountdown.textContent = `${info.label} has started or passed`;
+        if (el.examCountdownLabel) el.examCountdownLabel.textContent = info.label;
+        el.examCountdown.textContent = "Exam date reached";
         if (el.examCountdownSub) el.examCountdownSub.textContent = "Update your target exam date in your profile.";
       }
     }
