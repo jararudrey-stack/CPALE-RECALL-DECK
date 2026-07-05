@@ -1,18 +1,21 @@
-CPALE Recall Deck v5.0
+CPALE Recall Deck v5.1
+
+This is a redone fix based on the last working v4.9.
 
 What changed:
-- Removed the default Auditing · Auditing General deck.
-- Old rows imported as Auditing General are preserved by moving them into a real Auditing topic when possible.
-  Example: Audit Risk items are moved to FS Audit Overview.
-- Auditing no longer creates a general deck by default.
-- While taking a quiz, tapping Next automatically scrolls the quiz card back to the center of the screen.
-- Tapping Previous or jumping to an item from the quiz queue also recenters the quiz card.
-
-Subject/deck arrangement remains:
-- FAR, AFAR, MAS, Auditing, Taxation, RFBT
-- General decks appear first for subjects that still have a General deck.
-- Auditing starts with uploaded topic decks instead of Auditing General.
-- Specific topic decks stay in upload/creation order.
+- Auditing · Auditing General is removed from default decks and from saved local data on startup.
+- Old Auditing General items are automatically moved into actual Auditing topic decks.
+  Examples:
+  - Audit Risk / Assertions / Materiality -> FS Audit Overview
+  - RA 9298 / PRBOA / PICPA / CPD -> Practice & Regulation
+  - Assurance / Review / AUP / Compilation -> Fundamentals of Auditing & Assurance Services
+  - ISQM / Quality Review -> Quality Management
+  - Engagement Letter / Opening Balances / PSA 220 -> Pre-Engagement
+  - Operational / Compliance / Government Audit -> Introduction to Auditing
+- Auditing no longer creates a General deck.
+- When taking a quiz, tapping Next scrolls the actual question back to a comfortable center position.
+- Previous and queue-jump also auto-center the question.
+- Decks remain in the main subject order, and topic decks stay in upload/creation order.
 
 How to update GitHub:
 1. Download and extract this ZIP.
@@ -23,6 +26,6 @@ How to update GitHub:
    - README.txt
 3. Commit changes.
 4. Open:
-   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=50
+   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=51
 
-If the page still shows the old version, refresh several times or clear Safari website data for the GitHub Pages site.
+If it still shows the old version, refresh several times or clear Safari website data for the GitHub Pages site.
