@@ -850,7 +850,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.1 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.2 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1043,7 +1043,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v5.1 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is automatically removed. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v5.2 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -1156,6 +1156,7 @@
       { id: "far-general", subject: "FAR", name: "FAR General", order: -1 },
       { id: "afar-general", subject: "AFAR", name: "AFAR General", order: -1 },
       { id: "mas-general", subject: "MAS", name: "MAS General", order: -1 },
+      { id: "at-general", subject: "Auditing", name: "Auditing General", order: -1 },
       { id: "tax-general", subject: "Taxation", name: "Taxation General", order: -1 },
       { id: "rfbt-general", subject: "RFBT", name: "RFBT General", order: -1 }
     ];
@@ -1213,9 +1214,9 @@
     ];
 
 
-    const ALLOWED_SUBJECTS_V51 = ["FAR", "AFAR", "MAS", "Auditing", "Taxation", "RFBT"];
+    const ALLOWED_SUBJECTS_V52 = ["FAR", "AFAR", "MAS", "Auditing", "Taxation", "RFBT"];
 
-    function basicCleanV51(value) {
+    function basicCleanV52(value) {
       return String(value ?? "")
         .replace(/[“”]/g, '"')
         .replace(/[‘’]/g, "'")
@@ -1226,8 +1227,8 @@
         .trim();
     }
 
-    function canonicalSubjectV51(value) {
-      const raw = basicCleanV51(value);
+    function canonicalSubjectV52(value) {
+      const raw = basicCleanV52(value);
       const key = raw.toLowerCase().replace(/[^a-z]/g, "");
 
       if (["far", "financialaccounting", "financialaccountingandreporting"].includes(key)) return "FAR";
@@ -1238,11 +1239,11 @@
       if (key.includes("tax")) return "Taxation";
       if (key.includes("rfbt") || key.includes("regulatoryframework") || key.includes("businesstransactions")) return "RFBT";
 
-      return ALLOWED_SUBJECTS_V51.includes(raw) ? raw : "";
+      return ALLOWED_SUBJECTS_V52.includes(raw) ? raw : "";
     }
 
-    function normalizeDeckKeyV51(value) {
-      return basicCleanV51(value)
+    function normalizeDeckKeyV52(value) {
+      return basicCleanV52(value)
         .toLowerCase()
         .replace(/&/g, " and ")
         .replace(/[^a-z0-9]+/g, " ")
@@ -1251,20 +1252,20 @@
         .trim();
     }
 
-    function isGenericDeckNameV51(subject, name) {
-      const key = normalizeDeckKeyV51(name);
-      const subjectKey = normalizeDeckKeyV51(subject);
+    function isGenericDeckNameV52(subject, name) {
+      const key = normalizeDeckKeyV52(name);
+      const subjectKey = normalizeDeckKeyV52(subject);
       return !key || key === "general" || key === subjectKey || key === `${subjectKey} general`;
     }
 
-    function titleCleanDeckV51(name) {
-      const s = basicCleanV51(name);
+    function titleCleanDeckV52(name) {
+      const s = basicCleanV52(name);
       if (!s) return "";
       return s.replace(/\s*&\s*/g, " & ").replace(/\s*-\s*/g, " - ");
     }
 
-    function classifyAuditingTopicV51(textRaw) {
-      const key = normalizeDeckKeyV51(textRaw);
+    function classifyAuditingTopicV52(textRaw) {
+      const key = normalizeDeckKeyV52(textRaw);
 
       if (
         key.includes("practice regulation") ||
@@ -1354,68 +1355,81 @@
       return "FS Audit Overview";
     }
 
-    function smartDeckNameV51(subjectRaw, deckRaw, topicRaw = "", questionRaw = "", explanationRaw = "") {
-      const subject = canonicalSubjectV51(subjectRaw) || "FAR";
-      const deck = titleCleanDeckV51(deckRaw);
-      const topic = titleCleanDeckV51(topicRaw);
-      const combinedText = `${deck} ${topic} ${basicCleanV51(questionRaw)} ${basicCleanV51(explanationRaw)}`;
+    function smartDeckNameV52(subjectRaw, deckRaw, topicRaw = "", questionRaw = "", explanationRaw = "") {
+      const subject = canonicalSubjectV52(subjectRaw) || "FAR";
+      const deck = titleCleanDeckV52(deckRaw);
+      const topic = titleCleanDeckV52(topicRaw);
+      const combinedText = `${deck} ${topic} ${basicCleanV52(questionRaw)} ${basicCleanV52(explanationRaw)}`;
 
-      if (subject === "Auditing") return classifyAuditingTopicV51(combinedText);
+      if (subject === "Auditing") {
+        const deckKey = normalizeDeckKeyV52(deck);
+        const topicKey = normalizeDeckKeyV52(topic);
 
-      if (isGenericDeckNameV51(subject, deck)) return `${subject} General`;
+        // Reinstated: Auditing · Auditing General is the general container for broad or generic Auditing imports.
+        if (
+          !deckKey ||
+          deckKey === "auditing" ||
+          deckKey === "auditing general" ||
+          deckKey === "general" ||
+          (isGenericDeckNameV52(subject, deck) && !topicKey)
+        ) return "Auditing General";
+
+        return classifyAuditingTopicV52(combinedText);
+      }
+
+      if (isGenericDeckNameV52(subject, deck)) return `${subject} General`;
       return deck || `${subject} General`;
     }
 
-    function isGeneralDeckV51(deck) {
-      const subject = canonicalSubjectV51(deck?.subject);
-      if (subject === "Auditing") return false;
-      return normalizeDeckKeyV51(deck?.name) === normalizeDeckKeyV51(`${subject} General`);
+    function isGeneralDeckV52(deck) {
+      const subject = canonicalSubjectV52(deck?.subject);
+      return normalizeDeckKeyV52(deck?.name) === normalizeDeckKeyV52(`${subject} General`);
     }
 
-    function subjectOrderV51(subjectRaw) {
-      const subject = canonicalSubjectV51(subjectRaw);
-      const index = ALLOWED_SUBJECTS_V51.indexOf(subject);
+    function subjectOrderV52(subjectRaw) {
+      const subject = canonicalSubjectV52(subjectRaw);
+      const index = ALLOWED_SUBJECTS_V52.indexOf(subject);
       return index < 0 ? 999 : index;
     }
 
-    function deckOrderValueV51(deck) {
-      if (isGeneralDeckV51(deck)) return -1;
+    function deckOrderValueV52(deck) {
+      if (isGeneralDeckV52(deck)) return -1;
       const n = Number(deck?.order);
       return Number.isFinite(n) ? n : 999999999;
     }
 
-    function compareDecksV51(a, b) {
-      const subjectDiff = subjectOrderV51(a.subject) - subjectOrderV51(b.subject);
+    function compareDecksV52(a, b) {
+      const subjectDiff = subjectOrderV52(a.subject) - subjectOrderV52(b.subject);
       if (subjectDiff) return subjectDiff;
-      const aGeneral = isGeneralDeckV51(a) ? 0 : 1;
-      const bGeneral = isGeneralDeckV51(b) ? 0 : 1;
+      const aGeneral = isGeneralDeckV52(a) ? 0 : 1;
+      const bGeneral = isGeneralDeckV52(b) ? 0 : 1;
       if (aGeneral !== bGeneral) return aGeneral - bGeneral;
-      const orderDiff = deckOrderValueV51(a) - deckOrderValueV51(b);
+      const orderDiff = deckOrderValueV52(a) - deckOrderValueV52(b);
       if (orderDiff) return orderDiff;
       return String(a.createdAt || "").localeCompare(String(b.createdAt || ""));
     }
 
-    function nextDeckOrderV51(data, subjectRaw) {
-      const subject = canonicalSubjectV51(subjectRaw);
+    function nextDeckOrderV52(data, subjectRaw) {
+      const subject = canonicalSubjectV52(subjectRaw);
       const orders = (data.decks || [])
-        .filter(d => canonicalSubjectV51(d.subject) === subject && !isGeneralDeckV51(d))
+        .filter(d => canonicalSubjectV52(d.subject) === subject && !isGeneralDeckV52(d))
         .map(d => Number(d.order))
         .filter(Number.isFinite);
       return orders.length ? Math.max(...orders) + 1 : 1;
     }
 
-    function findDeckBySmartNameV51(data, subjectRaw, deckRaw, topicRaw = "", questionRaw = "", explanationRaw = "") {
-      const subject = canonicalSubjectV51(subjectRaw) || "FAR";
-      const name = smartDeckNameV51(subject, deckRaw, topicRaw, questionRaw, explanationRaw);
-      const key = normalizeDeckKeyV51(name);
-      return data.decks.find(d => canonicalSubjectV51(d.subject) === subject && normalizeDeckKeyV51(d.name) === key) || null;
+    function findDeckBySmartNameV52(data, subjectRaw, deckRaw, topicRaw = "", questionRaw = "", explanationRaw = "") {
+      const subject = canonicalSubjectV52(subjectRaw) || "FAR";
+      const name = smartDeckNameV52(subject, deckRaw, topicRaw, questionRaw, explanationRaw);
+      const key = normalizeDeckKeyV52(name);
+      return data.decks.find(d => canonicalSubjectV52(d.subject) === subject && normalizeDeckKeyV52(d.name) === key) || null;
     }
 
-    function getOrCreateDeckInDataV51(data, subjectRaw, deckRaw, topicRaw = "", questionRaw = "", explanationRaw = "") {
-      const subject = canonicalSubjectV51(subjectRaw) || "FAR";
-      const name = smartDeckNameV51(subject, deckRaw, topicRaw, questionRaw, explanationRaw);
-      const key = normalizeDeckKeyV51(name);
-      let deck = data.decks.find(d => canonicalSubjectV51(d.subject) === subject && normalizeDeckKeyV51(d.name) === key);
+    function getOrCreateDeckInDataV52(data, subjectRaw, deckRaw, topicRaw = "", questionRaw = "", explanationRaw = "") {
+      const subject = canonicalSubjectV52(subjectRaw) || "FAR";
+      const name = smartDeckNameV52(subject, deckRaw, topicRaw, questionRaw, explanationRaw);
+      const key = normalizeDeckKeyV52(name);
+      let deck = data.decks.find(d => canonicalSubjectV52(d.subject) === subject && normalizeDeckKeyV52(d.name) === key);
 
       if (!deck) {
         deck = {
@@ -1423,7 +1437,7 @@
           subject,
           name,
           createdAt: nowISO(),
-          order: normalizeDeckKeyV51(name) === normalizeDeckKeyV51(`${subject} General`) ? -1 : nextDeckOrderV51(data, subject)
+          order: normalizeDeckKeyV52(name) === normalizeDeckKeyV52(`${subject} General`) ? -1 : nextDeckOrderV52(data, subject)
         };
         data.decks.push(deck);
       } else {
@@ -1431,17 +1445,17 @@
         deck.name = name;
         if (!deck.createdAt) deck.createdAt = nowISO();
         if (!Number.isFinite(Number(deck.order))) {
-          deck.order = normalizeDeckKeyV51(name) === normalizeDeckKeyV51(`${subject} General`) ? -1 : nextDeckOrderV51(data, subject);
+          deck.order = normalizeDeckKeyV52(name) === normalizeDeckKeyV52(`${subject} General`) ? -1 : nextDeckOrderV52(data, subject);
         }
       }
       return deck;
     }
 
-    function getOrCreateDeckV51(subjectRaw, deckRaw, topicRaw = "", questionRaw = "", explanationRaw = "") {
-      return getOrCreateDeckInDataV51(db, subjectRaw, deckRaw, topicRaw, questionRaw, explanationRaw);
+    function getOrCreateDeckV52(subjectRaw, deckRaw, topicRaw = "", questionRaw = "", explanationRaw = "") {
+      return getOrCreateDeckInDataV52(db, subjectRaw, deckRaw, topicRaw, questionRaw, explanationRaw);
     }
 
-    function organizeLibraryV51(data) {
+    function organizeLibraryV52(data) {
       if (!data) return data;
       data.decks = Array.isArray(data.decks) ? data.decks : [];
       data.cards = Array.isArray(data.cards) ? data.cards : [];
@@ -1462,7 +1476,7 @@
       });
 
       function inferredOldDeckOrder(oldDeck) {
-        const subject = canonicalSubjectV51(oldDeck.subject) || "FAR";
+        const subject = canonicalSubjectV52(oldDeck.subject) || "FAR";
         const explicit = Number(oldDeck.order);
         if (Number.isFinite(explicit)) return explicit;
         if (firstMCQByDeck.has(oldDeck.id)) return firstMCQByDeck.get(oldDeck.id);
@@ -1474,13 +1488,11 @@
       const mergedDecks = [];
 
       oldDecks.forEach(oldDeck => {
-        const subject = canonicalSubjectV51(oldDeck.subject) || "FAR";
-        if (!ALLOWED_SUBJECTS_V51.includes(subject)) return;
+        const subject = canonicalSubjectV52(oldDeck.subject) || "FAR";
+        if (!ALLOWED_SUBJECTS_V52.includes(subject)) return;
 
-        const name = smartDeckNameV51(subject, oldDeck.name, "");
-        if (subject === "Auditing" && normalizeDeckKeyV51(name) === normalizeDeckKeyV51("Auditing General")) return;
-
-        const key = `${subject}|${normalizeDeckKeyV51(name)}`;
+        const name = smartDeckNameV52(subject, oldDeck.name, "");
+        const key = `${subject}|${normalizeDeckKeyV52(name)}`;
         const order = inferredOldDeckOrder(oldDeck);
         const createdAt = oldDeck.createdAt || oldDeck.updatedAt || nowISO();
 
@@ -1490,7 +1502,7 @@
           mergedDecks.push(deck);
         } else {
           const existing = deckByKey.get(key);
-          existing.order = Math.min(deckOrderValueV51(existing), order);
+          existing.order = Math.min(deckOrderValueV52(existing), order);
           if (!existing.createdAt || (createdAt && createdAt < existing.createdAt)) existing.createdAt = createdAt;
         }
       });
@@ -1498,9 +1510,9 @@
       data.decks = mergedDecks;
 
       defaultDecks.forEach(defaultDeck => {
-        const subject = canonicalSubjectV51(defaultDeck.subject);
-        if (subject && ALLOWED_SUBJECTS_V51.includes(subject)) {
-          const deck = getOrCreateDeckInDataV51(data, subject, defaultDeck.name, "");
+        const subject = canonicalSubjectV52(defaultDeck.subject);
+        if (subject && ALLOWED_SUBJECTS_V52.includes(subject)) {
+          const deck = getOrCreateDeckInDataV52(data, subject, defaultDeck.name, "");
           deck.order = -1;
           deck.createdAt = deck.createdAt || "1970-01-01T00:00:00.000Z";
         }
@@ -1512,45 +1524,44 @@
 
       data.cards.forEach(card => {
         const oldDeck = oldDeckFor(card.deckId);
-        const subject = canonicalSubjectV51(card.subject || oldDeck.subject) || "FAR";
-        const targetDeck = getOrCreateDeckInDataV51(data, subject, oldDeck.name || `${subject} General`, card.topic || "", card.question || "", card.answer || "");
+        const subject = canonicalSubjectV52(card.subject || oldDeck.subject) || "FAR";
+        const targetDeck = getOrCreateDeckInDataV52(data, subject, oldDeck.name || `${subject} General`, card.topic || "", card.question || "", card.answer || "");
         card.deckId = targetDeck.id;
         card.subject = targetDeck.subject;
-        card.topic = basicCleanV51(card.topic || "");
+        card.topic = basicCleanV52(card.topic || "");
       });
 
       data.mcqs.forEach(q => {
         const oldDeck = oldDeckFor(q.deckId);
-        const subject = canonicalSubjectV51(q.subject || oldDeck.subject) || "FAR";
+        const subject = canonicalSubjectV52(q.subject || oldDeck.subject) || "FAR";
         const text = `${q.question || ""} ${q.A || ""} ${q.B || ""} ${q.C || ""} ${q.D || ""} ${q.explanation || ""}`;
-        const targetDeck = getOrCreateDeckInDataV51(data, subject, oldDeck.name || `${subject} General`, q.topic || "", text, q.explanation || "");
+        const targetDeck = getOrCreateDeckInDataV52(data, subject, oldDeck.name || `${subject} General`, q.topic || "", text, q.explanation || "");
         q.deckId = targetDeck.id;
         q.subject = targetDeck.subject;
-        q.topic = basicCleanV51(q.topic || "");
+        q.topic = basicCleanV52(q.topic || "");
       });
 
       const usedDeckIds = new Set([...data.cards.map(c => c.deckId), ...data.mcqs.map(q => q.deckId)]);
       const defaultKeys = new Set(defaultDecks.map(d => {
-        const subject = canonicalSubjectV51(d.subject);
-        if (!subject || !ALLOWED_SUBJECTS_V51.includes(subject)) return "";
-        return `${subject}|${normalizeDeckKeyV51(smartDeckNameV51(subject, d.name, ""))}`;
+        const subject = canonicalSubjectV52(d.subject);
+        if (!subject || !ALLOWED_SUBJECTS_V52.includes(subject)) return "";
+        return `${subject}|${normalizeDeckKeyV52(smartDeckNameV52(subject, d.name, ""))}`;
       }).filter(Boolean));
 
       const finalDecks = [];
       const finalKeys = new Set();
 
       data.decks.forEach(deck => {
-        const subject = canonicalSubjectV51(deck.subject);
-        if (!subject || !ALLOWED_SUBJECTS_V51.includes(subject)) return;
+        const subject = canonicalSubjectV52(deck.subject);
+        if (!subject || !ALLOWED_SUBJECTS_V52.includes(subject)) return;
 
         deck.subject = subject;
-        deck.name = smartDeckNameV51(subject, deck.name, "");
-        if (deck.subject === "Auditing" && normalizeDeckKeyV51(deck.name) === normalizeDeckKeyV51("Auditing General")) return;
+        deck.name = smartDeckNameV52(subject, deck.name, "");
         if (!deck.createdAt) deck.createdAt = nowISO();
-        if (isGeneralDeckV51(deck)) deck.order = -1;
-        if (!Number.isFinite(Number(deck.order))) deck.order = nextDeckOrderV51(data, subject);
+        if (isGeneralDeckV52(deck)) deck.order = -1;
+        if (!Number.isFinite(Number(deck.order))) deck.order = nextDeckOrderV52(data, subject);
 
-        const key = `${deck.subject}|${normalizeDeckKeyV51(deck.name)}`;
+        const key = `${deck.subject}|${normalizeDeckKeyV52(deck.name)}`;
         if (finalKeys.has(key)) return;
         if (usedDeckIds.has(deck.id) || defaultKeys.has(key)) {
           finalKeys.add(key);
@@ -1558,12 +1569,12 @@
         }
       });
 
-      data.decks = finalDecks.sort(compareDecksV51);
+      data.decks = finalDecks.sort(compareDecksV52);
       return data;
     }
 
     let db = loadDB();
-    db = organizeLibraryV51(db);
+    db = organizeLibraryV52(db);
     localStorage.setItem(STORE, JSON.stringify(db));
 
     let profile = loadProfile();
@@ -1654,7 +1665,7 @@
         return makeCard(deck.id, subject, topic, question, answer);
       });
       const mcqs = sampleMCQ.map(item => makeMCQFromSample(item, decks));
-      return organizeLibraryV51({
+      return organizeLibraryV52({
         decks, cards, mcqs,
         stats: { reviews: 0, correct: 0, quizAnswered: 0, quizCorrect: 0, studiedDates: [], lastStudied: "", createdAt: nowISO() }
       });
@@ -1676,13 +1687,13 @@
         sampleMCQ.forEach(item => data.mcqs.push(makeMCQFromSample(item, data.decks)));
       }
 
-      data = organizeLibraryV51(data);
+      data = organizeLibraryV52(data);
       localStorage.setItem(STORE, JSON.stringify(data));
       return data;
     }
 
     function saveDB(silent = false) {
-      db = organizeLibraryV51(db);
+      db = organizeLibraryV52(db);
       localStorage.setItem(STORE, JSON.stringify(db));
       updateAll();
       if (!silent) showToast("Saved");
@@ -1767,7 +1778,7 @@
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
       const displayTargetExamV46 = profile.targetExam === "October 2026 CPALE" ? "October 24, 2026 CPALE" : profile.targetExam;
-      el.subtitle.textContent = displayTargetExamV46 ? `Target: ${displayTargetExamV46}. Review smarter, not just longer. v5.1` : "Flashcards + CPALE-style multiple choice quizzes. v5.1";
+      el.subtitle.textContent = displayTargetExamV46 ? `Target: ${displayTargetExamV46}. Review smarter, not just longer. v5.2` : "Flashcards + CPALE-style multiple choice quizzes. v5.2";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
@@ -1812,15 +1823,15 @@
     function deckOptionHTML(includeAll = true) {
       const all = includeAll ? `<option value="all">All decks</option>` : "";
       const decks = db.decks
-        .filter(d => ALLOWED_SUBJECTS_V51.includes(canonicalSubjectV51(d.subject)))
+        .filter(d => ALLOWED_SUBJECTS_V52.includes(canonicalSubjectV52(d.subject)))
         .slice()
-        .sort(compareDecksV51);
-      return all + decks.map(d => `<option value="${escapeHTML(d.id)}">${escapeHTML(canonicalSubjectV51(d.subject))} · ${escapeHTML(d.name)}</option>`).join("");
+        .sort(compareDecksV52);
+      return all + decks.map(d => `<option value="${escapeHTML(d.id)}">${escapeHTML(canonicalSubjectV52(d.subject))} · ${escapeHTML(d.name)}</option>`).join("");
     }
 
     function subjectOptionHTML(includeAll = true) {
-      const subjects = [...new Set(db.decks.map(d => canonicalSubjectV51(d.subject)).concat(db.mcqs.map(q => canonicalSubjectV51(q.subject))))].filter(s => ALLOWED_SUBJECTS_V51.includes(s));
-      const ordered = ALLOWED_SUBJECTS_V51.filter(s => subjects.includes(s));
+      const subjects = [...new Set(db.decks.map(d => canonicalSubjectV52(d.subject)).concat(db.mcqs.map(q => canonicalSubjectV52(q.subject))))].filter(s => ALLOWED_SUBJECTS_V52.includes(s));
+      const ordered = ALLOWED_SUBJECTS_V52.filter(s => subjects.includes(s));
       const all = includeAll ? `<option value="all">All subjects</option>` : "";
       return all + ordered.map(s => `<option value="${escapeHTML(s)}">${escapeHTML(s)}</option>`).join("");
     }
@@ -1846,9 +1857,9 @@
 
     function renderDecks() {
       const organizedDecks = db.decks
-        .filter(d => ALLOWED_SUBJECTS_V51.includes(canonicalSubjectV51(d.subject)))
+        .filter(d => ALLOWED_SUBJECTS_V52.includes(canonicalSubjectV52(d.subject)))
         .slice()
-        .sort(compareDecksV51);
+        .sort(compareDecksV52);
 
       el.deckGrid.innerHTML = organizedDecks.map(deck => {
         const cards = deckCards(deck.id);
@@ -2101,6 +2112,7 @@
       quizSessionStartedAt = nowISO();
       if (quizQueue.length) saveQuizSession(false);
       renderQuiz();
+      scrollQuizCardToCenterV52();
     }
 
     function shuffle(arr) {
@@ -2289,6 +2301,7 @@
       } else {
         saveQuizSession(false);
         renderQuiz();
+        scrollQuizExplanationToCenterV52();
       }
     }
 
@@ -2297,8 +2310,7 @@
       quizTimerDeadline = 0;
     }
 
-    function scrollQuizQuestionToCenterV51() {
-      const target = el.quizQuestion || el.quizActiveArea || el.quizCard;
+    function scrollNodeToComfortCenterV52(target, centerRatio = 0.38) {
       if (!target) return;
 
       const doScroll = () => {
@@ -2311,13 +2323,25 @@
         setTimeout(() => {
           try {
             const rect = target.getBoundingClientRect();
-            const desiredTop = window.scrollY + rect.top - (window.innerHeight * 0.35);
+            const desiredTop = window.scrollY + rect.top - (window.innerHeight * centerRatio);
             window.scrollTo({ top: Math.max(0, desiredTop), behavior: "smooth" });
           } catch {}
-        }, 120);
+        }, 100);
       };
 
-      requestAnimationFrame(() => setTimeout(doScroll, 60));
+      requestAnimationFrame(() => setTimeout(doScroll, 70));
+    }
+
+    function scrollQuizCardToCenterV52() {
+      scrollNodeToComfortCenterV52(el.quizCard || el.quizActiveArea || el.quizQuestion, 0.28);
+    }
+
+    function scrollQuizQuestionToCenterV52() {
+      scrollNodeToComfortCenterV52(el.quizQuestion || el.quizActiveArea || el.quizCard, 0.34);
+    }
+
+    function scrollQuizExplanationToCenterV52() {
+      scrollNodeToComfortCenterV52(el.quizExplanation || el.quizQuestion || el.quizCard, 0.36);
     }
 
     function renderQuiz() {
@@ -2340,7 +2364,7 @@
         const mark = ans ? (ans === q.correct ? "✓ " : (ans === TIMEOUT_ANSWER ? "⏱ " : "✕ ")) : "";
         return `<div class="list-item" data-quiz-index="${idx}"><strong>${escapeHTML(mark + q.question)}</strong><span>${escapeHTML(q.subject)} · ${escapeHTML(q.topic || getDeck(q.deckId).name)} · Correct: ${escapeHTML(q.correct)}</span></div>`;
       }).join("") : `<div class="muted small">Start a quiz to see questions here.</div>`;
-      el.quizQueueList.querySelectorAll("[data-quiz-index]").forEach(node => node.addEventListener("click", () => { quizIndex = Number(node.dataset.quizIndex); renderQuiz(); scrollQuizQuestionToCenterV51(); }));
+      el.quizQueueList.querySelectorAll("[data-quiz-index]").forEach(node => node.addEventListener("click", () => { quizIndex = Number(node.dataset.quizIndex); renderQuiz(); scrollQuizQuestionToCenterV52(); }));
 
       if (!item) {
         el.quizSubjectTag.textContent = "No MCQs"; el.quizTopicTag.textContent = "Add or import"; el.quizCounter.textContent = "0 / 0";
@@ -2415,6 +2439,7 @@
       } else {
         saveQuizSession(false);
         renderQuiz();
+        scrollQuizExplanationToCenterV52();
       }
     }
 
@@ -2426,7 +2451,7 @@
         quizIndex++;
         saveQuizSession(false);
         renderQuiz();
-        scrollQuizQuestionToCenterV51();
+        scrollQuizQuestionToCenterV52();
       } else {
         showQuizResults();
       }
@@ -2439,7 +2464,7 @@
       quizIndex--;
       saveQuizSession(false);
       renderQuiz();
-      scrollQuizQuestionToCenterV51();
+      scrollQuizQuestionToCenterV52();
     }
 
     function clearCurrentQuizSession() {
@@ -2601,7 +2626,7 @@
         const searchMatch = !search || card.question.toLowerCase().includes(search) || card.answer.toLowerCase().includes(search) || card.subject.toLowerCase().includes(search) || (card.topic || "").toLowerCase().includes(search) || getDeck(card.deckId).name.toLowerCase().includes(search);
         return deckMatch && searchMatch;
       }).sort((a, b) => {
-        const deckCompare = compareDecksV51(getDeck(a.deckId), getDeck(b.deckId));
+        const deckCompare = compareDecksV52(getDeck(a.deckId), getDeck(b.deckId));
         return deckCompare || ((originalIndex.get(a.id) ?? 0) - (originalIndex.get(b.id) ?? 0));
       });
     }
@@ -2641,7 +2666,7 @@
         const searchMatch = !search || q.question.toLowerCase().includes(search) || q.explanation.toLowerCase().includes(search) || q.subject.toLowerCase().includes(search) || (q.topic || "").toLowerCase().includes(search) || getDeck(q.deckId).name.toLowerCase().includes(search);
         return deckMatch && searchMatch;
       }).sort((a, b) => {
-        const deckCompare = compareDecksV51(getDeck(a.deckId), getDeck(b.deckId));
+        const deckCompare = compareDecksV52(getDeck(a.deckId), getDeck(b.deckId));
         return deckCompare || ((originalIndex.get(a.id) ?? 0) - (originalIndex.get(b.id) ?? 0));
       });
     }
@@ -2685,11 +2710,11 @@
     }
 
     function addDeck() {
-      const subject = canonicalSubjectV51(el.newDeckSubject.value) || "FAR";
-      const name = smartDeckNameV51(subject, el.newDeckName.value.trim(), "");
-      if (!name || isGenericDeckNameV51(subject, name)) { showToast("Enter a specific deck/topic name"); return; }
+      const subject = canonicalSubjectV52(el.newDeckSubject.value) || "FAR";
+      const name = smartDeckNameV52(subject, el.newDeckName.value.trim(), "");
+      if (!name || isGenericDeckNameV52(subject, name)) { showToast("Enter a specific deck/topic name"); return; }
 
-      const existing = findDeckBySmartNameV51(db, subject, name, "");
+      const existing = findDeckBySmartNameV52(db, subject, name, "");
       if (existing) {
         showToast("Deck already exists; new MCQs will be added there");
         el.newDeckName.value = "";
@@ -2749,7 +2774,7 @@
         rows.forEach(row => {
           const subjectRaw = row[idx("subject")] || targetDeck.subject, deckName = row[idx("deck")] || targetDeck.name, topic = row[idx("topic")] || "", question = row[idx("question")], answer = row[idx("answer")];
           if (!question || !answer) return;
-          const deck = getOrCreateDeckV51(subjectRaw, deckName, topic, question, answer);
+          const deck = getOrCreateDeckV52(subjectRaw, deckName, topic, question, answer);
           db.cards.push(makeCard(deck.id, deck.subject, topic, question, answer)); imported++;
         });
       } else if (text.match(/Q\s*:/i) && text.match(/A\s*:/i)) {
@@ -2758,8 +2783,8 @@
       } else {
         const rows = parseCSV(text);
         rows.forEach(row => {
-          if (row.length >= 5) { const [subjectRaw, deckName, topic, question, answer] = row; if (!question || !answer) return; const deck = getOrCreateDeckV51(subjectRaw, deckName, topic); db.cards.push(makeCard(deck.id, deck.subject, topic, question, answer)); imported++; }
-          else if (row.length >= 3) { const [subjectRaw, question, answer] = row; if (!question || !answer) return; const deck = getOrCreateDeckV51(subjectRaw || targetDeck.subject, targetDeck.name, ""); db.cards.push(makeCard(deck.id, deck.subject, "", question, answer)); imported++; }
+          if (row.length >= 5) { const [subjectRaw, deckName, topic, question, answer] = row; if (!question || !answer) return; const deck = getOrCreateDeckV52(subjectRaw, deckName, topic); db.cards.push(makeCard(deck.id, deck.subject, topic, question, answer)); imported++; }
+          else if (row.length >= 3) { const [subjectRaw, question, answer] = row; if (!question || !answer) return; const deck = getOrCreateDeckV52(subjectRaw || targetDeck.subject, targetDeck.name, ""); db.cards.push(makeCard(deck.id, deck.subject, "", question, answer)); imported++; }
         });
       }
       saveDB(); showToast(`Imported ${imported} card${imported === 1 ? "" : "s"}`);
@@ -2788,7 +2813,7 @@
     }
 
     function isValidMCQFields(subjectRaw, question, A, B, C, D, correct) {
-      const allowedSubjects = new Set(ALLOWED_SUBJECTS_V51);
+      const allowedSubjects = new Set(ALLOWED_SUBJECTS_V52);
       if (!allowedSubjects.has(subjectRaw)) return false;
       if (!question || question.length < 20) return false;
       if (!A || !B || !C || !D) return false;
@@ -2850,7 +2875,7 @@
           return;
         }
 
-        const subjectRaw = canonicalSubjectV51(getVal(row, ["subject"], 0) || targetDeck.subject);
+        const subjectRaw = canonicalSubjectV52(getVal(row, ["subject"], 0) || targetDeck.subject);
         const deckName = getVal(row, ["deck"], 1) || targetDeck.name;
         const topic = getVal(row, ["topic"], 2) || "";
         const question = getVal(row, ["question"], 3);
@@ -2866,7 +2891,7 @@
           return;
         }
 
-        const deck = getOrCreateDeckV51(subjectRaw, deckName, topic, question, explanation);
+        const deck = getOrCreateDeckV52(subjectRaw, deckName, topic, question, explanation);
 
         db.mcqs.push(makeMCQ(deck.id, deck.subject, topic, question, A, B, C, D, correct, explanation));
         imported++;
@@ -2992,7 +3017,7 @@
       const confirmed = confirm("Remove broken imported MCQs? This deletes malformed MCQs caused by bad CSV splitting, including cut-off stems like 'A owes B P100', quoted subjects, missing choices, invalid answer letters, and wrong columns. Export full JSON first if you want extra safety.");
       if (!confirmed) return;
 
-      const allowedSubjects = new Set(ALLOWED_SUBJECTS_V51);
+      const allowedSubjects = new Set(ALLOWED_SUBJECTS_V52);
 
       const rawHasWrappingQuote = value => {
         const s = String(value || "").trim();
