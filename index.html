@@ -154,6 +154,44 @@
     .small { font-size: .9rem; }
     .tiny { font-size: .78rem; }
 
+
+    .countdown-panel {
+      margin-bottom: 16px;
+      background:
+        linear-gradient(135deg, rgba(250,204,21,.20), rgba(56,189,248,.10)),
+        var(--panel);
+    }
+
+    .countdown-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .countdown-label {
+      color: #fde68a;
+      font-size: .8rem;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .countdown-main {
+      font-size: clamp(1.65rem, 7vw, 3.3rem);
+      font-weight: 950;
+      letter-spacing: -.07em;
+      line-height: .95;
+      margin: 6px 0;
+    }
+
+    .countdown-detail {
+      color: var(--muted);
+      line-height: 1.45;
+      margin: 0;
+    }
+
     .stat-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -761,6 +799,15 @@
     </nav>
 
     <section id="dashboard" class="screen active">
+      <div class="panel pad countdown-panel" id="examCountdownPanel">
+        <div class="countdown-topline">
+          <span class="countdown-label">Target exam countdown</span>
+          <span class="tag blue">Live</span>
+        </div>
+        <div class="countdown-main" id="examCountdown">Set your target exam in profile.</div>
+        <p class="countdown-detail" id="examCountdownSub">Choose a target exam date to start the live countdown.</p>
+      </div>
+
       <div class="panel pad">
         <h2 class="section-title">Today’s dashboard</h2>
         <div class="stat-grid">
@@ -789,7 +836,7 @@
             Use flashcards for mastery. Use MCQ quizzes for CPALE-style application. When you miss a question, read the explanation and convert the trap into a flashcard.
           </p>
           <div class="divider"></div>
-          <p class="muted small" id="examCountdown">Set your target exam in profile.</p>
+          <p class="muted small" id="examCountdownAside">Your live countdown now appears at the top of the dashboard.</p>
         </aside>
       </div>
     </section>
@@ -850,7 +897,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.2 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.3 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1043,7 +1090,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v5.2 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v5.3 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -1610,7 +1657,7 @@
       profileNameEdit: $("profileNameEdit"), targetExamEdit: $("targetExamEdit"), saveProfileBtn: $("saveProfileBtn"), closeProfileBtn: $("closeProfileBtn"), toast: $("toast"),
 
       dashDue: $("dashDue"), dashTotal: $("dashTotal"), dashMCQ: $("dashMCQ"), dashStreak: $("dashStreak"), dashAccuracy: $("dashAccuracy"), dashQuizAccuracy: $("dashQuizAccuracy"),
-      dashboardDecks: $("dashboardDecks"), examCountdown: $("examCountdown"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
+      dashboardDecks: $("dashboardDecks"), examCountdown: $("examCountdown"), examCountdownSub: $("examCountdownSub"), examCountdownPanel: $("examCountdownPanel"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
 
       reviewDeckFilter: $("reviewDeckFilter"), reviewMode: $("reviewMode"), reviewCard: $("reviewCard"),
       cardSubject: $("cardSubject"), cardDeck: $("cardDeck"), cardBox: $("cardBox"), cardQuestion: $("cardQuestion"), cardAnswer: $("cardAnswer"),
@@ -1645,8 +1692,12 @@
     }
 
     function saveProfile() {
+      if (!profile) profile = { name: "Student", targetExam: "", createdAt: nowISO() };
+      profile.name = profile.name || "Student";
+      profile.targetExam = normalizeTargetExamValue(profile.targetExam);
       localStorage.setItem(PROFILE, JSON.stringify(profile));
       renderProfile();
+      renderCountdown();
     }
 
     function loadDB() {
@@ -1766,30 +1817,77 @@
       db.stats.lastStudied = t;
     }
 
+    function normalizeTargetExamValue(value) {
+      const raw = basicCleanV52(value);
+      if (!raw || raw === "Target exam: choose later" || raw === "No target selected") return "";
+      if (raw === "October 2026 CPALE") return "October 24, 2026 CPALE";
+      return raw;
+    }
+
+    function targetExamInfo(value = profile?.targetExam) {
+      const label = normalizeTargetExamValue(value);
+      const map = {
+        "October 24, 2026 CPALE": "2026-10-24T00:00:00+08:00",
+        "May 2027 CPALE": "2027-05-01T00:00:00+08:00",
+        "October 2027 CPALE": "2027-10-01T00:00:00+08:00"
+      };
+
+      if (!label || !map[label]) return null;
+      return { label, dateTime: map[label], date: new Date(map[label]) };
+    }
+
+    function formatCountdownParts(diffMs) {
+      const totalSeconds = Math.max(0, Math.floor(diffMs / 1000));
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      return { days, hours, minutes, seconds };
+    }
+
     function renderProfile() {
       if (!profile) {
         el.loginScreen.classList.remove("hidden");
         el.mainApp.classList.add("hidden");
         return;
       }
+
+      profile.targetExam = normalizeTargetExamValue(profile.targetExam);
       el.loginScreen.classList.add("hidden");
       el.mainApp.classList.remove("hidden");
+
       const name = profile.name || "Student";
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
-      const displayTargetExamV46 = profile.targetExam === "October 2026 CPALE" ? "October 24, 2026 CPALE" : profile.targetExam;
-      el.subtitle.textContent = displayTargetExamV46 ? `Target: ${displayTargetExamV46}. Review smarter, not just longer. v5.2` : "Flashcards + CPALE-style multiple choice quizzes. v5.2";
+
+      const info = targetExamInfo();
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.3` : "Flashcards + CPALE-style multiple choice quizzes. v5.3";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
     }
 
     function renderCountdown() {
-      const map = { "October 24, 2026 CPALE": "2026-10-24", "October 2026 CPALE": "2026-10-24", "May 2027 CPALE": "2027-05-01", "October 2027 CPALE": "2027-10-01" };
-      const target = profile && map[profile.targetExam];
-      if (!target) { el.examCountdown.textContent = "Set your target exam in profile."; return; }
-      const days = Math.ceil((new Date(target) - new Date(today())) / 86400000);
-      el.examCountdown.textContent = days >= 0 ? `${days} days until ${displayTargetExamV46}. Make today count.` : `${displayTargetExamV46} has passed. Update your target in profile.`;
+      const info = targetExamInfo();
+
+      if (!el.examCountdown) return;
+
+      if (!info) {
+        el.examCountdown.textContent = "No target set";
+        if (el.examCountdownSub) el.examCountdownSub.textContent = "Open your profile and choose a target exam date to start the live countdown.";
+        return;
+      }
+
+      const diff = info.date.getTime() - Date.now();
+      const parts = formatCountdownParts(diff);
+
+      if (diff >= 0) {
+        el.examCountdown.textContent = `${parts.days}d ${parts.hours}h ${parts.minutes}m ${parts.seconds}s`;
+        if (el.examCountdownSub) el.examCountdownSub.textContent = `until ${info.label}. Make today count.`;
+      } else {
+        el.examCountdown.textContent = `${info.label} has started or passed`;
+        if (el.examCountdownSub) el.examCountdownSub.textContent = "Update your target exam date in your profile.";
+      }
     }
 
     function renderDashboard() {
@@ -2925,14 +3023,54 @@
     }
 
     async function restoreJSON() {
-      const file = el.jsonRestoreFile.files[0]; if (!file) { showToast("Choose a JSON backup first"); return; }
+      const file = el.jsonRestoreFile.files[0];
+      if (!file) { showToast("Choose a JSON backup first"); return; }
+
+      let restored;
       try {
-        const text = await file.text(); const restored = JSON.parse(text);
-        if (restored.db && Array.isArray(restored.db.decks) && Array.isArray(restored.db.cards)) {
-          db = ensureV3(restored.db); if (restored.profile) profile = restored.profile;
-          localStorage.setItem(STORE, JSON.stringify(db)); localStorage.setItem(PROFILE, JSON.stringify(profile)); updateAll(); renderProfile(); showToast("Backup restored");
-        } else showToast("Invalid backup file");
-      } catch { showToast("Could not restore backup"); }
+        const text = await file.text();
+        restored = JSON.parse(text);
+      } catch (err) {
+        console.error(err);
+        showToast("Could not read JSON file");
+        return;
+      }
+
+      const restoredDB = restored && restored.db ? restored.db : restored;
+      if (!restoredDB || !Array.isArray(restoredDB.decks) || !Array.isArray(restoredDB.cards)) {
+        showToast("Invalid backup file");
+        return;
+      }
+
+      try {
+        db = ensureV3(restoredDB);
+        if (restored.profile) {
+          profile = restored.profile;
+        } else if (!profile) {
+          profile = { name: "Student", targetExam: "", createdAt: nowISO() };
+        }
+
+        profile.name = profile.name || "Student";
+        profile.targetExam = normalizeTargetExamValue(profile.targetExam);
+
+        localStorage.setItem(STORE, JSON.stringify(db));
+        localStorage.setItem(PROFILE, JSON.stringify(profile));
+        if (el.jsonRestoreFile) el.jsonRestoreFile.value = "";
+      } catch (err) {
+        console.error(err);
+        showToast("Could not save restored backup");
+        return;
+      }
+
+      try {
+        renderProfile();
+        updateAll();
+        showScreen("dashboard");
+      } catch (err) {
+        console.error(err);
+      }
+
+      showToast("Backup restored");
     }
 
     async function extractPDFText() {
@@ -3163,13 +3301,28 @@ Notes:`;
     }
 
     function bindEvents() {
-      el.startBtn.addEventListener("click", () => { const name = el.profileName.value.trim() || "Student"; profile = { name, targetExam: el.targetExam.value || "", createdAt: nowISO() }; saveProfile(); updateAll(); });
+      el.startBtn.addEventListener("click", () => {
+        const name = el.profileName.value.trim() || "Student";
+        profile = { name, targetExam: normalizeTargetExamValue(el.targetExam.value || ""), createdAt: nowISO() };
+        saveProfile();
+        updateAll();
+        showScreen("dashboard");
+      });
       document.querySelectorAll(".nav button").forEach(btn => btn.addEventListener("click", () => showScreen(btn.dataset.screen)));
       document.querySelectorAll("[data-screen-link]").forEach(btn => btn.addEventListener("click", () => showScreen(btn.dataset.screenLink)));
 
       el.profileBtn.addEventListener("click", () => { el.profileNameEdit.value = profile?.name || ""; el.targetExamEdit.value = profile?.targetExam || ""; el.profileModal.classList.add("show"); });
       el.closeProfileBtn.addEventListener("click", () => el.profileModal.classList.remove("show"));
-      el.saveProfileBtn.addEventListener("click", () => { profile.name = el.profileNameEdit.value.trim() || "Student"; profile.targetExam = el.targetExamEdit.value || ""; saveProfile(); el.profileModal.classList.remove("show"); showToast("Profile saved"); });
+      el.saveProfileBtn.addEventListener("click", () => {
+        if (!profile) profile = { name: "Student", targetExam: "", createdAt: nowISO() };
+        profile.name = el.profileNameEdit.value.trim() || "Student";
+        profile.targetExam = normalizeTargetExamValue(el.targetExamEdit.value || "");
+        saveProfile();
+        updateAll();
+        el.profileModal.classList.remove("show");
+        showScreen("dashboard");
+        showToast("Profile saved");
+      });
 
       el.startDueBtn.addEventListener("click", () => { el.reviewDeckFilter.value = "all"; el.reviewMode.value = "due"; showScreen("review"); });
       el.startQuizBtn.addEventListener("click", () => showScreen("quiz"));
@@ -3206,7 +3359,13 @@ el.addDeckBtn.addEventListener("click", addDeck);
       el.removeDuplicateMCQBtn.addEventListener("click", removeDuplicateMCQs);
       el.removeBrokenMCQBtn.addEventListener("click", removeBrokenImportedMCQs);
       el.clearAllBtn.addEventListener("click", clearAllData);
-      el.resetProfileBtn.addEventListener("click", () => { if (!confirm("Reset your local profile? Cards and MCQs will remain.")) return; localStorage.removeItem(PROFILE); profile = null; renderProfile(); });
+      el.resetProfileBtn.addEventListener("click", () => {
+        if (!confirm("Reset your local profile? Cards and MCQs will remain.")) return;
+        localStorage.removeItem(PROFILE);
+        profile = null;
+        renderProfile();
+        renderCountdown();
+      });
     }
 
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
@@ -3222,6 +3381,8 @@ el.addDeckBtn.addEventListener("click", addDeck);
     }
     renderQuiz();
     updateTimerDisplay();
+    renderCountdown();
+    setInterval(renderCountdown, 1000);
   </script>
 </body>
 </html>
