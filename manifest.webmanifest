@@ -5,5 +5,5 @@
   "display": "standalone",
   "background_color": "#0b1020",
   "theme_color": "#0f172a",
-  "description": "A CPALE flashcard and MCQ quiz app with fixed clean MCQ grouping."
+  "description": "A CPALE flashcard and MCQ quiz app with subject topics ordered by upload sequence."
 }
