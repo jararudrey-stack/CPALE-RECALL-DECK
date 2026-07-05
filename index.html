@@ -160,18 +160,18 @@
       position: relative;
       overflow: hidden;
       background:
-        radial-gradient(circle at 12% 0%, rgba(250, 204, 21, .10), transparent 32%),
-        radial-gradient(circle at 94% 3%, rgba(59, 130, 246, .12), transparent 30%),
-        linear-gradient(135deg, rgba(15, 23, 42, .96), rgba(17, 24, 39, .88)),
+        radial-gradient(circle at 10% 0%, rgba(59, 130, 246, .10), transparent 28%),
+        radial-gradient(circle at 95% 2%, rgba(168, 85, 247, .12), transparent 28%),
+        linear-gradient(135deg, rgba(2, 6, 23, .96), rgba(15, 23, 42, .92)),
         var(--panel);
-      border: 1px solid rgba(148, 163, 184, .15);
-      box-shadow: 0 18px 55px rgba(0, 0, 0, .22);
+      border: 1px solid rgba(148, 163, 184, .14);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, .24);
     }
 
     .countdown-layout {
-      position: relative;
       display: grid;
       gap: 14px;
+      position: relative;
     }
 
     .countdown-top-row {
@@ -247,14 +247,137 @@
       color: #0f172a;
     }
 
-    .countdown-title {
+    .bottle-progress {
       display: grid;
-      gap: 4px;
-      text-align: center;
-      margin-top: 1px;
+      grid-template-columns: minmax(120px, 165px) 1fr;
+      align-items: center;
+      gap: 16px;
+      min-height: 210px;
     }
 
-    .countdown-mini-label {
+    .bottle-wrap {
+      position: relative;
+      width: 135px;
+      height: 180px;
+      justify-self: center;
+    }
+
+    .bottle-cap {
+      position: absolute;
+      top: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 34px;
+      height: 10px;
+      border-radius: 10px 10px 4px 4px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 2px 10px rgba(0,0,0,.18);
+      z-index: 3;
+    }
+
+    .bottle-shell {
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      transform: translateX(-50%);
+      width: 128px;
+      height: 162px;
+      border: 2px solid rgba(255,255,255,.84);
+      border-radius: 24px;
+      background: rgba(2, 6, 23, .08);
+      box-shadow:
+        0 10px 26px rgba(0,0,0,.22),
+        inset 0 0 0 1px rgba(255,255,255,.06);
+      overflow: hidden;
+    }
+
+    .bottle-glass-highlight {
+      position: absolute;
+      left: 10px;
+      bottom: 28px;
+      width: 14px;
+      height: 44px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.10));
+      opacity: .95;
+      z-index: 3;
+    }
+
+    .bottle-side-highlight {
+      position: absolute;
+      right: 9px;
+      top: 32px;
+      width: 3px;
+      height: 38px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      z-index: 3;
+    }
+
+    .bottle-liquid {
+      --fill-level: 0%;
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      bottom: 6px;
+      height: var(--fill-level);
+      border-radius: 0 0 18px 18px;
+      background: linear-gradient(180deg, #ff66de 0%, #c954f3 52%, #665cff 100%);
+      overflow: hidden;
+      transition: height .9s ease;
+      z-index: 1;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+    }
+
+    .bottle-liquid::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,.16), transparent 38%);
+      pointer-events: none;
+    }
+
+    .liquid-wave {
+      position: absolute;
+      left: -8%;
+      width: 116%;
+      border-radius: 44% 56% 47% 53% / 58% 54% 46% 42%;
+      opacity: .95;
+    }
+
+    .liquid-wave.wave-a {
+      top: -18px;
+      height: 28px;
+      background: rgba(255, 108, 226, .92);
+      animation: waveMoveA 5.6s linear infinite;
+    }
+
+    .liquid-wave.wave-b {
+      top: -13px;
+      height: 24px;
+      background: rgba(147, 51, 234, .58);
+      animation: waveMoveB 7.4s linear infinite reverse;
+    }
+
+    @keyframes waveMoveA {
+      0% { transform: translateX(-6%) translateY(0); }
+      50% { transform: translateX(4%) translateY(2px); }
+      100% { transform: translateX(-6%) translateY(0); }
+    }
+
+    @keyframes waveMoveB {
+      0% { transform: translateX(5%) translateY(1px); }
+      50% { transform: translateX(-5%) translateY(-2px); }
+      100% { transform: translateX(5%) translateY(1px); }
+    }
+
+    .progress-copy {
+      display: grid;
+      gap: 8px;
+      align-content: center;
+    }
+
+    .progress-kicker {
       color: #93c5fd;
       font-size: .72rem;
       font-weight: 950;
@@ -262,85 +385,61 @@
       text-transform: uppercase;
     }
 
-    .countdown-detail {
-      color: var(--muted);
-      font-size: .84rem;
-      line-height: 1.35;
-      margin: 0;
-    }
-
-    .flip-countdown {
+    .days-left-line {
       display: flex;
-      align-items: end;
-      justify-content: center;
-      gap: clamp(8px, 2.7vw, 18px);
-      margin-top: 1px;
-    }
-
-    .flip-unit {
-      display: grid;
+      align-items: baseline;
       gap: 8px;
-      justify-items: center;
-      min-width: min(40vw, 180px);
+      flex-wrap: wrap;
     }
 
-    .flip-number {
-      position: relative;
-      display: grid;
-      place-items: center;
-      width: min(38vw, 170px);
-      min-height: clamp(88px, 22vw, 132px);
-      border-radius: 22px;
-      background:
-        linear-gradient(180deg, rgba(254, 243, 199, 1), rgba(253, 230, 138, .95));
-      color: #1234a5;
+    .days-left-number {
+      font-size: clamp(2.4rem, 9vw, 4.8rem);
+      line-height: .92;
+      letter-spacing: -.07em;
       font-weight: 950;
-      font-size: clamp(3rem, 17vw, 6.3rem);
-      line-height: .85;
-      letter-spacing: -.08em;
+      color: #f8fafc;
       font-variant-numeric: tabular-nums;
-      box-shadow:
-        0 18px 35px rgba(0,0,0,.28),
-        inset 0 1px 0 rgba(255,255,255,.58),
-        inset 0 -1px 0 rgba(0,0,0,.08);
-      overflow: hidden;
     }
 
-    .flip-number::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 50%;
-      height: 2px;
-      background: rgba(18, 52, 165, .20);
-      box-shadow: 0 1px 0 rgba(255,255,255,.48);
+    .days-left-label {
+      font-size: 1rem;
+      font-weight: 850;
+      color: #cbd5e1;
+      letter-spacing: -.01em;
     }
 
-    .flip-label {
+    .exam-target-label {
+      font-size: .92rem;
       color: var(--muted);
-      font-size: .76rem;
-      font-weight: 950;
-      letter-spacing: .18em;
-      text-transform: uppercase;
+      line-height: 1.45;
     }
 
-    .flip-colon {
-      align-self: center;
-      color: #fef3c7;
-      font-size: clamp(2rem, 9vw, 4rem);
-      font-weight: 950;
-      line-height: 1;
-      padding-bottom: 24px;
-      opacity: .95;
+    .progress-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: #e2e8f0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .82rem;
+      font-weight: 900;
+      letter-spacing: -.01em;
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 560px) {
       .clock-chip { width: 100%; justify-content: space-between; }
-      .flip-countdown { gap: 7px; }
-      .flip-unit { min-width: 0; flex: 1; }
-      .flip-number { width: 100%; border-radius: 18px; }
-      .flip-colon { padding-bottom: 22px; }
+      .bottle-progress {
+        grid-template-columns: 118px 1fr;
+        gap: 12px;
+      }
+      .bottle-wrap { width: 118px; height: 168px; }
+      .bottle-shell { width: 110px; height: 150px; }
+      .days-left-number { font-size: clamp(2rem, 12vw, 3.2rem); }
+      .days-left-label { font-size: .95rem; }
+      .progress-pill { font-size: .78rem; }
     }
 
     .stat-grid {
@@ -962,20 +1061,27 @@
             </div>
           </div>
 
-          <div class="countdown-title">
-            <div class="countdown-mini-label" id="examCountdownLabel">Target exam countdown</div>
-            <p class="countdown-detail" id="examCountdownSub">Choose a target exam date in your profile.</p>
-          </div>
-
-          <div class="flip-countdown" id="examCountdown" aria-label="Target exam countdown">
-            <div class="flip-unit">
-              <div class="flip-number" id="countdownDays">--</div>
-              <div class="flip-label">Days</div>
+          <div class="bottle-progress">
+            <div class="bottle-wrap" aria-hidden="true">
+              <div class="bottle-cap"></div>
+              <div class="bottle-shell">
+                <div class="bottle-liquid" id="bottleLiquid">
+                  <div class="liquid-wave wave-a"></div>
+                  <div class="liquid-wave wave-b"></div>
+                </div>
+                <div class="bottle-glass-highlight"></div>
+                <div class="bottle-side-highlight"></div>
+              </div>
             </div>
-            <div class="flip-colon">:</div>
-            <div class="flip-unit">
-              <div class="flip-number" id="countdownHours">--</div>
-              <div class="flip-label">Hours</div>
+
+            <div class="progress-copy">
+              <div class="progress-kicker">CPALE countdown</div>
+              <div class="days-left-line">
+                <span class="days-left-number" id="daysLeftValue">--</span>
+                <span class="days-left-label">days left</span>
+              </div>
+              <div class="exam-target-label" id="examCountdownLabel">Choose your target exam date in profile.</div>
+              <div class="progress-pill" id="progressPercent">0% consumed since June 1, 2026</div>
             </div>
           </div>
         </div>
@@ -1070,7 +1176,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.6 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.7 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1263,7 +1369,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v5.6 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v5.7 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -1830,7 +1936,7 @@
       profileNameEdit: $("profileNameEdit"), targetExamEdit: $("targetExamEdit"), saveProfileBtn: $("saveProfileBtn"), closeProfileBtn: $("closeProfileBtn"), toast: $("toast"),
 
       dashDue: $("dashDue"), dashTotal: $("dashTotal"), dashMCQ: $("dashMCQ"), dashStreak: $("dashStreak"), dashAccuracy: $("dashAccuracy"), dashQuizAccuracy: $("dashQuizAccuracy"),
-      dashboardDecks: $("dashboardDecks"), examCountdown: $("examCountdown"), examCountdownSub: $("examCountdownSub"), examCountdownPanel: $("examCountdownPanel"), examCountdownLabel: $("examCountdownLabel"), todayLabel: $("todayLabel"), countdownDays: $("countdownDays"), countdownHours: $("countdownHours"), liveClock: $("liveClock"), dayNightToggle: $("dayNightToggle"), dayNightOrb: $("dayNightOrb"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
+      dashboardDecks: $("dashboardDecks"), examCountdownPanel: $("examCountdownPanel"), examCountdownLabel: $("examCountdownLabel"), todayLabel: $("todayLabel"), daysLeftValue: $("daysLeftValue"), progressPercent: $("progressPercent"), bottleLiquid: $("bottleLiquid"), liveClock: $("liveClock"), dayNightToggle: $("dayNightToggle"), dayNightOrb: $("dayNightOrb"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
 
       reviewDeckFilter: $("reviewDeckFilter"), reviewMode: $("reviewMode"), reviewCard: $("reviewCard"),
       cardSubject: $("cardSubject"), cardDeck: $("cardDeck"), cardBox: $("cardBox"), cardQuestion: $("cardQuestion"), cardAnswer: $("cardAnswer"),
@@ -2067,6 +2173,14 @@
       return raw;
     }
 
+    function countdownStartDate() {
+      return new Date("2026-06-01T00:00:00+08:00");
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
     function targetExamInfo(value = profile?.targetExam) {
       const label = normalizeTargetExamValue(value);
       const map = {
@@ -2104,7 +2218,7 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.6` : "Flashcards + CPALE-style multiple choice quizzes. v5.6";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.7` : "Flashcards + CPALE-style multiple choice quizzes. v5.7";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderTodayLine();
@@ -2116,30 +2230,30 @@
       renderLiveClock();
 
       const info = targetExamInfo();
-      if (!el.examCountdown) return;
+      if (!el.examCountdownPanel) return;
 
       if (!info) {
-        if (el.examCountdownLabel) el.examCountdownLabel.textContent = "Target exam countdown";
-        if (el.countdownDays) el.countdownDays.textContent = "--";
-        if (el.countdownHours) el.countdownHours.textContent = "--";
-        if (el.examCountdownSub) el.examCountdownSub.textContent = "Choose a target exam date in your profile.";
+        if (el.daysLeftValue) el.daysLeftValue.textContent = "--";
+        if (el.examCountdownLabel) el.examCountdownLabel.textContent = "Choose your target exam date in profile.";
+        if (el.progressPercent) el.progressPercent.textContent = "0% consumed since June 1, 2026";
+        if (el.bottleLiquid) el.bottleLiquid.style.setProperty("--fill-level", "0%");
         return;
       }
 
-      const diff = info.date.getTime() - Date.now();
-      const parts = formatCountdownParts(diff);
+      const now = new Date();
+      const diff = info.date.getTime() - now.getTime();
+      const msDay = 24 * 60 * 60 * 1000;
+      const daysLeft = Math.max(0, Math.ceil(diff / msDay));
 
-      if (el.examCountdownLabel) el.examCountdownLabel.textContent = info.label;
+      const start = countdownStartDate();
+      const total = Math.max(1, info.date.getTime() - start.getTime());
+      const elapsed = clamp(now.getTime() - start.getTime(), 0, total);
+      const progress = clamp((elapsed / total) * 100, 0, 100);
 
-      if (diff >= 0) {
-        if (el.countdownDays) el.countdownDays.textContent = String(parts.days).padStart(2, "0");
-        if (el.countdownHours) el.countdownHours.textContent = String(parts.hours).padStart(2, "0");
-        if (el.examCountdownSub) el.examCountdownSub.textContent = "remaining until your target exam date.";
-      } else {
-        if (el.countdownDays) el.countdownDays.textContent = "00";
-        if (el.countdownHours) el.countdownHours.textContent = "00";
-        if (el.examCountdownSub) el.examCountdownSub.textContent = "Exam date reached. Update your target in profile.";
-      }
+      if (el.daysLeftValue) el.daysLeftValue.textContent = String(daysLeft);
+      if (el.examCountdownLabel) el.examCountdownLabel.textContent = `Target exam: ${info.label}`;
+      if (el.progressPercent) el.progressPercent.textContent = `${progress.toFixed(1)}% consumed since June 1, 2026`;
+      if (el.bottleLiquid) el.bottleLiquid.style.setProperty("--fill-level", `${progress}%`);
     }
 
     function renderDashboard() {

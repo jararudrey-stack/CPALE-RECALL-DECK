@@ -3,7 +3,7 @@
   "short_name": "CPALE Deck",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0b1020",
+  "background_color": "#020617",
   "theme_color": "#0f172a",
-  "description": "A CPALE recall app with a flip-style days/hours countdown and Philippine real-time clock."
+  "description": "A CPALE recall app with a bottle-style days-left countdown and Philippine live clock."
 }
