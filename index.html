@@ -157,72 +157,197 @@
 
     .countdown-panel {
       margin-bottom: 14px;
-      background: rgba(15, 23, 42, .72);
-      border: 1px solid rgba(148, 163, 184, .16);
-      box-shadow: 0 18px 55px rgba(0, 0, 0, .18);
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(15, 23, 42, .94), rgba(17, 24, 39, .86)),
+        var(--panel);
+      border: 1px solid rgba(148, 163, 184, .15);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, .22);
     }
 
-    .countdown-cluster {
+    .countdown-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(250, 204, 21, .10), transparent 34%),
+        radial-gradient(circle at 92% 6%, rgba(56, 189, 248, .10), transparent 30%);
+      pointer-events: none;
+    }
+
+    .countdown-layout {
+      position: relative;
       display: grid;
-      gap: 10px;
+      gap: 14px;
+    }
+
+    .countdown-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     .today-line {
       color: var(--muted);
-      font-size: .88rem;
+      font-size: .86rem;
       font-weight: 800;
       letter-spacing: -.01em;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
     }
 
     .today-line strong {
       color: var(--text);
-      font-weight: 900;
+      font-weight: 950;
     }
 
-    .countdown-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(148, 163, 184, .28), transparent);
-      margin: 1px 0;
+    .clock-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(148, 163, 184, .16);
+      background: rgba(2, 6, 23, .35);
+      border-radius: 999px;
+      padding: 6px 8px 6px 11px;
+      color: var(--text);
+      font-weight: 950;
+      font-size: .86rem;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.02em;
+    }
+
+    .day-night-switch {
+      width: 54px;
+      height: 26px;
+      border-radius: 999px;
+      padding: 3px;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(56, 189, 248, .26), rgba(250, 204, 21, .18));
+      border: 1px solid rgba(255, 255, 255, .13);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+    }
+
+    .day-night-switch.night {
+      background: linear-gradient(135deg, rgba(15, 23, 42, .72), rgba(79, 70, 229, .22));
+    }
+
+    .day-night-orb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: .72rem;
+      background: #fef3c7;
+      color: #172033;
+      box-shadow: 0 4px 14px rgba(0,0,0,.24);
+      transform: translateX(0);
+      transition: transform .25s ease, background .25s ease, color .25s ease;
+    }
+
+    .day-night-switch.night .day-night-orb {
+      transform: translateX(26px);
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .countdown-title {
+      display: grid;
+      gap: 3px;
+      text-align: center;
+      margin-top: 2px;
     }
 
     .countdown-mini-label {
       color: #93c5fd;
       font-size: .72rem;
       font-weight: 950;
-      letter-spacing: .11em;
+      letter-spacing: .14em;
       text-transform: uppercase;
-    }
-
-    .countdown-main {
-      font-size: clamp(1.55rem, 6vw, 2.75rem);
-      font-weight: 950;
-      letter-spacing: -.055em;
-      line-height: 1;
-      margin: 2px 0 3px;
-      font-variant-numeric: tabular-nums;
     }
 
     .countdown-detail {
       color: var(--muted);
-      font-size: .86rem;
-      line-height: 1.4;
+      font-size: .84rem;
+      line-height: 1.35;
       margin: 0;
     }
 
-    .countdown-subtle-pill {
-      border: 1px solid rgba(148, 163, 184, .18);
-      background: rgba(15, 23, 42, .55);
+    .flip-countdown {
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      gap: clamp(8px, 2.5vw, 18px);
+      margin-top: 1px;
+    }
+
+    .flip-unit {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      min-width: min(40vw, 180px);
+    }
+
+    .flip-number {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: min(38vw, 170px);
+      min-height: clamp(92px, 22vw, 132px);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(254, 243, 199, 1), rgba(253, 230, 138, .94));
+      color: #1234a5;
+      font-weight: 950;
+      font-size: clamp(3rem, 17vw, 6.4rem);
+      line-height: .85;
+      letter-spacing: -.08em;
+      font-variant-numeric: tabular-nums;
+      box-shadow:
+        0 18px 35px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.55),
+        inset 0 -1px 0 rgba(0,0,0,.08);
+      overflow: hidden;
+    }
+
+    .flip-number::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 2px;
+      background: rgba(18, 52, 165, .18);
+      box-shadow: 0 1px 0 rgba(255,255,255,.45);
+    }
+
+    .flip-label {
       color: var(--muted);
-      border-radius: 999px;
-      padding: 5px 9px;
-      font-size: .72rem;
-      font-weight: 900;
-      white-space: nowrap;
+      font-size: .76rem;
+      font-weight: 950;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .flip-colon {
+      align-self: center;
+      color: #fef3c7;
+      font-size: clamp(2rem, 9vw, 4rem);
+      font-weight: 950;
+      line-height: 1;
+      padding-bottom: 24px;
+      opacity: .95;
+    }
+
+    @media (max-width: 520px) {
+      .clock-chip { width: 100%; justify-content: space-between; }
+      .flip-countdown { gap: 7px; }
+      .flip-unit { min-width: 0; flex: 1; }
+      .flip-number { width: 100%; border-radius: 18px; }
+      .flip-colon { padding-bottom: 22px; }
     }
 
     .stat-grid {
@@ -833,16 +958,32 @@
 
     <section id="dashboard" class="screen active">
       <div class="panel pad countdown-panel" id="examCountdownPanel">
-        <div class="countdown-cluster">
-          <div class="today-line">
-            <span id="todayLabel">Today is loading...</span>
-            <span class="countdown-subtle-pill">Philippine time</span>
+        <div class="countdown-layout">
+          <div class="countdown-top-row">
+            <span class="today-line" id="todayLabel">Today is loading...</span>
+            <div class="clock-chip" aria-label="Philippine time">
+              <span id="liveClock">--:--:--</span>
+              <span class="day-night-switch" id="dayNightSwitch" title="Daytime or nighttime in the Philippines">
+                <span class="day-night-orb" id="dayNightOrb">☀️</span>
+              </span>
+            </div>
           </div>
-          <div class="countdown-divider"></div>
-          <div>
-            <div class="countdown-mini-label" id="examCountdownLabel">Target exam</div>
-            <div class="countdown-main" id="examCountdown">Set your target exam.</div>
+
+          <div class="countdown-title">
+            <div class="countdown-mini-label" id="examCountdownLabel">Target exam countdown</div>
             <p class="countdown-detail" id="examCountdownSub">Choose a target exam date in your profile.</p>
+          </div>
+
+          <div class="flip-countdown" id="examCountdown">
+            <div class="flip-unit">
+              <div class="flip-number" id="countdownDays">--</div>
+              <div class="flip-label">Days</div>
+            </div>
+            <div class="flip-colon">:</div>
+            <div class="flip-unit">
+              <div class="flip-number" id="countdownHours">--</div>
+              <div class="flip-label">Hours</div>
+            </div>
           </div>
         </div>
       </div>
@@ -936,7 +1077,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.4 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.5 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1129,7 +1270,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v5.4 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v5.5 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -1696,7 +1837,7 @@
       profileNameEdit: $("profileNameEdit"), targetExamEdit: $("targetExamEdit"), saveProfileBtn: $("saveProfileBtn"), closeProfileBtn: $("closeProfileBtn"), toast: $("toast"),
 
       dashDue: $("dashDue"), dashTotal: $("dashTotal"), dashMCQ: $("dashMCQ"), dashStreak: $("dashStreak"), dashAccuracy: $("dashAccuracy"), dashQuizAccuracy: $("dashQuizAccuracy"),
-      dashboardDecks: $("dashboardDecks"), examCountdown: $("examCountdown"), examCountdownSub: $("examCountdownSub"), examCountdownPanel: $("examCountdownPanel"), examCountdownLabel: $("examCountdownLabel"), todayLabel: $("todayLabel"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
+      dashboardDecks: $("dashboardDecks"), examCountdown: $("examCountdown"), examCountdownSub: $("examCountdownSub"), examCountdownPanel: $("examCountdownPanel"), examCountdownLabel: $("examCountdownLabel"), todayLabel: $("todayLabel"), countdownDays: $("countdownDays"), countdownHours: $("countdownHours"), liveClock: $("liveClock"), dayNightSwitch: $("dayNightSwitch"), dayNightOrb: $("dayNightOrb"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
 
       reviewDeckFilter: $("reviewDeckFilter"), reviewMode: $("reviewMode"), reviewCard: $("reviewCard"),
       cardSubject: $("cardSubject"), cardDeck: $("cardDeck"), cardBox: $("cardBox"), cardQuestion: $("cardQuestion"), cardAnswer: $("cardAnswer"),
@@ -1872,10 +2013,47 @@
       };
     }
 
+    function philippineHour24() {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Manila",
+        hour: "2-digit",
+        hourCycle: "h23"
+      }).formatToParts(new Date());
+
+      return Number(parts.find(p => p.type === "hour")?.value || 0);
+    }
+
+    function philippineClockText() {
+      return new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Manila",
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+      }).format(new Date());
+    }
+
     function renderTodayLine() {
       if (!el.todayLabel) return;
       const pht = philippineDateParts();
       el.todayLabel.innerHTML = `Today is <strong>${pht.weekday}, ${pht.month} ${pht.day}</strong>`;
+    }
+
+    function renderLiveClock() {
+      if (el.liveClock) el.liveClock.textContent = philippineClockText();
+
+      const hour = philippineHour24();
+      const isDay = hour >= 6 && hour < 18;
+
+      if (el.dayNightSwitch) {
+        el.dayNightSwitch.classList.toggle("night", !isDay);
+        el.dayNightSwitch.classList.toggle("day", isDay);
+        el.dayNightSwitch.title = isDay ? "Daytime in the Philippines" : "Nighttime in the Philippines";
+      }
+
+      if (el.dayNightOrb) {
+        el.dayNightOrb.textContent = isDay ? "☀️" : "🌙";
+      }
     }
 
     function normalizeTargetExamValue(value) {
@@ -1922,7 +2100,7 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.4` : "Flashcards + CPALE-style multiple choice quizzes. v5.4";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.5` : "Flashcards + CPALE-style multiple choice quizzes. v5.5";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderTodayLine();
@@ -1932,13 +2110,15 @@
     function renderCountdown() {
       const info = targetExamInfo();
 
+      renderTodayLine();
+      renderLiveClock();
+
       if (!el.examCountdown) return;
 
-      renderTodayLine();
-
       if (!info) {
-        if (el.examCountdownLabel) el.examCountdownLabel.textContent = "Target exam";
-        el.examCountdown.textContent = "No target set";
+        if (el.examCountdownLabel) el.examCountdownLabel.textContent = "Target exam countdown";
+        if (el.countdownDays) el.countdownDays.textContent = "--";
+        if (el.countdownHours) el.countdownHours.textContent = "--";
         if (el.examCountdownSub) el.examCountdownSub.textContent = "Choose a target exam date in your profile.";
         return;
       }
@@ -1946,14 +2126,16 @@
       const diff = info.date.getTime() - Date.now();
       const parts = formatCountdownParts(diff);
 
+      if (el.examCountdownLabel) el.examCountdownLabel.textContent = info.label;
+
       if (diff >= 0) {
-        if (el.examCountdownLabel) el.examCountdownLabel.textContent = info.label;
-        el.examCountdown.textContent = `${parts.days}d ${parts.hours}h ${parts.minutes}m ${parts.seconds}s`;
+        if (el.countdownDays) el.countdownDays.textContent = String(parts.days).padStart(2, "0");
+        if (el.countdownHours) el.countdownHours.textContent = String(parts.hours).padStart(2, "0");
         if (el.examCountdownSub) el.examCountdownSub.textContent = "remaining until your target exam date.";
       } else {
-        if (el.examCountdownLabel) el.examCountdownLabel.textContent = info.label;
-        el.examCountdown.textContent = "Exam date reached";
-        if (el.examCountdownSub) el.examCountdownSub.textContent = "Update your target exam date in your profile.";
+        if (el.countdownDays) el.countdownDays.textContent = "00";
+        if (el.countdownHours) el.countdownHours.textContent = "00";
+        if (el.examCountdownSub) el.examCountdownSub.textContent = "Exam date reached. Update your target in profile.";
       }
     }
 

@@ -5,5 +5,5 @@
   "display": "standalone",
   "background_color": "#0b1020",
   "theme_color": "#0f172a",
-  "description": "A CPALE recall app with a minimalist dashboard countdown and Philippine date line."
+  "description": "A CPALE recall app with a flip-style days/hours countdown and Philippine real-time clock."
 }

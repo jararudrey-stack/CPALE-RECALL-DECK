@@ -1,12 +1,16 @@
-CPALE Recall Deck v5.4
+CPALE Recall Deck v5.5
 
 Countdown redesign:
-- Redesigned the dashboard countdown into a cleaner, minimalist panel that blends with the app style.
-- Added a Philippine-time date line beside the countdown:
-  Example: Today is Sunday, July 5
-- The date uses Asia/Manila timezone and updates automatically. Since the countdown refreshes every second, the displayed date resets immediately after 12 midnight Philippine time.
-- Countdown and today's date are kept close together in one compact dashboard panel.
-- Countdown still shows days, hours, minutes, and seconds.
+- Redesigned the dashboard countdown into a flip-card inspired layout based on the reference image.
+- Countdown now shows only DAYS and HOURS.
+- The design keeps the website's dark glass aesthetic while using soft yellow flip cards.
+- Added a working real-time Philippine clock.
+- Added a day/night toggle beside the clock:
+  - Sun from 6:00 AM to 5:59 PM
+  - Moon from 6:00 PM to 5:59 AM
+- The date line remains:
+  Today is Sunday, July 5
+- The date and clock use Asia/Manila timezone and refresh every second.
 
 How to update GitHub:
 1. Download and extract this ZIP.
@@ -17,6 +21,6 @@ How to update GitHub:
    - README.txt
 3. Commit changes.
 4. Open:
-   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=54
+   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=55
 
 If Safari still shows the old version, refresh several times or clear website data for the GitHub Pages site.
