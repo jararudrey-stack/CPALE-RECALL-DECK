@@ -161,8 +161,8 @@
       overflow: hidden;
       background:
         radial-gradient(circle at 10% 0%, rgba(59, 130, 246, .10), transparent 28%),
-        radial-gradient(circle at 95% 2%, rgba(168, 85, 247, .12), transparent 28%),
-        linear-gradient(135deg, rgba(2, 6, 23, .96), rgba(15, 23, 42, .92)),
+        radial-gradient(circle at 92% 3%, rgba(168, 85, 247, .13), transparent 30%),
+        linear-gradient(135deg, rgba(2, 6, 23, .98), rgba(15, 23, 42, .93)),
         var(--panel);
       border: 1px solid rgba(148, 163, 184, .14);
       box-shadow: 0 18px 55px rgba(0, 0, 0, .24);
@@ -249,17 +249,18 @@
 
     .bottle-progress {
       display: grid;
-      grid-template-columns: minmax(120px, 165px) 1fr;
+      grid-template-columns: minmax(120px, 168px) 1fr;
       align-items: center;
-      gap: 16px;
-      min-height: 210px;
+      gap: 18px;
+      min-height: 220px;
     }
 
     .bottle-wrap {
       position: relative;
-      width: 135px;
-      height: 180px;
+      width: 138px;
+      height: 186px;
       justify-self: center;
+      filter: drop-shadow(0 16px 28px rgba(79, 70, 229, .12));
     }
 
     .bottle-cap {
@@ -270,9 +271,9 @@
       width: 34px;
       height: 10px;
       border-radius: 10px 10px 4px 4px;
-      background: rgba(255,255,255,.92);
+      background: rgba(255,255,255,.95);
       box-shadow: 0 2px 10px rgba(0,0,0,.18);
-      z-index: 3;
+      z-index: 5;
     }
 
     .bottle-shell {
@@ -282,13 +283,24 @@
       transform: translateX(-50%);
       width: 128px;
       height: 162px;
-      border: 2px solid rgba(255,255,255,.84);
+      border: 2px solid rgba(255,255,255,.86);
       border-radius: 24px;
-      background: rgba(2, 6, 23, .08);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)),
+        rgba(2, 6, 23, .08);
       box-shadow:
-        0 10px 26px rgba(0,0,0,.22),
+        0 16px 34px rgba(0,0,0,.24),
         inset 0 0 0 1px rgba(255,255,255,.06);
       overflow: hidden;
+    }
+
+    .bottle-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, rgba(255,255,255,.10), transparent 22%, transparent 72%, rgba(255,255,255,.05));
+      pointer-events: none;
+      z-index: 4;
     }
 
     .bottle-glass-highlight {
@@ -298,9 +310,9 @@
       width: 14px;
       height: 44px;
       border-radius: 999px;
-      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.10));
+      background: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.10));
       opacity: .95;
-      z-index: 3;
+      z-index: 5;
     }
 
     .bottle-side-highlight {
@@ -310,8 +322,8 @@
       width: 3px;
       height: 38px;
       border-radius: 999px;
-      background: rgba(255,255,255,.72);
-      z-index: 3;
+      background: rgba(255,255,255,.75);
+      z-index: 5;
     }
 
     .bottle-liquid {
@@ -322,11 +334,25 @@
       bottom: 6px;
       height: var(--fill-level);
       border-radius: 0 0 18px 18px;
-      background: linear-gradient(180deg, #ff66de 0%, #c954f3 52%, #665cff 100%);
+      background: linear-gradient(180deg, #ff7be7 0%, #d658f7 38%, #8d5bff 70%, #5d5cff 100%);
       overflow: hidden;
-      transition: height .9s ease;
+      transition: height .95s cubic-bezier(.2,.84,.28,1);
       z-index: 1;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.22),
+        0 0 18px rgba(168, 85, 247, .20),
+        0 0 28px rgba(96, 165, 250, .10);
+    }
+
+    .liquid-glow {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,.22), transparent 38%),
+        radial-gradient(circle at 50% 88%, rgba(99, 102, 241, .18), transparent 46%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+      z-index: 2;
     }
 
     .bottle-liquid::after {
@@ -335,45 +361,102 @@
       inset: 0;
       background: linear-gradient(180deg, rgba(255,255,255,.16), transparent 38%);
       pointer-events: none;
+      z-index: 2;
     }
 
     .liquid-wave {
       position: absolute;
-      left: -8%;
-      width: 116%;
+      left: -10%;
+      width: 120%;
       border-radius: 44% 56% 47% 53% / 58% 54% 46% 42%;
       opacity: .95;
     }
 
     .liquid-wave.wave-a {
-      top: -18px;
-      height: 28px;
-      background: rgba(255, 108, 226, .92);
-      animation: waveMoveA 5.6s linear infinite;
+      top: -19px;
+      height: 30px;
+      background: rgba(255, 130, 232, .95);
+      animation: waveMoveA 4.8s ease-in-out infinite;
     }
 
     .liquid-wave.wave-b {
-      top: -13px;
-      height: 24px;
-      background: rgba(147, 51, 234, .58);
-      animation: waveMoveB 7.4s linear infinite reverse;
+      top: -14px;
+      height: 25px;
+      background: rgba(201, 83, 243, .72);
+      animation: waveMoveB 6.6s ease-in-out infinite reverse;
+    }
+
+    .liquid-wave.wave-c {
+      top: -16px;
+      height: 27px;
+      background: rgba(125, 91, 255, .55);
+      animation: waveMoveC 8.2s ease-in-out infinite;
+      opacity: .82;
+    }
+
+    .liquid-wave.wave-d {
+      top: -10px;
+      height: 20px;
+      background: rgba(255,255,255,.14);
+      animation: waveMoveD 5.1s ease-in-out infinite reverse;
+      opacity: .9;
+      filter: blur(.2px);
     }
 
     @keyframes waveMoveA {
-      0% { transform: translateX(-6%) translateY(0); }
-      50% { transform: translateX(4%) translateY(2px); }
-      100% { transform: translateX(-6%) translateY(0); }
+      0% { transform: translateX(-7%) translateY(0) rotate(0deg); }
+      25% { transform: translateX(1%) translateY(1px) rotate(1deg); }
+      50% { transform: translateX(5%) translateY(3px) rotate(0deg); }
+      75% { transform: translateX(-1%) translateY(1px) rotate(-1deg); }
+      100% { transform: translateX(-7%) translateY(0) rotate(0deg); }
     }
 
     @keyframes waveMoveB {
-      0% { transform: translateX(5%) translateY(1px); }
-      50% { transform: translateX(-5%) translateY(-2px); }
-      100% { transform: translateX(5%) translateY(1px); }
+      0% { transform: translateX(6%) translateY(1px); }
+      50% { transform: translateX(-6%) translateY(-3px); }
+      100% { transform: translateX(6%) translateY(1px); }
+    }
+
+    @keyframes waveMoveC {
+      0% { transform: translateX(-3%) translateY(0); }
+      33% { transform: translateX(4%) translateY(2px); }
+      66% { transform: translateX(-5%) translateY(-1px); }
+      100% { transform: translateX(-3%) translateY(0); }
+    }
+
+    @keyframes waveMoveD {
+      0% { transform: translateX(2%) translateY(0); }
+      50% { transform: translateX(-4%) translateY(2px); }
+      100% { transform: translateX(2%) translateY(0); }
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -18px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.85), rgba(255,255,255,.14) 62%, rgba(255,255,255,0) 70%);
+      opacity: .48;
+      filter: blur(.15px);
+      animation: bubbleRise 6.4s linear infinite;
+    }
+
+    .bubble.b1 { left: 18%; width: 7px; height: 7px; animation-duration: 4.7s; animation-delay: -.8s; }
+    .bubble.b2 { left: 36%; width: 10px; height: 10px; animation-duration: 6.1s; animation-delay: -2.4s; }
+    .bubble.b3 { left: 58%; width: 6px; height: 6px; animation-duration: 5.4s; animation-delay: -1.2s; }
+    .bubble.b4 { left: 73%; width: 11px; height: 11px; animation-duration: 7.1s; animation-delay: -3.1s; }
+    .bubble.b5 { left: 50%; width: 8px; height: 8px; animation-duration: 5.9s; animation-delay: -.2s; }
+
+    @keyframes bubbleRise {
+      0%   { transform: translateY(0) translateX(0) scale(.85); opacity: 0; }
+      10%  { opacity: .35; }
+      50%  { transform: translateY(-46px) translateX(-3px) scale(1); opacity: .55; }
+      75%  { transform: translateY(-84px) translateX(4px) scale(1.07); opacity: .42; }
+      100% { transform: translateY(-122px) translateX(-1px) scale(1.12); opacity: 0; }
     }
 
     .progress-copy {
       display: grid;
-      gap: 8px;
+      gap: 9px;
       align-content: center;
     }
 
@@ -393,12 +476,13 @@
     }
 
     .days-left-number {
-      font-size: clamp(2.4rem, 9vw, 4.8rem);
+      font-size: clamp(2.5rem, 9vw, 4.95rem);
       line-height: .92;
       letter-spacing: -.07em;
       font-weight: 950;
       color: #f8fafc;
       font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 12px rgba(255,255,255,.06);
     }
 
     .days-left-label {
@@ -420,13 +504,23 @@
       justify-content: center;
       width: fit-content;
       border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      color: #e2e8f0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      color: #f8fafc;
       border-radius: 999px;
-      padding: 8px 12px;
+      padding: 9px 13px;
       font-size: .82rem;
       font-weight: 900;
       letter-spacing: -.01em;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 8px 20px rgba(0,0,0,.15);
+    }
+
+    .progress-pill .progress-soft {
+      color: #cbd5e1;
+      font-weight: 800;
+      margin-left: 6px;
     }
 
     @media (max-width: 560px) {
@@ -440,6 +534,7 @@
       .days-left-number { font-size: clamp(2rem, 12vw, 3.2rem); }
       .days-left-label { font-size: .95rem; }
       .progress-pill { font-size: .78rem; }
+      .bubble.b4 { left: 68%; }
     }
 
     .stat-grid {
@@ -1066,8 +1161,16 @@
               <div class="bottle-cap"></div>
               <div class="bottle-shell">
                 <div class="bottle-liquid" id="bottleLiquid">
+                  <div class="liquid-glow"></div>
                   <div class="liquid-wave wave-a"></div>
                   <div class="liquid-wave wave-b"></div>
+                  <div class="liquid-wave wave-c"></div>
+                  <div class="liquid-wave wave-d"></div>
+                  <span class="bubble b1"></span>
+                  <span class="bubble b2"></span>
+                  <span class="bubble b3"></span>
+                  <span class="bubble b4"></span>
+                  <span class="bubble b5"></span>
                 </div>
                 <div class="bottle-glass-highlight"></div>
                 <div class="bottle-side-highlight"></div>
@@ -1081,7 +1184,7 @@
                 <span class="days-left-label">days left</span>
               </div>
               <div class="exam-target-label" id="examCountdownLabel">Choose your target exam date in profile.</div>
-              <div class="progress-pill" id="progressPercent">0% consumed since June 1, 2026</div>
+              <div class="progress-pill" id="progressPercent">0.0% consumed <span class="progress-soft">since June 1, 2026</span></div>
             </div>
           </div>
         </div>
@@ -1176,7 +1279,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.7 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.8 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1369,7 +1472,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v5.7 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v5.8 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -2218,7 +2321,7 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.7` : "Flashcards + CPALE-style multiple choice quizzes. v5.7";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.8` : "Flashcards + CPALE-style multiple choice quizzes. v5.8";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderTodayLine();
@@ -2235,7 +2338,7 @@
       if (!info) {
         if (el.daysLeftValue) el.daysLeftValue.textContent = "--";
         if (el.examCountdownLabel) el.examCountdownLabel.textContent = "Choose your target exam date in profile.";
-        if (el.progressPercent) el.progressPercent.textContent = "0% consumed since June 1, 2026";
+        if (el.progressPercent) el.progressPercent.innerHTML = '0.0% consumed <span class="progress-soft">since June 1, 2026</span>';
         if (el.bottleLiquid) el.bottleLiquid.style.setProperty("--fill-level", "0%");
         return;
       }
@@ -2252,7 +2355,7 @@
 
       if (el.daysLeftValue) el.daysLeftValue.textContent = String(daysLeft);
       if (el.examCountdownLabel) el.examCountdownLabel.textContent = `Target exam: ${info.label}`;
-      if (el.progressPercent) el.progressPercent.textContent = `${progress.toFixed(1)}% consumed since June 1, 2026`;
+      if (el.progressPercent) el.progressPercent.innerHTML = `${progress.toFixed(1)}% consumed <span class="progress-soft">since June 1, 2026</span>`;
       if (el.bottleLiquid) el.bottleLiquid.style.setProperty("--fill-level", `${progress}%`);
     }
 

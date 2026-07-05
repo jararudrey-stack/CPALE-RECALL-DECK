@@ -1,15 +1,16 @@
-CPALE Recall Deck v5.7
+CPALE Recall Deck v5.8
 
-Countdown redesign:
-- Replaced the old countdown with a bottle-style progress design inspired by the reference image.
-- The bottle fills gradually as time progresses and becomes full on the examination date.
-- Added animated liquid waves inside the bottle.
-- The panel now shows:
-  - Days left until the CPALE
-  - Target exam label
-  - Percentage consumed since June 1, 2026
-- The percentage fill is based on the elapsed time from June 1, 2026 up to the selected target exam date.
-- The dashboard still includes the Philippine live clock and the sun/moon day-night toggle.
+Bottle countdown polish update:
+- Improved the liquid to look more realistic.
+- Added a subtle glow to the liquid and bottle.
+- Added more liquid motion with extra animated wave layers.
+- Added rising bubbles for more movement inside the bottle.
+- Upgraded the percentage display to a cleaner, more premium pill style.
+- The countdown still shows:
+  - days left until the CPALE
+  - target exam date
+  - percentage consumed since June 1, 2026
+- The live Philippine clock and sun/moon toggle remain.
 
 How to update GitHub:
 1. Download and extract this ZIP.
@@ -20,6 +21,6 @@ How to update GitHub:
    - README.txt
 3. Commit changes.
 4. Open:
-   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=57
+   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=58
 
 If Safari still shows the old version, refresh several times or clear website data for the GitHub Pages site.
