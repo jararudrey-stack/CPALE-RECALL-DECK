@@ -728,7 +728,7 @@
         <input id="profileName" placeholder="Your name or nickname" autocomplete="name" />
         <select id="targetExam">
           <option value="">Target exam: choose later</option>
-          <option>October 2026 CPALE</option>
+          <option>October 24, 2026 CPALE</option>
           <option>May 2027 CPALE</option>
           <option>October 2027 CPALE</option>
         </select>
@@ -850,7 +850,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v4.5 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v4.6 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1131,7 +1131,7 @@
         <input id="profileNameEdit" placeholder="Name" />
         <select id="targetExamEdit">
           <option value="">No target selected</option>
-          <option>October 2026 CPALE</option>
+          <option>October 24, 2026 CPALE</option>
           <option>May 2027 CPALE</option>
           <option>October 2027 CPALE</option>
         </select>
@@ -1424,18 +1424,19 @@
       const name = profile.name || "Student";
       el.userLabel.textContent = name;
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
-      el.subtitle.textContent = profile.targetExam ? `Target: ${profile.targetExam}. Review smarter, not just longer. v4.5` : "Flashcards + CPALE-style multiple choice quizzes. v4.5";
+      const displayTargetExamV46 = profile.targetExam === "October 2026 CPALE" ? "October 24, 2026 CPALE" : profile.targetExam;
+      el.subtitle.textContent = displayTargetExamV46 ? `Target: ${displayTargetExamV46}. Review smarter, not just longer. v4.6` : "Flashcards + CPALE-style multiple choice quizzes. v4.6";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderCountdown();
     }
 
     function renderCountdown() {
-      const map = { "October 2026 CPALE": "2026-10-01", "May 2027 CPALE": "2027-05-01", "October 2027 CPALE": "2027-10-01" };
+      const map = { "October 24, 2026 CPALE": "2026-10-24", "October 2026 CPALE": "2026-10-24", "May 2027 CPALE": "2027-05-01", "October 2027 CPALE": "2027-10-01" };
       const target = profile && map[profile.targetExam];
       if (!target) { el.examCountdown.textContent = "Set your target exam in profile."; return; }
       const days = Math.ceil((new Date(target) - new Date(today())) / 86400000);
-      el.examCountdown.textContent = days >= 0 ? `${days} days until ${profile.targetExam}. Make today count.` : `${profile.targetExam} has passed. Update your target in profile.`;
+      el.examCountdown.textContent = days >= 0 ? `${days} days until ${displayTargetExamV46}. Make today count.` : `${displayTargetExamV46} has passed. Update your target in profile.`;
     }
 
     function renderDashboard() {
@@ -2765,7 +2766,7 @@ Notes:`;
       el.beginQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.resumeQuizBtn.addEventListener("click", resumeSavedQuizSession); el.retryMissedBtn.addEventListener("click", retrySavedQuizSession); el.reviewMissedBtn.addEventListener("click", () => buildQuizQueue(true)); el.newQuizBtn.addEventListener("click", () => buildQuizQueue(false)); el.finishQuizBtn.addEventListener("click", finishQuizSession);
       el.prevQuizBtn.addEventListener("click", prevQuiz); el.nextQuizBtn.addEventListener("click", nextQuiz); el.exitSaveQuizBtn.addEventListener("click", exitQuizSession); el.exitNoSaveQuizBtn.addEventListener("click", exitQuizWithoutSaving); el.restartQuizBtn.addEventListener("click", restartCurrentQuiz); el.quizTimerMode.addEventListener("change", () => { enableTimedModeFromSelect(); updateTimerDisplay(); }); el.quizDeckFilter.addEventListener("change", () => { if (el.quizDeckFilter.value !== "all") el.quizSubjectFilter.value = "all"; }); el.quizSubjectFilter.addEventListener("change", () => { if (el.quizSubjectFilter.value !== "all") el.quizDeckFilter.value = "all"; });
 
-            // Finish final fallback v4.5
+            // Finish final fallback v4.6
       document.addEventListener("click", (event) => {
         const target = event.target;
         if (target && (target.id === "finishQuizBtnFinal" || target.id === "finishQuizBtn")) {
