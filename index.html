@@ -106,6 +106,7 @@
     .nav::-webkit-scrollbar { display: none; }
 
     .nav button {
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
       border: 1px solid var(--line);
       background: rgba(255,255,255,.075);
       color: var(--text);
@@ -114,6 +115,10 @@
       cursor: pointer;
       white-space: nowrap;
       font-weight: 850;
+    }
+
+    .nav button:active {
+      transform: scale(.97);
     }
 
     .nav button.active {
@@ -787,6 +792,43 @@
     .screen.active { display: block; }
     .hidden { display: none !important; }
 
+    main {
+      position: relative;
+      overflow-x: clip;
+    }
+
+    .screen {
+      transform-origin: center;
+      will-change: opacity, transform, filter;
+    }
+
+    .screen.screen-enter {
+      animation: pageSlideIn .36s cubic-bezier(.22, .78, .26, 1) both;
+    }
+
+    @keyframes pageSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateX(28px) scale(.992);
+        filter: blur(3px);
+      }
+      65% {
+        opacity: 1;
+        filter: blur(.5px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        filter: blur(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .screen.screen-enter {
+        animation: none !important;
+      }
+    }
+
     .login-wrap {
       min-height: 92vh;
       display: grid;
@@ -1279,7 +1321,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.8 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.9 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1472,7 +1514,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v5.8 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v5.9 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -2321,7 +2363,7 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.8` : "Flashcards + CPALE-style multiple choice quizzes. v5.8";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.9` : "Flashcards + CPALE-style multiple choice quizzes. v5.9";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderTodayLine();
@@ -3745,20 +3787,52 @@ Notes:`;
 
     function copyPrompt() { el.cardPrompt.select(); navigator.clipboard?.writeText(el.cardPrompt.value); showToast("Prompt copied"); }
 
+    let screenAnimationTimer = null;
+
     function showScreen(name) {
+      const nextScreen = document.getElementById(name);
+      if (!nextScreen) return;
+
       if (activeScreen === "quiz" && name !== "quiz" && quizQueue.length && !quizIsComplete()) {
         captureCurrentTimerRemaining();
         saveQuizSession(false);
         resetQuizRuntime();
       }
+
+      const currentScreen = document.querySelector(".screen.active");
+      const isSameScreen = currentScreen && currentScreen.id === name;
+
       activeScreen = name;
-      document.querySelectorAll(".screen").forEach(screen => screen.classList.toggle("active", screen.id === name));
-      document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.screen === name));
+
       if (name === "review") buildReviewQueue();
       if (name === "cards") renderCardsList();
       if (name === "mcq") renderMCQList();
       if (name === "quiz") renderQuiz();
-      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("screen-enter");
+        screen.classList.toggle("active", screen.id === name);
+      });
+
+      document.querySelectorAll(".nav button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.screen === name);
+      });
+
+      if (screenAnimationTimer) clearTimeout(screenAnimationTimer);
+
+      if (!isSameScreen) {
+        nextScreen.classList.add("screen-enter");
+        screenAnimationTimer = setTimeout(() => {
+          nextScreen.classList.remove("screen-enter");
+          screenAnimationTimer = null;
+        }, 420);
+      }
+
+      try {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch {
+        window.scrollTo(0, 0);
+      }
     }
 
     function updateAll() {
