@@ -160,20 +160,12 @@
       position: relative;
       overflow: hidden;
       background:
-        linear-gradient(135deg, rgba(15, 23, 42, .94), rgba(17, 24, 39, .86)),
+        radial-gradient(circle at 12% 0%, rgba(250, 204, 21, .10), transparent 32%),
+        radial-gradient(circle at 94% 3%, rgba(59, 130, 246, .12), transparent 30%),
+        linear-gradient(135deg, rgba(15, 23, 42, .96), rgba(17, 24, 39, .88)),
         var(--panel);
       border: 1px solid rgba(148, 163, 184, .15);
       box-shadow: 0 18px 55px rgba(0, 0, 0, .22);
-    }
-
-    .countdown-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 10% 0%, rgba(250, 204, 21, .10), transparent 34%),
-        radial-gradient(circle at 92% 6%, rgba(56, 189, 248, .10), transparent 30%);
-      pointer-events: none;
     }
 
     .countdown-layout {
@@ -207,7 +199,7 @@
       align-items: center;
       gap: 10px;
       border: 1px solid rgba(148, 163, 184, .16);
-      background: rgba(2, 6, 23, .35);
+      background: rgba(2, 6, 23, .34);
       border-radius: 999px;
       padding: 6px 8px 6px 11px;
       color: var(--text);
@@ -215,40 +207,41 @@
       font-size: .86rem;
       font-variant-numeric: tabular-nums;
       letter-spacing: -.02em;
+      white-space: nowrap;
     }
 
-    .day-night-switch {
-      width: 54px;
-      height: 26px;
+    .day-night-toggle {
+      width: 56px;
+      height: 28px;
       border-radius: 999px;
       padding: 3px;
-      position: relative;
       display: inline-flex;
       align-items: center;
-      background: linear-gradient(135deg, rgba(56, 189, 248, .26), rgba(250, 204, 21, .18));
-      border: 1px solid rgba(255, 255, 255, .13);
+      background: linear-gradient(135deg, rgba(56, 189, 248, .32), rgba(250, 204, 21, .22));
+      border: 1px solid rgba(255, 255, 255, .14);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+      transition: background .25s ease;
     }
 
-    .day-night-switch.night {
-      background: linear-gradient(135deg, rgba(15, 23, 42, .72), rgba(79, 70, 229, .22));
+    .day-night-toggle.night {
+      background: linear-gradient(135deg, rgba(15, 23, 42, .78), rgba(99, 102, 241, .28));
     }
 
     .day-night-orb {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       display: grid;
       place-items: center;
       font-size: .72rem;
       background: #fef3c7;
       color: #172033;
-      box-shadow: 0 4px 14px rgba(0,0,0,.24);
+      box-shadow: 0 5px 14px rgba(0,0,0,.25);
       transform: translateX(0);
       transition: transform .25s ease, background .25s ease, color .25s ease;
     }
 
-    .day-night-switch.night .day-night-orb {
+    .day-night-toggle.night .day-night-orb {
       transform: translateX(26px);
       background: #e2e8f0;
       color: #0f172a;
@@ -256,9 +249,9 @@
 
     .countdown-title {
       display: grid;
-      gap: 3px;
+      gap: 4px;
       text-align: center;
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
     .countdown-mini-label {
@@ -280,7 +273,7 @@
       display: flex;
       align-items: end;
       justify-content: center;
-      gap: clamp(8px, 2.5vw, 18px);
+      gap: clamp(8px, 2.7vw, 18px);
       margin-top: 1px;
     }
 
@@ -296,19 +289,19 @@
       display: grid;
       place-items: center;
       width: min(38vw, 170px);
-      min-height: clamp(92px, 22vw, 132px);
+      min-height: clamp(88px, 22vw, 132px);
       border-radius: 22px;
       background:
-        linear-gradient(180deg, rgba(254, 243, 199, 1), rgba(253, 230, 138, .94));
+        linear-gradient(180deg, rgba(254, 243, 199, 1), rgba(253, 230, 138, .95));
       color: #1234a5;
       font-weight: 950;
-      font-size: clamp(3rem, 17vw, 6.4rem);
+      font-size: clamp(3rem, 17vw, 6.3rem);
       line-height: .85;
       letter-spacing: -.08em;
       font-variant-numeric: tabular-nums;
       box-shadow:
         0 18px 35px rgba(0,0,0,.28),
-        inset 0 1px 0 rgba(255,255,255,.55),
+        inset 0 1px 0 rgba(255,255,255,.58),
         inset 0 -1px 0 rgba(0,0,0,.08);
       overflow: hidden;
     }
@@ -320,8 +313,8 @@
       right: 0;
       top: 50%;
       height: 2px;
-      background: rgba(18, 52, 165, .18);
-      box-shadow: 0 1px 0 rgba(255,255,255,.45);
+      background: rgba(18, 52, 165, .20);
+      box-shadow: 0 1px 0 rgba(255,255,255,.48);
     }
 
     .flip-label {
@@ -963,7 +956,7 @@
             <span class="today-line" id="todayLabel">Today is loading...</span>
             <div class="clock-chip" aria-label="Philippine time">
               <span id="liveClock">--:--:--</span>
-              <span class="day-night-switch" id="dayNightSwitch" title="Daytime or nighttime in the Philippines">
+              <span class="day-night-toggle" id="dayNightToggle" title="Daytime or nighttime in the Philippines">
                 <span class="day-night-orb" id="dayNightOrb">☀️</span>
               </span>
             </div>
@@ -974,7 +967,7 @@
             <p class="countdown-detail" id="examCountdownSub">Choose a target exam date in your profile.</p>
           </div>
 
-          <div class="flip-countdown" id="examCountdown">
+          <div class="flip-countdown" id="examCountdown" aria-label="Target exam countdown">
             <div class="flip-unit">
               <div class="flip-number" id="countdownDays">--</div>
               <div class="flip-label">Days</div>
@@ -1077,7 +1070,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.5 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v5.6 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1270,7 +1263,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v5.5 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v5.6 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -1837,7 +1830,7 @@
       profileNameEdit: $("profileNameEdit"), targetExamEdit: $("targetExamEdit"), saveProfileBtn: $("saveProfileBtn"), closeProfileBtn: $("closeProfileBtn"), toast: $("toast"),
 
       dashDue: $("dashDue"), dashTotal: $("dashTotal"), dashMCQ: $("dashMCQ"), dashStreak: $("dashStreak"), dashAccuracy: $("dashAccuracy"), dashQuizAccuracy: $("dashQuizAccuracy"),
-      dashboardDecks: $("dashboardDecks"), examCountdown: $("examCountdown"), examCountdownSub: $("examCountdownSub"), examCountdownPanel: $("examCountdownPanel"), examCountdownLabel: $("examCountdownLabel"), todayLabel: $("todayLabel"), countdownDays: $("countdownDays"), countdownHours: $("countdownHours"), liveClock: $("liveClock"), dayNightSwitch: $("dayNightSwitch"), dayNightOrb: $("dayNightOrb"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
+      dashboardDecks: $("dashboardDecks"), examCountdown: $("examCountdown"), examCountdownSub: $("examCountdownSub"), examCountdownPanel: $("examCountdownPanel"), examCountdownLabel: $("examCountdownLabel"), todayLabel: $("todayLabel"), countdownDays: $("countdownDays"), countdownHours: $("countdownHours"), liveClock: $("liveClock"), dayNightToggle: $("dayNightToggle"), dayNightOrb: $("dayNightOrb"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
 
       reviewDeckFilter: $("reviewDeckFilter"), reviewMode: $("reviewMode"), reviewCard: $("reviewCard"),
       cardSubject: $("cardSubject"), cardDeck: $("cardDeck"), cardBox: $("cardBox"), cardQuestion: $("cardQuestion"), cardAnswer: $("cardAnswer"),
@@ -2013,6 +2006,24 @@
       };
     }
 
+    function philippineTimeParts() {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Manila",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+      }).formatToParts(new Date());
+
+      const get = type => parts.find(p => p.type === type)?.value || "";
+      return {
+        hour12: get("hour"),
+        minute: get("minute"),
+        second: get("second"),
+        dayPeriod: get("dayPeriod")
+      };
+    }
+
     function philippineHour24() {
       const parts = new Intl.DateTimeFormat("en-US", {
         timeZone: "Asia/Manila",
@@ -2020,17 +2031,9 @@
         hourCycle: "h23"
       }).formatToParts(new Date());
 
-      return Number(parts.find(p => p.type === "hour")?.value || 0);
-    }
-
-    function philippineClockText() {
-      return new Intl.DateTimeFormat("en-US", {
-        timeZone: "Asia/Manila",
-        hour: "numeric",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true
-      }).format(new Date());
+      const raw = parts.find(p => p.type === "hour")?.value;
+      const hour = Number(raw);
+      return Number.isFinite(hour) ? hour : 0;
     }
 
     function renderTodayLine() {
@@ -2040,15 +2043,16 @@
     }
 
     function renderLiveClock() {
-      if (el.liveClock) el.liveClock.textContent = philippineClockText();
+      const pht = philippineTimeParts();
+      if (el.liveClock) el.liveClock.textContent = `${pht.hour12}:${pht.minute}:${pht.second} ${pht.dayPeriod}`;
 
       const hour = philippineHour24();
       const isDay = hour >= 6 && hour < 18;
 
-      if (el.dayNightSwitch) {
-        el.dayNightSwitch.classList.toggle("night", !isDay);
-        el.dayNightSwitch.classList.toggle("day", isDay);
-        el.dayNightSwitch.title = isDay ? "Daytime in the Philippines" : "Nighttime in the Philippines";
+      if (el.dayNightToggle) {
+        el.dayNightToggle.classList.toggle("night", !isDay);
+        el.dayNightToggle.classList.toggle("day", isDay);
+        el.dayNightToggle.title = isDay ? "Daytime in the Philippines" : "Nighttime in the Philippines";
       }
 
       if (el.dayNightOrb) {
@@ -2100,7 +2104,7 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.5` : "Flashcards + CPALE-style multiple choice quizzes. v5.5";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v5.6` : "Flashcards + CPALE-style multiple choice quizzes. v5.6";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderTodayLine();
@@ -2108,11 +2112,10 @@
     }
 
     function renderCountdown() {
-      const info = targetExamInfo();
-
       renderTodayLine();
       renderLiveClock();
 
+      const info = targetExamInfo();
       if (!el.examCountdown) return;
 
       if (!info) {
