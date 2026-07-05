@@ -1,6 +1,10 @@
-CPALE Recall Deck v4.7
+CPALE Recall Deck v4.8
 
-This update cleans up MCQ arrangement and removes Auditing Problems from the subject list.
+This is a redone clean MCQ grouping update based on the last working v4.6 base.
+
+Why this redo:
+- The earlier v4.7 build could fail during startup because the organizer could run before its constants were initialized.
+- v4.8 fixes that by loading the organizer before the app reads saved local data.
 
 What changed:
 - Removed Auditing Problems from the subject dropdown and import prompt subject list.
@@ -12,15 +16,13 @@ What changed:
   - Fundamentals of Auditing & Assurance Services
   - Introduction to Auditing
 - Duplicate deck names under the same subject are merged on load and on every save.
-- MCQ list sorting is now cleaner: subject, deck, topic, then question.
+- MCQ list sorting is cleaner: subject, deck, topic, then question.
 
 Recommended CSV use:
 subject,deck,topic,question,A,B,C,D,correct,explanation
 
 Example:
 Auditing Theory,Practice & Regulation,PRBOA Qualifications,...
-
-If you upload more Practice & Regulation MCQs later, they will be added to the same Practice & Regulation deck instead of creating another messy deck.
 
 How to update GitHub:
 1. Download and extract this ZIP.
@@ -31,6 +33,6 @@ How to update GitHub:
    - README.txt
 3. Commit changes.
 4. Open:
-   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=47
+   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=48
 
-If the page still shows the old subject list, refresh several times or clear Safari website data for the GitHub Pages site.
+If the page still shows the old version, refresh several times or clear Safari website data for the GitHub Pages site.
