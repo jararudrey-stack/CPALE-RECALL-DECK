@@ -1,13 +1,11 @@
-CPALE Recall Deck v6.7
+CPALE Recall Deck v6.8
 
-Splash centering fix:
-- Rebuilt from the stable v6.0 app.
-- The fiery eye is now positioned exactly at the viewport center using absolute centering.
-- The quote is retained but positioned separately below the eye, so it no longer pulls the eye off-center.
-- The transparent eye animation remains, with no visible box/background.
-- The splash is CSS-only and does not depend on JavaScript.
-- The animation is embedded directly in index.html, so there is no extra image file to upload.
-- Keeps Firebase live learners-online, smooth transitions, and the bottle countdown.
+Update:
+- Added a floating ghost companion beside the day/night toggle.
+- The ghost appears only from 10:00 PM to 5:59 AM Philippine time.
+- Scaled to match the toggle size.
+- Background removed so it blends seamlessly with the site aesthetic.
+- Animation is preserved from the uploaded GIF and embedded directly in index.html.
 
 Files to upload:
 - index.html
@@ -15,11 +13,5 @@ Files to upload:
 - service-worker.js
 - README.txt
 
-How to update GitHub:
-1. Download and extract this ZIP.
-2. Replace the four files listed above.
-3. Commit changes.
-4. Open:
-   https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=67
-
-If Safari still shows the old version, refresh several times or clear website data for the GitHub Pages site.
+Open after updating:
+https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=68
