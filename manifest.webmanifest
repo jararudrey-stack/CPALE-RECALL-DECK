@@ -5,5 +5,5 @@
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#0f172a",
-  "description": "A CPALE recall app with centered fiery-eye splash and a night ghost companion."
+  "description": "A CPALE recall app with a night-only ghost companion beside the day/night toggle."
 }
