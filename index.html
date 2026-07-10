@@ -1499,7 +1499,7 @@
 
 
     /* ============================
-       v8.1 — Focus Edition revamp
+       v9.0 — Focus Edition revamp
        ============================ */
     :root {
       --bg: #070b14;
@@ -2587,7 +2587,7 @@
 
 
     /* =============================
-       v8.1 — interaction refinement
+       v9.0 — interaction refinement
        ============================= */
     .app button,
     .modal button,
@@ -3038,6 +3038,788 @@
       }
     }
 
+
+    /* =================================
+       v9.0 — Professional Study OS layer
+       ================================= */
+    :root {
+      --surface-0: #070b14;
+      --surface-1: #0b1220;
+      --surface-2: #101a2b;
+      --surface-3: #172338;
+      --ink-strong: #f8fafc;
+      --ink-soft: #a8b4c8;
+      --cyan: #67d4ff;
+      --cyan-soft: rgba(103,212,255,.12);
+      --gold: #f3d36a;
+      --gold-soft: rgba(243,211,106,.12);
+      --violet: #b9a7ff;
+      --violet-soft: rgba(185,167,255,.12);
+      --emerald: #54e28a;
+      --emerald-soft: rgba(84,226,138,.12);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 14% 16%, rgba(103,212,255,.055), transparent 28%),
+        radial-gradient(circle at 85% 22%, rgba(185,167,255,.05), transparent 30%),
+        radial-gradient(circle at 56% 88%, rgba(243,211,106,.045), transparent 31%);
+      animation: ambientDrift 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes ambientDrift {
+      0% { transform: scale(1) translate3d(0,0,0); opacity: .8; }
+      100% { transform: scale(1.035) translate3d(0,-8px,0); opacity: 1; }
+    }
+
+    .topbar {
+      border-bottom: 1px solid rgba(148,163,184,.065);
+    }
+
+    .focus-timer-button {
+      min-width: 126px;
+      justify-content: flex-start;
+    }
+
+    .focus-live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex: 0 0 8px;
+      background: #64748b;
+      box-shadow: 0 0 0 4px rgba(100,116,139,.08);
+      transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .focus-timer-button.running .focus-live-dot {
+      background: var(--emerald);
+      box-shadow:
+        0 0 0 4px rgba(84,226,138,.09),
+        0 0 14px rgba(84,226,138,.28);
+      animation: focusLivePulse 1.7s ease-in-out infinite;
+    }
+
+    @keyframes focusLivePulse {
+      0%,100% { transform: scale(1); opacity: .85; }
+      50% { transform: scale(1.28); opacity: 1; }
+    }
+
+    .mission-card {
+      overflow: hidden;
+    }
+
+    .mission-card::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      z-index: -1;
+      border-radius: inherit;
+      background:
+        linear-gradient(
+          110deg,
+          rgba(243,211,106,.20),
+          rgba(103,212,255,.12),
+          rgba(185,167,255,.18),
+          rgba(243,211,106,.20)
+        );
+      background-size: 260% 100%;
+      animation: missionBorderFlow 10s linear infinite;
+      opacity: .42;
+    }
+
+    @keyframes missionBorderFlow {
+      from { background-position: 0% 50%; }
+      to { background-position: 260% 50%; }
+    }
+
+    .learning-intelligence-grid {
+      display: grid;
+      grid-template-columns: minmax(0,1.08fr) minmax(0,.92fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .learning-intelligence-grid > .panel {
+      border-radius: 27px;
+      min-width: 0;
+    }
+
+    .daily-pulse-panel {
+      background:
+        radial-gradient(circle at 6% 10%, rgba(84,226,138,.10), transparent 36%),
+        radial-gradient(circle at 100% 100%, rgba(103,212,255,.07), transparent 38%),
+        var(--panel);
+    }
+
+    .intelligence-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 6px 9px;
+      border: 1px solid rgba(148,163,184,.13);
+      border-radius: 999px;
+      background: rgba(255,255,255,.035);
+      color: #cbd5e1;
+      font-size: .68rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .daily-pulse-layout {
+      display: grid;
+      grid-template-columns: minmax(150px, .7fr) minmax(0,1.3fr);
+      gap: 20px;
+      align-items: center;
+    }
+
+    .daily-goal-ring {
+      --goal-progress: 0;
+      width: min(100%, 188px);
+      aspect-ratio: 1;
+      justify-self: center;
+      display: grid;
+      place-items: center;
+      position: relative;
+      border-radius: 50%;
+      background:
+        conic-gradient(
+          var(--emerald) calc(var(--goal-progress) * 1%),
+          rgba(148,163,184,.11) 0
+        );
+      box-shadow:
+        0 0 0 8px rgba(255,255,255,.018),
+        0 24px 54px rgba(0,0,0,.30);
+      transition: background .45s ease;
+    }
+
+    .daily-goal-ring::before {
+      content: "";
+      position: absolute;
+      inset: 11px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255,255,255,.055), transparent 32%),
+        #0b1423;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.055);
+    }
+
+    .daily-goal-ring > div {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: center;
+      line-height: 1;
+    }
+
+    .daily-goal-ring b {
+      font-size: clamp(2.45rem, 6vw, 4.2rem);
+      letter-spacing: -.075em;
+    }
+
+    .daily-goal-ring span {
+      margin-top: 7px;
+      color: var(--ink-soft);
+      font-size: .74rem;
+      font-weight: 850;
+    }
+
+    .daily-goal-ring small {
+      margin-top: 7px;
+      color: #718096;
+      font-size: .62rem;
+      font-weight: 900;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .daily-pulse-copy h3 {
+      margin: 0;
+      font-size: clamp(1.1rem, 2.6vw, 1.45rem);
+      letter-spacing: -.035em;
+    }
+
+    .daily-pulse-copy > p {
+      margin: 6px 0 13px;
+      color: var(--muted);
+      line-height: 1.48;
+      font-size: .82rem;
+    }
+
+    .pulse-metrics {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 7px;
+      margin-bottom: 10px;
+    }
+
+    .pulse-metrics > div {
+      padding: 9px;
+      border: 1px solid rgba(148,163,184,.105);
+      border-radius: 13px;
+      background: rgba(255,255,255,.032);
+    }
+
+    .pulse-metrics strong,
+    .pulse-metrics span {
+      display: block;
+    }
+
+    .pulse-metrics strong {
+      font-size: 1rem;
+      margin-bottom: 3px;
+    }
+
+    .pulse-metrics span {
+      color: var(--muted);
+      font-size: .64rem;
+      font-weight: 800;
+    }
+
+    .pulse-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .pulse-actions button {
+      min-height: 42px;
+      font-size: .75rem;
+    }
+
+    .weekly-rhythm-panel {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(103,212,255,.10), transparent 35%),
+        var(--panel);
+    }
+
+    .weekly-bars {
+      min-height: 190px;
+      display: grid;
+      grid-template-columns: repeat(7,minmax(0,1fr));
+      gap: 8px;
+      align-items: end;
+      padding-top: 12px;
+    }
+
+    .week-column {
+      display: grid;
+      grid-template-rows: 1fr auto auto;
+      gap: 7px;
+      align-items: end;
+      min-width: 0;
+    }
+
+    .week-bar-track {
+      width: 100%;
+      height: 142px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 2px;
+      padding: 5px;
+      border-radius: 12px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.018), rgba(255,255,255,.045));
+      border: 1px solid rgba(148,163,184,.08);
+      overflow: hidden;
+    }
+
+    .week-bar {
+      width: 45%;
+      min-height: 3px;
+      border-radius: 999px 999px 4px 4px;
+      transform-origin: bottom;
+      animation: weekBarRise .55s cubic-bezier(.2,.78,.25,1) both;
+    }
+
+    .week-bar.cards {
+      background: linear-gradient(180deg, #ffe791, #f3c94e);
+      box-shadow: 0 0 12px rgba(243,211,106,.16);
+    }
+
+    .week-bar.mcqs {
+      background: linear-gradient(180deg, #99e5ff, #43bce9);
+      box-shadow: 0 0 12px rgba(103,212,255,.16);
+    }
+
+    @keyframes weekBarRise {
+      from { transform: scaleY(0); opacity: .3; }
+      to { transform: scaleY(1); opacity: 1; }
+    }
+
+    .week-count {
+      color: #dce4ef;
+      font-size: .69rem;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .week-label {
+      color: #758299;
+      font-size: .62rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .week-column.today .week-label {
+      color: #dff4ff;
+    }
+
+    .week-column.today .week-bar-track {
+      border-color: rgba(103,212,255,.20);
+      background: rgba(103,212,255,.045);
+    }
+
+    .weekly-legend {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: .65rem;
+      font-weight: 800;
+    }
+
+    .weekly-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .weekly-legend i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .legend-card { background: var(--gold); }
+    .legend-mcq { background: var(--cyan); }
+
+    .growth-priorities-panel {
+      background:
+        radial-gradient(circle at 0% 100%, rgba(243,211,106,.08), transparent 38%),
+        var(--panel);
+    }
+
+    .growth-priority-list,
+    .recent-session-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .growth-priority-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 66px;
+      padding: 10px;
+      border: 1px solid rgba(148,163,184,.10);
+      border-radius: 16px;
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      text-align: left;
+    }
+
+    .growth-priority-rank {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(243,211,106,.10);
+      border: 1px solid rgba(243,211,106,.14);
+      color: #ffeaa0;
+      font-size: .68rem;
+      font-weight: 950;
+    }
+
+    .growth-priority-copy {
+      min-width: 0;
+    }
+
+    .growth-priority-copy strong,
+    .growth-priority-copy span {
+      display: block;
+    }
+
+    .growth-priority-copy strong {
+      margin-bottom: 4px;
+      font-size: .82rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .growth-priority-copy span {
+      color: var(--muted);
+      font-size: .67rem;
+      line-height: 1.35;
+    }
+
+    .priority-arrow {
+      color: #8090a7;
+    }
+
+    .insight-empty {
+      padding: 20px;
+      border: 1px dashed rgba(148,163,184,.14);
+      border-radius: 16px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .76rem;
+      line-height: 1.45;
+    }
+
+    .recent-session-item {
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 66px;
+      padding: 10px;
+      border: 1px solid rgba(148,163,184,.10);
+      border-radius: 16px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .session-score {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,.12);
+      background: rgba(255,255,255,.045);
+      font-size: .82rem;
+      font-weight: 950;
+    }
+
+    .session-score.high {
+      color: #bbf7d0;
+      background: rgba(84,226,138,.075);
+      border-color: rgba(84,226,138,.15);
+    }
+
+    .session-score.mid {
+      color: #fff0ad;
+      background: rgba(243,211,106,.07);
+      border-color: rgba(243,211,106,.14);
+    }
+
+    .session-score.low {
+      color: #fed7aa;
+      background: rgba(251,146,60,.07);
+      border-color: rgba(251,146,60,.14);
+    }
+
+    .session-copy {
+      min-width: 0;
+    }
+
+    .session-copy strong,
+    .session-copy span {
+      display: block;
+    }
+
+    .session-copy strong {
+      margin-bottom: 4px;
+      font-size: .81rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .session-copy span {
+      color: var(--muted);
+      font-size: .66rem;
+    }
+
+    .session-time {
+      color: #758299;
+      font-size: .64rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .ghost-button {
+      min-height: 34px;
+      border-color: rgba(148,163,184,.12);
+      background: rgba(255,255,255,.025);
+      color: #d7e0ed;
+      box-shadow: none;
+    }
+
+    .profile-field-label {
+      display: grid;
+      gap: 4px;
+      margin-top: 2px;
+      color: #dce4ef;
+      font-size: .79rem;
+      font-weight: 850;
+    }
+
+    .profile-field-label span {
+      color: var(--muted);
+      font-size: .66rem;
+      font-weight: 700;
+    }
+
+    .focus-timer-modal {
+      width: min(560px,100%);
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(103,212,255,.11), transparent 38%),
+        radial-gradient(circle at 100% 100%, rgba(185,167,255,.08), transparent 36%),
+        #0c1424;
+    }
+
+    .focus-timer-stage {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      padding: 10px 0 15px;
+    }
+
+    .focus-ring {
+      --focus-progress: 0;
+      width: min(64vw, 220px);
+      aspect-ratio: 1;
+      position: relative;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background:
+        conic-gradient(
+          var(--cyan) calc(var(--focus-progress) * 1%),
+          rgba(148,163,184,.11) 0
+        );
+      box-shadow:
+        0 0 0 9px rgba(255,255,255,.018),
+        0 28px 58px rgba(0,0,0,.32);
+      transition: background .2s linear;
+    }
+
+    .focus-ring::before {
+      content: "";
+      position: absolute;
+      inset: 11px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 32%, rgba(255,255,255,.055), transparent 32%),
+        #0a1322;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.055);
+    }
+
+    .focus-ring-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: center;
+    }
+
+    .focus-ring-inner strong {
+      font-size: clamp(2.5rem, 10vw, 4.4rem);
+      letter-spacing: -.075em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .focus-ring-inner span {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .71rem;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .focus-timer-stage > p {
+      max-width: 430px;
+      margin: 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: .78rem;
+      line-height: 1.45;
+    }
+
+    .focus-preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .focus-preset {
+      min-height: 76px;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 4px;
+      border-color: rgba(148,163,184,.12);
+      background: rgba(255,255,255,.028);
+      color: var(--text);
+    }
+
+    .focus-preset strong {
+      font-size: 1.3rem;
+    }
+
+    .focus-preset span {
+      color: var(--muted);
+      font-size: .65rem;
+      font-weight: 800;
+    }
+
+    .focus-preset.active {
+      border-color: rgba(103,212,255,.28);
+      background: rgba(103,212,255,.08);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.06),
+        0 10px 26px rgba(103,212,255,.055);
+    }
+
+    .focus-control-grid {
+      display: grid;
+      grid-template-columns: 1.4fr .6fr;
+      gap: 8px;
+    }
+
+    .focus-primary {
+      background: linear-gradient(135deg, #77ddff, #4ebde9);
+      color: #062333;
+      border-color: rgba(103,212,255,.32);
+      font-weight: 950;
+    }
+
+    .focus-tip {
+      display: grid;
+      grid-template-columns: 31px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid rgba(148,163,184,.10);
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .focus-tip > span {
+      width: 31px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(185,167,255,.09);
+      color: #ded6ff;
+    }
+
+    .focus-tip p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .69rem;
+      line-height: 1.4;
+    }
+
+    .deck[data-subject-tone="FAR"] { --subject-accent: #67d4ff; }
+    .deck[data-subject-tone="AFAR"] { --subject-accent: #b9a7ff; }
+    .deck[data-subject-tone="MAS"] { --subject-accent: #f3d36a; }
+    .deck[data-subject-tone="Auditing"] { --subject-accent: #54e28a; }
+    .deck[data-subject-tone="Taxation"] { --subject-accent: #fb923c; }
+    .deck[data-subject-tone="RFBT"] { --subject-accent: #fb7185; }
+
+    .deck[data-subject-tone]::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 14px;
+      bottom: 14px;
+      width: 3px;
+      border-radius: 999px;
+      background: var(--subject-accent);
+      box-shadow: 0 0 14px color-mix(in srgb, var(--subject-accent) 35%, transparent);
+      opacity: .85;
+    }
+
+    .deck[data-subject-tone] .bar {
+      background: linear-gradient(90deg, var(--subject-accent), rgba(255,255,255,.75));
+    }
+
+    .screen.screen-enter .panel,
+    .screen.screen-enter .mission-card {
+      animation: professionalPanelEnter .46s cubic-bezier(.18,.82,.24,1) both;
+    }
+
+    .screen.screen-enter .panel:nth-child(2) { animation-delay: .035s; }
+    .screen.screen-enter .panel:nth-child(3) { animation-delay: .07s; }
+
+    @keyframes professionalPanelEnter {
+      from { opacity: 0; transform: translateY(12px) scale(.993); filter: blur(2px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    @media (max-width: 920px) {
+      .learning-intelligence-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .daily-pulse-layout {
+        grid-template-columns: 170px 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .daily-pulse-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .daily-goal-ring {
+        width: 158px;
+      }
+
+      .pulse-actions,
+      .focus-control-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .weekly-bars {
+        gap: 5px;
+      }
+
+      .week-bar-track {
+        height: 120px;
+        padding: 4px 3px;
+      }
+
+      .focus-preset-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .focus-preset {
+        min-height: 58px;
+        grid-template-columns: auto 1fr;
+        justify-items: start;
+        padding: 10px 14px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body::after,
+      .mission-card::after,
+      .focus-live-dot,
+      .week-bar,
+      .screen.screen-enter .panel,
+      .screen.screen-enter .mission-card {
+        animation: none !important;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -3084,6 +3866,11 @@
           <span aria-hidden="true">⌕</span>
           <span>Search</span>
           <kbd>/</kbd>
+        </button>
+        <button class="utility-btn focus-timer-button" id="focusTimerBtn" title="Open focus timer">
+          <span class="focus-live-dot" id="focusLiveDot" aria-hidden="true"></span>
+          <span id="focusTimerLabel">Focus 25:00</span>
+          <kbd>F</kbd>
         </button>
         <button class="utility-btn backup-btn" id="quickBackupBtn" title="Export a full JSON backup">
           <span aria-hidden="true">⇩</span>
@@ -3229,6 +4016,81 @@
         </div>
       </div>
 
+      <div class="learning-intelligence-grid">
+        <section class="panel pad daily-pulse-panel">
+          <div class="section-heading-row">
+            <div>
+              <span class="eyebrow">Daily momentum</span>
+              <h2 class="section-title">Study pulse</h2>
+            </div>
+            <span class="intelligence-chip" id="dailyGoalStatus">0% of goal</span>
+          </div>
+
+          <div class="daily-pulse-layout">
+            <div class="daily-goal-ring" id="dailyGoalRing" style="--goal-progress:0">
+              <div>
+                <b id="todayActivityCount">0</b>
+                <span>of <strong id="dailyGoalValue">30</strong></span>
+                <small>items today</small>
+              </div>
+            </div>
+
+            <div class="daily-pulse-copy">
+              <h3 id="dailyPulseHeadline">Start your first focused block</h3>
+              <p id="dailyPulseText">Every flashcard rating and MCQ answer moves the ring.</p>
+
+              <div class="pulse-metrics">
+                <div><strong id="todayCardCount">0</strong><span>Cards</span></div>
+                <div><strong id="todayMcqCount">0</strong><span>MCQs</span></div>
+                <div><strong id="todayAccuracy">—</strong><span>Accuracy</span></div>
+              </div>
+
+              <div class="pulse-actions">
+                <button class="secondary" id="pulseReviewBtn">Review due cards</button>
+                <button class="secondary" id="pulseFocusBtn">Start focus timer</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel pad weekly-rhythm-panel">
+          <div class="section-heading-row">
+            <div>
+              <span class="eyebrow">Consistency</span>
+              <h2 class="section-title">7-day rhythm</h2>
+            </div>
+            <span class="intelligence-chip" id="weeklyTotalLabel">0 activities</span>
+          </div>
+          <div class="weekly-bars" id="weeklyActivityBars"></div>
+          <div class="weekly-legend">
+            <span><i class="legend-card"></i> Flashcards</span>
+            <span><i class="legend-mcq"></i> MCQs</span>
+          </div>
+        </section>
+
+        <section class="panel pad growth-priorities-panel">
+          <div class="section-heading-row">
+            <div>
+              <span class="eyebrow">Adaptive review</span>
+              <h2 class="section-title">Growth priorities</h2>
+            </div>
+            <span class="muted tiny">Based on your misses and weak cards</span>
+          </div>
+          <div class="growth-priority-list" id="growthPriorityList"></div>
+        </section>
+
+        <section class="panel pad recent-sessions-panel">
+          <div class="section-heading-row">
+            <div>
+              <span class="eyebrow">Performance history</span>
+              <h2 class="section-title">Recent quiz runs</h2>
+            </div>
+            <button class="ghost-button compact-btn" id="recentQuizStartBtn">New quiz</button>
+          </div>
+          <div class="recent-session-list" id="recentQuizSessions"></div>
+        </section>
+      </div>
+
       <div class="grid dashboard-lower-grid">
         <div class="panel pad subject-panel">
           <div class="section-heading-row">
@@ -3322,7 +4184,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v8.1 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v9.0 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -3515,7 +4377,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v8.1 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v9.0 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -3614,6 +4476,44 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="focusTimerModal">
+    <div class="modal focus-timer-modal" role="dialog" aria-modal="true" aria-labelledby="focusTimerTitle">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow">Deep-work companion</span>
+          <h2 id="focusTimerTitle">Focus timer</h2>
+        </div>
+        <button class="secondary compact-btn" id="closeFocusTimerBtn">Close</button>
+      </div>
+
+      <div class="focus-timer-stage">
+        <div class="focus-ring" id="focusRing" style="--focus-progress:0">
+          <div class="focus-ring-inner">
+            <strong id="focusTimerDisplay">25:00</strong>
+            <span id="focusTimerStatus">Ready</span>
+          </div>
+        </div>
+        <p id="focusTimerMessage">Choose a focused block and begin. Your timer survives page refreshes.</p>
+      </div>
+
+      <div class="focus-preset-grid" id="focusPresetGrid">
+        <button class="focus-preset active" data-focus-minutes="25"><strong>25</strong><span>Quick focus</span></button>
+        <button class="focus-preset" data-focus-minutes="50"><strong>50</strong><span>Deep work</span></button>
+        <button class="focus-preset" data-focus-minutes="90"><strong>90</strong><span>Full session</span></button>
+      </div>
+
+      <div class="focus-control-grid">
+        <button class="focus-primary" id="focusStartPauseBtn">Start focus</button>
+        <button class="secondary" id="focusResetBtn">Reset</button>
+      </div>
+
+      <div class="focus-tip">
+        <span>⌁</span>
+        <p>During a focus block, keep one objective: finish due cards or complete one quiz set.</p>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-backdrop" id="profileModal">
     <div class="modal">
       <div class="modal-head">
@@ -3628,6 +4528,11 @@
           <option>May 2027 CPALE</option>
           <option>October 2027 CPALE</option>
         </select>
+        <label class="profile-field-label" for="dailyGoalEdit">
+          Daily study goal
+          <span>Counted as flashcards rated + MCQs answered</span>
+        </label>
+        <input id="dailyGoalEdit" type="number" min="5" max="300" step="5" value="30" inputmode="numeric" />
         <button id="saveProfileBtn">Save profile</button>
       </div>
     </div>
@@ -4100,13 +5005,15 @@
     const el = {
       loginScreen: $("loginScreen"), mainApp: $("mainApp"), profileName: $("profileName"), targetExam: $("targetExam"), startBtn: $("startBtn"),
       userLabel: $("userLabel"), avatar: $("avatar"), subtitle: $("subtitle"), profileBtn: $("profileBtn"), profileModal: $("profileModal"),
-      globalSearchBtn: $("globalSearchBtn"), quickBackupBtn: $("quickBackupBtn"), quickBackupLabel: $("quickBackupLabel"), saveState: $("saveState"),
+      globalSearchBtn: $("globalSearchBtn"), focusTimerBtn: $("focusTimerBtn"), focusTimerLabel: $("focusTimerLabel"), focusLiveDot: $("focusLiveDot"), quickBackupBtn: $("quickBackupBtn"), quickBackupLabel: $("quickBackupLabel"), saveState: $("saveState"),
       searchModal: $("searchModal"), closeSearchBtn: $("closeSearchBtn"), globalSearchInput: $("globalSearchInput"), globalSearchResults: $("globalSearchResults"), searchMetaText: $("searchMetaText"),
-      profileNameEdit: $("profileNameEdit"), targetExamEdit: $("targetExamEdit"), saveProfileBtn: $("saveProfileBtn"), closeProfileBtn: $("closeProfileBtn"), toast: $("toast"),
+      focusTimerModal: $("focusTimerModal"), closeFocusTimerBtn: $("closeFocusTimerBtn"), focusTimerDisplay: $("focusTimerDisplay"), focusTimerStatus: $("focusTimerStatus"), focusTimerMessage: $("focusTimerMessage"), focusRing: $("focusRing"), focusPresetGrid: $("focusPresetGrid"), focusStartPauseBtn: $("focusStartPauseBtn"), focusResetBtn: $("focusResetBtn"),
+      profileNameEdit: $("profileNameEdit"), targetExamEdit: $("targetExamEdit"), dailyGoalEdit: $("dailyGoalEdit"), saveProfileBtn: $("saveProfileBtn"), closeProfileBtn: $("closeProfileBtn"), toast: $("toast"),
 
       dashDue: $("dashDue"), dashTotal: $("dashTotal"), dashMCQ: $("dashMCQ"), dashStreak: $("dashStreak"), dashAccuracy: $("dashAccuracy"), dashQuizAccuracy: $("dashQuizAccuracy"),
       missionBadge: $("missionBadge"), missionHeadline: $("missionHeadline"), missionText: $("missionText"), missionProgress: $("missionProgress"), dashboardDateLabel: $("dashboardDateLabel"),
       backupStatusTitle: $("backupStatusTitle"), backupStatusText: $("backupStatusText"),
+      dailyGoalStatus: $("dailyGoalStatus"), dailyGoalRing: $("dailyGoalRing"), todayActivityCount: $("todayActivityCount"), dailyGoalValue: $("dailyGoalValue"), dailyPulseHeadline: $("dailyPulseHeadline"), dailyPulseText: $("dailyPulseText"), todayCardCount: $("todayCardCount"), todayMcqCount: $("todayMcqCount"), todayAccuracy: $("todayAccuracy"), pulseReviewBtn: $("pulseReviewBtn"), pulseFocusBtn: $("pulseFocusBtn"), weeklyActivityBars: $("weeklyActivityBars"), weeklyTotalLabel: $("weeklyTotalLabel"), growthPriorityList: $("growthPriorityList"), recentQuizSessions: $("recentQuizSessions"), recentQuizStartBtn: $("recentQuizStartBtn"),
       dashboardDecks: $("dashboardDecks"), examCountdownPanel: $("examCountdownPanel"), examCountdownLabel: $("examCountdownLabel"), todayLabel: $("todayLabel"), daysLeftValue: $("daysLeftValue"), progressPercent: $("progressPercent"), bottleLiquid: $("bottleLiquid"), liveClock: $("liveClock"), sleepGhostWrap: $("sleepGhostWrap"), dayNightToggle: $("dayNightToggle"), dayNightOrb: $("dayNightOrb"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
 
       reviewDeckFilter: $("reviewDeckFilter"), reviewMode: $("reviewMode"), reviewCard: $("reviewCard"),
@@ -4142,12 +5049,14 @@
     }
 
     function saveProfile() {
-      if (!profile) profile = { name: "Student", targetExam: "", createdAt: nowISO() };
+      if (!profile) profile = { name: "Student", targetExam: "", dailyGoal: 30, createdAt: nowISO() };
       profile.name = profile.name || "Student";
       profile.targetExam = normalizeTargetExamValue(profile.targetExam);
+      profile.dailyGoal = Math.max(5, Math.min(300, Number(profile.dailyGoal) || 30));
       localStorage.setItem(PROFILE, JSON.stringify(profile));
       renderProfile();
       renderCountdown();
+      renderLearningIntelligence();
     }
 
     function loadDB() {
@@ -4182,6 +5091,8 @@
       data.stats.quizAnswered = data.stats.quizAnswered || 0;
       data.stats.quizCorrect = data.stats.quizCorrect || 0;
       data.stats.studiedDates = data.stats.studiedDates || [];
+      data.stats.dailyActivity = data.stats.dailyActivity && typeof data.stats.dailyActivity === "object" ? data.stats.dailyActivity : {};
+      data.stats.quizSessions = Array.isArray(data.stats.quizSessions) ? data.stats.quizSessions : [];
       data.stats.createdAt = data.stats.createdAt || nowISO();
 
       if (!data.mcqs.length) {
@@ -4241,13 +5152,31 @@
     function accuracy() { return db.stats.reviews ? Math.round((db.stats.correct / db.stats.reviews) * 100) : 0; }
     function quizAccuracy() { return db.stats.quizAnswered ? Math.round((db.stats.quizCorrect / db.stats.quizAnswered) * 100) : 0; }
 
+
+    function activityDateKey(date = new Date()) {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Manila",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(date);
+
+      const get = type => parts.find(part => part.type === type)?.value || "";
+      return `${get("year")}-${get("month")}-${get("day")}`;
+    }
+
+    function activityDateOffset(days = 0) {
+      const date = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+      return activityDateKey(date);
+    }
+
     function currentStreak() {
       const dates = Array.from(new Set(db.stats.studiedDates || [])).sort();
       if (!dates.length) return 0;
       let streak = 0;
-      let cursor = new Date(today());
+      let cursor = new Date(`${activityDateKey()}T12:00:00+08:00`);
       const set = new Set(dates);
-      while (set.has(cursor.toISOString().slice(0, 10))) {
+      while (set.has(activityDateKey(cursor))) {
         streak++;
         cursor.setDate(cursor.getDate() - 1);
       }
@@ -4262,9 +5191,21 @@
         db.stats.reviews++;
         if (correct) db.stats.correct++;
       }
-      const t = today();
+
+      const t = activityDateKey();
       if (!db.stats.studiedDates.includes(t)) db.stats.studiedDates.push(t);
       db.stats.lastStudied = t;
+
+      if (!db.stats.dailyActivity || typeof db.stats.dailyActivity !== "object") {
+        db.stats.dailyActivity = {};
+      }
+
+      const activity = db.stats.dailyActivity[t] || { cards: 0, mcqs: 0, correct: 0, total: 0 };
+      if (isQuiz) activity.mcqs += 1;
+      else activity.cards += 1;
+      activity.total += 1;
+      if (correct) activity.correct += 1;
+      db.stats.dailyActivity[t] = activity;
     }
 
     function philippineDateParts() {
@@ -4394,7 +5335,7 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v8.1` : "Flashcards + CPALE-style multiple choice quizzes. v8.1";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v9.0` : "Flashcards + CPALE-style multiple choice quizzes. v9.0";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderTodayLine();
@@ -4665,6 +5606,340 @@
       updateBackupStatus();
     }
 
+
+    const FOCUS_TIMER_KEY = "cpale_focus_timer_v1";
+    let focusTimerInterval = null;
+    let focusTimerState = loadFocusTimerState();
+    let focusCompletionHandled = false;
+
+    function defaultFocusTimerState() {
+      return {
+        duration: 25 * 60,
+        remaining: 25 * 60,
+        running: false,
+        endAt: 0
+      };
+    }
+
+    function loadFocusTimerState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(FOCUS_TIMER_KEY));
+        if (!saved || !Number.isFinite(Number(saved.duration))) return defaultFocusTimerState();
+        return {
+          duration: Math.max(60, Number(saved.duration) || 25 * 60),
+          remaining: Math.max(0, Number(saved.remaining) || 25 * 60),
+          running: Boolean(saved.running),
+          endAt: Number(saved.endAt) || 0
+        };
+      } catch {
+        return defaultFocusTimerState();
+      }
+    }
+
+    function saveFocusTimerState() {
+      localStorage.setItem(FOCUS_TIMER_KEY, JSON.stringify(focusTimerState));
+    }
+
+    function focusRemainingSeconds() {
+      if (!focusTimerState.running) return Math.max(0, Math.round(focusTimerState.remaining));
+      return Math.max(0, Math.ceil((focusTimerState.endAt - Date.now()) / 1000));
+    }
+
+    function formatTimerSeconds(totalSeconds) {
+      const safe = Math.max(0, Math.round(totalSeconds));
+      const mins = Math.floor(safe / 60);
+      const secs = String(safe % 60).padStart(2, "0");
+      return `${mins}:${secs}`;
+    }
+
+    function renderFocusTimer() {
+      const remaining = focusRemainingSeconds();
+      const duration = Math.max(1, focusTimerState.duration);
+      const progress = Math.max(0, Math.min(100, ((duration - remaining) / duration) * 100));
+
+      if (focusTimerState.running && remaining <= 0) {
+        focusTimerState.running = false;
+        focusTimerState.remaining = 0;
+        focusTimerState.endAt = 0;
+        saveFocusTimerState();
+
+        if (!focusCompletionHandled) {
+          focusCompletionHandled = true;
+          showToast("Focus block complete");
+          try { if (navigator.vibrate) navigator.vibrate([120, 80, 160]); } catch {}
+          try {
+            playTone(660, .1, "sine", .05, 0);
+            playTone(880, .12, "sine", .05, .11);
+          } catch {}
+        }
+      }
+
+      const display = formatTimerSeconds(focusRemainingSeconds());
+      if (el.focusTimerDisplay) el.focusTimerDisplay.textContent = display;
+      if (el.focusTimerLabel) el.focusTimerLabel.textContent = `${focusTimerState.running ? "Focusing" : "Focus"} ${display}`;
+      if (el.focusTimerStatus) {
+        el.focusTimerStatus.textContent =
+          focusTimerState.running ? "In progress" :
+          focusRemainingSeconds() === 0 ? "Complete" :
+          focusRemainingSeconds() < focusTimerState.duration ? "Paused" : "Ready";
+      }
+      if (el.focusTimerMessage) {
+        el.focusTimerMessage.textContent =
+          focusTimerState.running
+            ? "Stay with one task until the timer ends."
+            : focusRemainingSeconds() === 0
+              ? "Focus block complete. Reset or choose another duration."
+              : "Choose a focused block and begin. Your timer survives page refreshes.";
+      }
+      if (el.focusRing) el.focusRing.style.setProperty("--focus-progress", progress.toFixed(2));
+      if (el.focusStartPauseBtn) {
+        el.focusStartPauseBtn.textContent =
+          focusTimerState.running ? "Pause focus" :
+          focusRemainingSeconds() === 0 ? "Start again" : "Start focus";
+      }
+      el.focusTimerBtn?.classList.toggle("running", focusTimerState.running);
+
+      document.querySelectorAll("[data-focus-minutes]").forEach(button => {
+        button.classList.toggle("active", Number(button.dataset.focusMinutes) * 60 === focusTimerState.duration);
+      });
+    }
+
+    function setFocusPreset(minutes) {
+      const duration = Math.max(60, Number(minutes) * 60);
+      focusTimerState = {
+        duration,
+        remaining: duration,
+        running: false,
+        endAt: 0
+      };
+      focusCompletionHandled = false;
+      saveFocusTimerState();
+      renderFocusTimer();
+    }
+
+    function toggleFocusTimer() {
+      const remaining = focusRemainingSeconds();
+
+      if (focusTimerState.running) {
+        focusTimerState.remaining = remaining;
+        focusTimerState.running = false;
+        focusTimerState.endAt = 0;
+      } else {
+        const nextRemaining = remaining > 0 ? remaining : focusTimerState.duration;
+        focusTimerState.remaining = nextRemaining;
+        focusTimerState.running = true;
+        focusTimerState.endAt = Date.now() + nextRemaining * 1000;
+        focusCompletionHandled = false;
+      }
+
+      saveFocusTimerState();
+      renderFocusTimer();
+    }
+
+    function resetFocusTimer() {
+      focusTimerState.remaining = focusTimerState.duration;
+      focusTimerState.running = false;
+      focusTimerState.endAt = 0;
+      focusCompletionHandled = false;
+      saveFocusTimerState();
+      renderFocusTimer();
+    }
+
+    function openFocusTimer() {
+      el.focusTimerModal?.classList.add("show");
+      renderFocusTimer();
+    }
+
+    function closeFocusTimer() {
+      el.focusTimerModal?.classList.remove("show");
+    }
+
+    function initFocusTimer() {
+      if (focusTimerState.running && focusTimerState.endAt <= Date.now()) {
+        focusTimerState.running = false;
+        focusTimerState.remaining = 0;
+        focusTimerState.endAt = 0;
+      }
+
+      renderFocusTimer();
+      clearInterval(focusTimerInterval);
+      focusTimerInterval = setInterval(renderFocusTimer, 500);
+    }
+
+    function recordQuizSessionV90(correctItems, totalItems, pct) {
+      if (!db.stats.quizSessions || !Array.isArray(db.stats.quizSessions)) {
+        db.stats.quizSessions = [];
+      }
+
+      const startedAt = quizSessionStartedAt || nowISO();
+      if (db.stats.quizSessions.some(session => session.startedAt === startedAt)) return;
+
+      const subjects = [...new Set(quizQueue.map(item => item.subject).filter(Boolean))];
+      const label = subjects.length === 1 ? subjects[0] : "Mixed subjects";
+
+      db.stats.quizSessions.unshift({
+        id: uid(),
+        startedAt,
+        completedAt: nowISO(),
+        correct: correctItems,
+        total: totalItems,
+        pct,
+        label,
+        timed: quizTimedMode
+      });
+
+      db.stats.quizSessions = db.stats.quizSessions.slice(0, 30);
+    }
+
+    function buildGrowthPrioritiesV90() {
+      const map = new Map();
+
+      const add = (subject, topic, wrong = 0, weakCards = 0, attempts = 0) => {
+        const cleanSubject = subject || "General";
+        const cleanTopic = topic || "General";
+        const key = `${cleanSubject}|${cleanTopic}`;
+        const current = map.get(key) || {
+          subject: cleanSubject,
+          topic: cleanTopic,
+          wrong: 0,
+          weakCards: 0,
+          attempts: 0
+        };
+        current.wrong += wrong;
+        current.weakCards += weakCards;
+        current.attempts += attempts;
+        map.set(key, current);
+      };
+
+      db.mcqs.forEach(item => {
+        const attempts = Number(item.attempts || 0);
+        const correct = Number(item.correctCount || 0);
+        const wrong = Math.max(0, attempts - correct);
+        if (!attempts && !wrong) return;
+        add(item.subject, item.topic || getDeck(item.deckId).name, wrong, 0, attempts);
+      });
+
+      db.cards.forEach(card => {
+        if (Number(card.box || 1) <= 2) {
+          add(card.subject, card.topic || getDeck(card.deckId).name, 0, 1, Number(card.attempts || 0));
+        }
+      });
+
+      return [...map.values()]
+        .map(item => ({
+          ...item,
+          score: item.wrong * 3 + item.weakCards * 1.6 + Math.max(0, item.attempts - item.wrong) * .05
+        }))
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 4);
+    }
+
+    function renderLearningIntelligence() {
+      if (!el.dailyGoalRing) return;
+
+      const key = activityDateKey();
+      const todayActivity = db.stats.dailyActivity?.[key] || { cards: 0, mcqs: 0, correct: 0, total: 0 };
+      const goal = Math.max(5, Math.min(300, Number(profile?.dailyGoal) || 30));
+      const total = Number(todayActivity.total || 0);
+      const progress = Math.max(0, Math.min(100, Math.round((total / goal) * 100)));
+      const todayPct = total ? Math.round((Number(todayActivity.correct || 0) / total) * 100) : null;
+
+      el.dailyGoalRing.style.setProperty("--goal-progress", progress);
+      el.todayActivityCount.textContent = total;
+      el.dailyGoalValue.textContent = goal;
+      el.dailyGoalStatus.textContent = total >= goal ? "Goal complete" : `${progress}% of goal`;
+      el.todayCardCount.textContent = Number(todayActivity.cards || 0);
+      el.todayMcqCount.textContent = Number(todayActivity.mcqs || 0);
+      el.todayAccuracy.textContent = todayPct === null ? "—" : `${todayPct}%`;
+
+      if (total >= goal) {
+        el.dailyPulseHeadline.textContent = "Daily goal complete";
+        el.dailyPulseText.textContent = "Excellent consistency. Continue only if the next block remains deliberate and focused.";
+      } else if (total > 0) {
+        el.dailyPulseHeadline.textContent = `${goal - total} more item${goal - total === 1 ? "" : "s"} to complete your goal`;
+        el.dailyPulseText.textContent = "A short due-card review or a focused MCQ set can finish today’s target.";
+      } else {
+        el.dailyPulseHeadline.textContent = "Start your first focused block";
+        el.dailyPulseText.textContent = "Every flashcard rating and MCQ answer moves the ring.";
+      }
+
+      const week = [];
+      let weekTotal = 0;
+      for (let offset = -6; offset <= 0; offset++) {
+        const dateKey = activityDateOffset(offset);
+        const activity = db.stats.dailyActivity?.[dateKey] || { cards: 0, mcqs: 0, total: 0 };
+        const date = new Date(`${dateKey}T12:00:00+08:00`);
+        const label = new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Manila",
+          weekday: "short"
+        }).format(date).slice(0, 2);
+
+        const cards = Number(activity.cards || 0);
+        const mcqs = Number(activity.mcqs || 0);
+        const activityTotal = cards + mcqs;
+        weekTotal += activityTotal;
+        week.push({ dateKey, label, cards, mcqs, total: activityTotal, today: offset === 0 });
+      }
+
+      const max = Math.max(1, ...week.map(day => Math.max(day.cards, day.mcqs)));
+      el.weeklyTotalLabel.textContent = `${weekTotal} activit${weekTotal === 1 ? "y" : "ies"}`;
+      el.weeklyActivityBars.innerHTML = week.map(day => {
+        const cardHeight = Math.max(day.cards ? 7 : 2, Math.round((day.cards / max) * 100));
+        const mcqHeight = Math.max(day.mcqs ? 7 : 2, Math.round((day.mcqs / max) * 100));
+        return `
+          <div class="week-column ${day.today ? "today" : ""}" title="${day.total} activities">
+            <div class="week-bar-track">
+              <span class="week-bar cards" style="height:${cardHeight}%"></span>
+              <span class="week-bar mcqs" style="height:${mcqHeight}%"></span>
+            </div>
+            <span class="week-count">${day.total}</span>
+            <span class="week-label">${day.label}</span>
+          </div>`;
+      }).join("");
+
+      const priorities = buildGrowthPrioritiesV90();
+      el.growthPriorityList.innerHTML = priorities.length
+        ? priorities.map((item, index) => `
+            <button class="growth-priority-item" data-priority-subject="${escapeHTML(item.subject)}">
+              <span class="growth-priority-rank">0${index + 1}</span>
+              <span class="growth-priority-copy">
+                <strong>${escapeHTML(item.subject)} · ${escapeHTML(item.topic)}</strong>
+                <span>${item.wrong} wrong MCQ${item.wrong === 1 ? "" : "s"} · ${item.weakCards} weak card${item.weakCards === 1 ? "" : "s"}</span>
+              </span>
+              <span class="priority-arrow">→</span>
+            </button>
+          `).join("")
+        : `<div class="insight-empty">Complete a few reviews or quizzes and your adaptive priorities will appear here.</div>`;
+
+      el.growthPriorityList.querySelectorAll("[data-priority-subject]").forEach(button => {
+        button.addEventListener("click", () => {
+          el.quizDeckFilter.value = "all";
+          el.quizSubjectFilter.value = button.dataset.prioritySubject || "all";
+          el.quizCount.value = "10";
+          buildQuizQueue(false);
+          showScreen("quiz");
+        });
+      });
+
+      const sessions = (db.stats.quizSessions || []).slice(0, 4);
+      el.recentQuizSessions.innerHTML = sessions.length
+        ? sessions.map(session => {
+            const pct = Number(session.pct || 0);
+            const scoreClass = pct >= 80 ? "high" : (pct >= 60 ? "mid" : "low");
+            return `
+              <div class="recent-session-item">
+                <span class="session-score ${scoreClass}">${pct}%</span>
+                <span class="session-copy">
+                  <strong>${escapeHTML(session.label || "Quiz session")}</strong>
+                  <span>${Number(session.correct || 0)}/${Number(session.total || 0)} correct · ${session.timed ? "Timed" : "Untimed"}</span>
+                </span>
+                <span class="session-time">${escapeHTML(formatRelativeTime(session.completedAt || session.startedAt))}</span>
+              </div>`;
+          }).join("")
+        : `<div class="insight-empty">Your completed quiz runs will appear here with score and timing details.</div>`;
+    }
+
     function renderDashboard() {
       el.dashDue.textContent = dueCards().length;
       el.dashTotal.textContent = db.cards.length;
@@ -4680,7 +5955,7 @@
         const due = cards.filter(isDue).length;
         const mastered = cards.filter(c => c.box >= 5).length;
         const pct = cards.length ? Math.round((mastered / cards.length) * 100) : 0;
-        return `<div class="deck" data-subject-start="${escapeHTML(subject)}"><strong>${escapeHTML(subject)}</strong><span class="muted tiny">${cards.length} cards · ${due} due · ${mcqs.length} MCQs</span><div class="progress"><div class="bar" style="width:${pct}%"></div></div></div>`;
+        return `<div class="deck" data-subject-start="${escapeHTML(subject)}" data-subject-tone="${escapeHTML(subject)}"><strong>${escapeHTML(subject)}</strong><span class="muted tiny">${cards.length} cards · ${due} due · ${mcqs.length} MCQs</span><div class="progress"><div class="bar" style="width:${pct}%"></div></div></div>`;
       }).join("");
 
       el.dashboardDecks.querySelectorAll("[data-subject-start]").forEach(node => {
@@ -4694,6 +5969,7 @@
 
       renderStudyMission();
       updateBackupStatus();
+      renderLearningIntelligence();
     }
 
     function deckOptionHTML(includeAll = true) {
@@ -5579,6 +6855,7 @@
       el.exitNoSaveQuizBtn.disabled = true;
       el.restartQuizBtn.disabled = true;
 
+      recordQuizSessionV90(correctItems, quizQueue.length, pct);
       localStorage.removeItem(QUIZ_SESSION_KEY);
       updateQuizProgressUI();
       updateTimerDisplay();
@@ -6227,6 +7504,24 @@ Notes:`;
       }, { passive: true });
 
       el.globalSearchBtn?.addEventListener("click", openGlobalSearch);
+      el.focusTimerBtn?.addEventListener("click", openFocusTimer);
+      el.closeFocusTimerBtn?.addEventListener("click", closeFocusTimer);
+      el.focusStartPauseBtn?.addEventListener("click", toggleFocusTimer);
+      el.focusResetBtn?.addEventListener("click", resetFocusTimer);
+      el.focusPresetGrid?.querySelectorAll("[data-focus-minutes]").forEach(button => {
+        button.addEventListener("click", () => setFocusPreset(button.dataset.focusMinutes));
+      });
+      el.focusTimerModal?.addEventListener("click", event => {
+        if (event.target === el.focusTimerModal) closeFocusTimer();
+      });
+      el.pulseFocusBtn?.addEventListener("click", openFocusTimer);
+      el.pulseReviewBtn?.addEventListener("click", () => {
+        el.reviewDeckFilter.value = "all";
+        el.reviewMode.value = "due";
+        showScreen("review");
+      });
+      el.recentQuizStartBtn?.addEventListener("click", () => showScreen("quiz"));
+
       el.closeSearchBtn?.addEventListener("click", closeGlobalSearch);
       el.globalSearchInput?.addEventListener("input", renderGlobalSearch);
       el.quickBackupBtn?.addEventListener("click", runQuickBackup);
@@ -6244,14 +7539,21 @@ Notes:`;
           openGlobalSearch();
         }
 
+        if ((event.key === "f" || event.key === "F") && !typing) {
+          event.preventDefault();
+          openFocusTimer();
+        }
+
         if (event.key === "Escape" && el.searchModal?.classList.contains("show")) {
           closeGlobalSearch();
+        } else if (event.key === "Escape" && el.focusTimerModal?.classList.contains("show")) {
+          closeFocusTimer();
         }
       });
 
       el.startBtn.addEventListener("click", () => {
         const name = el.profileName.value.trim() || "Student";
-        profile = { name, targetExam: normalizeTargetExamValue(el.targetExam.value || ""), createdAt: nowISO() };
+        profile = { name, targetExam: normalizeTargetExamValue(el.targetExam.value || ""), dailyGoal: 30, createdAt: nowISO() };
         saveProfile();
         updateAll();
         showScreen("dashboard");
@@ -6259,12 +7561,18 @@ Notes:`;
       document.querySelectorAll(".nav button").forEach(btn => btn.addEventListener("click", () => showScreen(btn.dataset.screen)));
       document.querySelectorAll("[data-screen-link]").forEach(btn => btn.addEventListener("click", () => showScreen(btn.dataset.screenLink)));
 
-      el.profileBtn.addEventListener("click", () => { el.profileNameEdit.value = profile?.name || ""; el.targetExamEdit.value = profile?.targetExam || ""; el.profileModal.classList.add("show"); });
+      el.profileBtn.addEventListener("click", () => {
+        el.profileNameEdit.value = profile?.name || "";
+        el.targetExamEdit.value = profile?.targetExam || "";
+        el.dailyGoalEdit.value = Math.max(5, Math.min(300, Number(profile?.dailyGoal) || 30));
+        el.profileModal.classList.add("show");
+      });
       el.closeProfileBtn.addEventListener("click", () => el.profileModal.classList.remove("show"));
       el.saveProfileBtn.addEventListener("click", () => {
-        if (!profile) profile = { name: "Student", targetExam: "", createdAt: nowISO() };
+        if (!profile) profile = { name: "Student", targetExam: "", dailyGoal: 30, createdAt: nowISO() };
         profile.name = el.profileNameEdit.value.trim() || "Student";
         profile.targetExam = normalizeTargetExamValue(el.targetExamEdit.value || "");
+        profile.dailyGoal = Math.max(5, Math.min(300, Number(el.dailyGoalEdit.value) || 30));
         saveProfile();
         updateAll();
         el.profileModal.classList.remove("show");
@@ -6321,6 +7629,7 @@ el.addDeckBtn.addEventListener("click", addDeck);
     }
     renderQuiz();
     updateTimerDisplay();
+    initFocusTimer();
     renderCountdown();
     setInterval(renderCountdown, 1000);
   </script>
