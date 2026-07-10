@@ -1499,7 +1499,7 @@
 
 
     /* ============================
-       v10.0 — Focus Edition revamp
+       v10.1 — Focus Edition revamp
        ============================ */
     :root {
       --bg: #070b14;
@@ -2587,7 +2587,7 @@
 
 
     /* =============================
-       v10.0 — interaction refinement
+       v10.1 — interaction refinement
        ============================= */
     .app button,
     .modal button,
@@ -3040,7 +3040,7 @@
 
 
     /* =================================
-       v10.0 — Professional Study OS layer
+       v10.1 — Professional Study OS layer
        ================================= */
     :root {
       --surface-0: #070b14;
@@ -3821,7 +3821,7 @@
     }
 
 
-    /* v10.0 MCQ Due Edition */
+    /* v10.1 MCQ Due Edition */
     #review,
     #cards {
       display: none !important;
@@ -4249,6 +4249,195 @@
       }
     }
 
+
+    /* ==========================================
+       v10.1 — connected MCQ sequencing and finish
+       ========================================== */
+    .all-due-complete-banner {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 13px;
+      align-items: center;
+      margin-top: 14px;
+      padding: 15px 17px;
+      border: 1px solid rgba(84,226,138,.22);
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(84,226,138,.12), transparent 38%),
+        linear-gradient(145deg, rgba(13,35,31,.92), rgba(8,21,24,.94));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.045),
+        0 16px 38px rgba(0,0,0,.20);
+      animation: dueCompleteEnter .52s cubic-bezier(.18,.82,.24,1) both;
+    }
+
+    .all-due-complete-banner.hidden {
+      display: none !important;
+    }
+
+    .all-due-complete-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      border: 1px solid rgba(84,226,138,.23);
+      background: rgba(84,226,138,.10);
+      color: #bbf7d0;
+      box-shadow: 0 10px 28px rgba(34,197,94,.10);
+    }
+
+    .all-due-complete-icon svg {
+      width: 27px;
+      height: 27px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.25;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .all-due-complete-banner strong,
+    .all-due-complete-banner span {
+      display: block;
+    }
+
+    .all-due-complete-banner strong {
+      margin-bottom: 4px;
+      color: #ecfdf5;
+      font-size: .91rem;
+      letter-spacing: -.012em;
+    }
+
+    .all-due-complete-banner span {
+      color: #9fb9ad;
+      font-size: .73rem;
+      line-height: 1.45;
+    }
+
+    @keyframes dueCompleteEnter {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .connected-sequence-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 25px;
+      margin-left: 6px;
+      padding: 4px 8px;
+      border: 1px solid rgba(185,167,255,.20);
+      border-radius: 999px;
+      background: rgba(185,167,255,.075);
+      color: #ddd5ff;
+      font-size: .62rem;
+      font-weight: 900;
+      letter-spacing: .035em;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    .connected-sequence-chip::before {
+      content: "↳";
+      color: #c9bfff;
+      font-size: .74rem;
+    }
+
+    .quiz-sequence-note-v101 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 9px 0 0;
+      padding: 8px 10px;
+      border: 1px solid rgba(185,167,255,.14);
+      border-radius: 13px;
+      background: rgba(185,167,255,.045);
+      color: #9f95c9;
+      font-size: .69rem;
+      line-height: 1.4;
+    }
+
+    .quiz-sequence-note-v101 strong {
+      color: #ddd5ff;
+    }
+
+    .due-completion-result-v101 {
+      width: min(100%, 620px);
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 11px 13px;
+      border: 1px solid rgba(84,226,138,.20);
+      border-radius: 15px;
+      background: rgba(84,226,138,.065);
+      color: #bbf7d0;
+      text-align: left;
+    }
+
+    .due-completion-result-v101 > span {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(84,226,138,.11);
+      font-size: 1rem;
+    }
+
+    .due-completion-result-v101 strong,
+    .due-completion-result-v101 small {
+      display: block;
+    }
+
+    .due-completion-result-v101 strong {
+      font-size: .82rem;
+    }
+
+    .due-completion-result-v101 small {
+      margin-top: 3px;
+      color: #94b5a5;
+      font-size: .67rem;
+      line-height: 1.4;
+    }
+
+    .due-progress-result-v101 {
+      width: min(100%, 620px);
+      padding: 9px 12px;
+      border: 1px solid rgba(103,212,255,.13);
+      border-radius: 14px;
+      background: rgba(103,212,255,.045);
+      color: #a8c8d5;
+      font-size: .7rem;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 560px) {
+      .all-due-complete-banner {
+        grid-template-columns: 40px 1fr;
+        padding: 13px;
+      }
+
+      .all-due-complete-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 13px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .all-due-complete-banner {
+        animation: none !important;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -4630,6 +4819,18 @@
         </div>
       </div>
 
+      <div class="all-due-complete-banner hidden" id="allDueCompleteBanner" role="status" aria-live="polite">
+        <div class="all-due-complete-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M5 12.5l4.1 4.1L19 6.8"></path>
+          </svg>
+        </div>
+        <div>
+          <strong>All due MCQs have been answered</strong>
+          <span>You completed today’s scheduled subtopics. A new due rotation will be prepared at midnight Philippine time.</span>
+        </div>
+      </div>
+
       <div class="due-layout">
         <div>
           <div class="section-heading-row due-heading-row">
@@ -4663,7 +4864,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ practice <span class="quiz-version-v40">v10.0 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ practice <span class="quiz-version-v40">v10.1 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -4856,7 +5057,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import CPALE MCQs</h2>
           <p class="muted small">Upload or paste an MCQ CSV using subject, deck, topic, question, A-D, correct, and explanation columns.</p>
-          <p class="muted tiny">v10.0 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v10.1 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType"><option value="mcq" selected>CPALE MCQ CSV</option></select>
             <select id="importTargetDeck"></select>
@@ -5808,7 +6009,7 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v10.0` : "Daily due MCQs + CPALE-style multiple choice practice. v10.0";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v10.1` : "Daily due MCQs + CPALE-style multiple choice practice. v10.1";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderTodayLine();
@@ -8073,7 +8274,7 @@ el.addDeckBtn.addEventListener("click", addDeck);
 
 
     /* ============================
-       v10.0 MCQ Due Engine
+       v10.1 MCQ Due Engine
        ============================ */
     const DUE_ITEMS_PER_SUBTOPIC_V10 = 5;
     const SUBJECT_COLOR_MAP_V10 = {
@@ -8818,6 +9019,612 @@ el.addDeckBtn.addEventListener("click", addDeck);
       }, 60000);
     }
 
+
+    /* ==========================================
+       v10.1 — connected MCQ sequence engine
+       ========================================== */
+    const SEQUENCE_VERSION_V101 = "10.1";
+    const FOLLOW_UP_CUES_V101 = [
+      /^using the same\b/i,
+      /^using (?:the|this) (?:information|data|facts|scenario|case)\b/i,
+      /^based on (?:the|this|these|such|the same|the preceding|the foregoing|the above)\b/i,
+      /^from the (?:preceding|foregoing|above|same)\b/i,
+      /^under the same\b/i,
+      /^continuing (?:the|from the|with the)\b/i,
+      /^assume instead\b/i,
+      /^assuming (?:instead|further|that the same|the same)\b/i,
+      /^if instead\b/i,
+      /^if the (?:same|above|preceding|foregoing)\b/i,
+      /\bprevious question\b/i,
+      /\bpreceding question\b/i,
+      /\bpreceding information\b/i,
+      /\bforegoing information\b/i,
+      /\binformation above\b/i,
+      /\bsame data\b/i,
+      /\bsame facts\b/i,
+      /\bsame scenario\b/i,
+      /\bsame transaction\b/i,
+      /\bsame contract\b/i,
+      /\bsame company\b/i,
+      /\bsame entity\b/i
+    ];
+
+    let sequenceImportBatchV101 = "";
+    let dueCompleteAnnouncementDateV101 = "";
+
+    function nextSequenceOrderV101() {
+      let max = -1;
+      db.mcqs.forEach((item, index) => {
+        const value = Number(item.sequenceOrderV101);
+        max = Math.max(max, Number.isFinite(value) ? value : index);
+      });
+      return max + 1;
+    }
+
+    function sequenceScopeV101(item) {
+      return [
+        canonicalSubjectV52(item?.subject),
+        item?.deckId || "",
+        String(item?.topic || "").trim().toLowerCase()
+      ].join("|");
+    }
+
+    function sequenceTextV101(item) {
+      return String(item?.question || "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function significantTokensV101(text) {
+      const stop = new Set([
+        "the","and","for","with","from","that","this","what","which","when","where",
+        "into","under","over","were","was","are","is","of","to","in","on","at","by",
+        "an","a","as","or","if","how","much","amount","should","be","recognized",
+        "company","entity","following","information","question"
+      ]);
+
+      return String(text || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9₱]+/g, " ")
+        .split(/\s+/)
+        .filter(token => token.length >= 3 && !stop.has(token));
+    }
+
+    function tokenSimilarityV101(a, b) {
+      const aa = new Set(significantTokensV101(a));
+      const bb = new Set(significantTokensV101(b));
+      if (!aa.size || !bb.size) return 0;
+
+      let overlap = 0;
+      aa.forEach(token => {
+        if (bb.has(token)) overlap++;
+      });
+
+      return overlap / Math.min(aa.size, bb.size);
+    }
+
+    function numberTokensV101(text) {
+      return String(text || "").match(/(?:₱|P)?\s?\d[\d,.]*(?:%| years?| units?| months?| days?)?/gi) || [];
+    }
+
+    function entityTokensV101(text) {
+      const matches = String(text || "").match(
+        /\b[A-Z][A-Za-z0-9&.'-]*(?:\s+[A-Z][A-Za-z0-9&.'-]*){0,2}\s+(?:Co\.?|Corp\.?|Corporation|Company|Inc\.?|Ltd\.?|Partnership|Bank)\b/g
+      );
+      return (matches || []).map(value => value.toLowerCase());
+    }
+
+    function isExplicitFollowUpV101(item) {
+      const text = sequenceTextV101(item);
+      return FOLLOW_UP_CUES_V101.some(pattern => pattern.test(text));
+    }
+
+    function announcesQuestionSetV101(item) {
+      const text = sequenceTextV101(item);
+      return (
+        /\buse the following information\b/i.test(text) ||
+        /\bthe following information applies\b/i.test(text) ||
+        /\bfor questions? \d+(?:\s*(?:to|-|and)\s*\d+)?\b/i.test(text) ||
+        /\bfor items? \d+(?:\s*(?:to|-|and)\s*\d+)?\b/i.test(text) ||
+        /\bquestions? \d+(?:\s*(?:to|-|and)\s*\d+)? are based on\b/i.test(text)
+      );
+    }
+
+    function isScenarioRichV101(item) {
+      const text = sequenceTextV101(item);
+      return (
+        text.length >= 180 ||
+        numberTokensV101(text).length >= 3 ||
+        announcesQuestionSetV101(item)
+      );
+    }
+
+    function isShortDependentStyleV101(item) {
+      const text = sequenceTextV101(item);
+      if (text.length > 175) return false;
+      const entities = entityTokensV101(text);
+      const numbers = numberTokensV101(text);
+      return (
+        /^(what|how|which|assuming|if|under|compute|determine)\b/i.test(text) &&
+        entities.length === 0 &&
+        numbers.length <= 1
+      );
+    }
+
+    function sharesScenarioSignatureV101(a, b) {
+      const aText = sequenceTextV101(a);
+      const bText = sequenceTextV101(b);
+
+      const aEntities = new Set(entityTokensV101(aText));
+      const bEntities = new Set(entityTokensV101(bText));
+      const sharedEntity = [...aEntities].some(entity => bEntities.has(entity));
+      if (sharedEntity) return true;
+
+      const aNumbers = new Set(numberTokensV101(aText).map(value => value.replace(/\s+/g, "").toLowerCase()));
+      const bNumbers = new Set(numberTokensV101(bText).map(value => value.replace(/\s+/g, "").toLowerCase()));
+      let sharedNumbers = 0;
+      aNumbers.forEach(value => {
+        if (bNumbers.has(value)) sharedNumbers++;
+      });
+      if (sharedNumbers >= 2) return true;
+
+      return tokenSimilarityV101(aText, bText) >= .46;
+    }
+
+    function shouldConnectV101(previous, current, firstInBlock, blockLength) {
+      if (!previous || !current) return false;
+      if (sequenceScopeV101(previous) !== sequenceScopeV101(current)) return false;
+      if (blockLength >= 8) return false;
+
+      if (isExplicitFollowUpV101(current)) return true;
+      if (announcesQuestionSetV101(previous) || announcesQuestionSetV101(firstInBlock)) return true;
+      if (sharesScenarioSignatureV101(previous, current)) return true;
+      if (sharesScenarioSignatureV101(firstInBlock, current)) return true;
+
+      return (
+        isScenarioRichV101(firstInBlock) &&
+        isShortDependentStyleV101(current)
+      );
+    }
+
+    function normalizeSequenceMetadataV101(force = false) {
+      let changed = false;
+
+      db.mcqs.forEach((item, index) => {
+        if (force || !Number.isFinite(Number(item.sequenceOrderV101))) {
+          item.sequenceOrderV101 = index;
+          changed = true;
+        }
+      });
+
+      const ordered = db.mcqs
+        .slice()
+        .sort((a, b) =>
+          Number(a.sequenceOrderV101 || 0) - Number(b.sequenceOrderV101 || 0) ||
+          String(a.createdAt || "").localeCompare(String(b.createdAt || ""))
+        );
+
+      let block = [];
+      let groupCounter = 0;
+
+      const commit = () => {
+        if (!block.length) return;
+        const groupId = `seq-${groupCounter++}-${block[0].id}`;
+        block.forEach((item, index) => {
+          if (
+            item.sequenceGroupV101 !== groupId ||
+            Number(item.sequencePositionV101) !== index ||
+            Number(item.sequenceSizeV101) !== block.length
+          ) {
+            item.sequenceGroupV101 = groupId;
+            item.sequencePositionV101 = index;
+            item.sequenceSizeV101 = block.length;
+            changed = true;
+          }
+        });
+        block = [];
+      };
+
+      ordered.forEach(item => {
+        if (!block.length) {
+          block = [item];
+          return;
+        }
+
+        const previous = block[block.length - 1];
+        if (shouldConnectV101(previous, item, block[0], block.length)) {
+          block.push(item);
+        } else {
+          commit();
+          block = [item];
+        }
+      });
+      commit();
+
+      if (changed) {
+        localStorage.setItem(STORE, JSON.stringify(db));
+      }
+    }
+
+    function connectedGroupMembersV101(item, source = db.mcqs) {
+      if (!item) return [];
+      normalizeSequenceMetadataV101();
+
+      return source
+        .filter(candidate => candidate.sequenceGroupV101 === item.sequenceGroupV101)
+        .sort((a, b) =>
+          Number(a.sequencePositionV101 || 0) - Number(b.sequencePositionV101 || 0)
+        );
+    }
+
+    function connectedBlocksV101(items, expandGroups = false) {
+      normalizeSequenceMetadataV101();
+      const available = new Map(items.map(item => [item.id, item]));
+      const seen = new Set();
+      const blocks = [];
+
+      const ordered = items.slice().sort((a, b) =>
+        Number(a.sequenceOrderV101 || 0) - Number(b.sequenceOrderV101 || 0)
+      );
+
+      ordered.forEach(item => {
+        if (seen.has(item.sequenceGroupV101)) return;
+        seen.add(item.sequenceGroupV101);
+
+        const members = (expandGroups ? connectedGroupMembersV101(item) : connectedGroupMembersV101(item, ordered))
+          .filter(member => expandGroups || available.has(member.id));
+
+        if (members.length) blocks.push(members);
+      });
+
+      return blocks;
+    }
+
+    function blockPriorityV101(block) {
+      if (!block.length) return 0;
+
+      return block.reduce((sum, item) => {
+        const attempts = Number(item.attempts || 0);
+        const correct = Number(item.correctCount || 0);
+        const wrong = Math.max(0, attempts - correct);
+        const accuracy = attempts ? correct / attempts : 0;
+        const unseen = attempts === 0 ? 1 : 0;
+        const age = item.lastAnswered
+          ? Math.min(12, Math.max(0, (Date.now() - new Date(item.lastAnswered).getTime()) / 86400000))
+          : 12;
+
+        return sum + wrong * 3.5 + unseen * 5 + (1 - accuracy) * 4 + age * .12;
+      }, 0) / block.length;
+    }
+
+    function shuffleBlocksV101(blocks) {
+      const copy = blocks.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function selectWholeBlocksV101(blocks, requestedCount) {
+      if (requestedCount === "all") return blocks.flat();
+
+      const target = Math.max(1, Number(requestedCount) || 10);
+      const selected = [];
+
+      for (const block of blocks) {
+        if (selected.length >= target) break;
+        selected.push(...block);
+      }
+
+      return selected;
+    }
+
+    function expandSelectedIdsToWholeBlocksV101(ids, scopeItems) {
+      normalizeSequenceMetadataV101();
+      const wanted = new Set(ids || []);
+      const blocks = connectedBlocksV101(scopeItems, false);
+      const output = [];
+
+      blocks.forEach(block => {
+        if (block.some(item => wanted.has(item.id))) {
+          output.push(...block);
+        }
+      });
+
+      return output;
+    }
+
+    const baseMakeMCQV101 = makeMCQ;
+    makeMCQ = function(deckId, subject, topic, question, A, B, C, D, correct, explanation) {
+      const item = baseMakeMCQV101(deckId, subject, topic, question, A, B, C, D, correct, explanation);
+      item.sequenceOrderV101 = nextSequenceOrderV101();
+      item.sequenceBatchV101 = sequenceImportBatchV101 || "";
+      return item;
+    };
+
+    const baseImportMCQCSVV101 = importMCQCSV;
+    importMCQCSV = function() {
+      sequenceImportBatchV101 = `batch-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      try {
+        const result = baseImportMCQCSVV101();
+        normalizeSequenceMetadataV101(true);
+
+        // Rebuild only when the current day's schedule has not yet been completed.
+        const overview = typeof dueOverviewV10 === "function" ? dueOverviewV10() : null;
+        if (!overview || overview.completed === 0) {
+          db.stats.dueSchedule = null;
+          ensureDailyDueScheduleV10(true);
+        }
+
+        updateAll();
+        return result;
+      } finally {
+        sequenceImportBatchV101 = "";
+      }
+    };
+
+    const baseChooseDueSubtopicV101 = chooseDueSubtopicV10;
+    chooseDueSubtopicV10 = function(subject, dateKey) {
+      const assignment = baseChooseDueSubtopicV101(subject, dateKey);
+      if (!assignment) return assignment;
+
+      normalizeSequenceMetadataV101();
+
+      const topicItems = db.mcqs
+        .filter(item => dueGroupKeyV10(item) === assignment.key)
+        .sort((a, b) =>
+          Number(a.sequenceOrderV101 || 0) - Number(b.sequenceOrderV101 || 0)
+        );
+
+      const blocks = connectedBlocksV101(topicItems, false)
+        .sort((a, b) => blockPriorityV101(b) - blockPriorityV101(a));
+
+      // A connected block is never split, even when this slightly exceeds five items.
+      assignment.itemIds = selectWholeBlocksV101(blocks, DUE_ITEMS_PER_SUBTOPIC_V10)
+        .map(item => item.id);
+
+      assignment.sequenceVersion = SEQUENCE_VERSION_V101;
+      return assignment;
+    };
+
+    const baseDueItemsForAssignmentV101 = dueItemsForAssignmentV10;
+    dueItemsForAssignmentV10 = function(assignment, remainingOnly = false) {
+      if (!assignment) return [];
+
+      normalizeSequenceMetadataV101();
+
+      const scopeItems = db.mcqs.filter(item => dueGroupKeyV10(item) === assignment.key);
+      const expanded = expandSelectedIdsToWholeBlocksV101(assignment.itemIds || [], scopeItems);
+
+      if (expanded.length) {
+        assignment.itemIds = expanded.map(item => item.id);
+      }
+
+      const dateKey = activityDateKey();
+      return expanded.filter(item => !remainingOnly || item.dueCompletedOn !== dateKey);
+    };
+
+    function rebuildDueScheduleForSequenceV101() {
+      ensureDueStatsV10();
+      if (db.stats.dueSequenceVersion === SEQUENCE_VERSION_V101) return;
+
+      normalizeSequenceMetadataV101(true);
+      db.stats.dueSchedule = null;
+      db.stats.dueSequenceVersion = SEQUENCE_VERSION_V101;
+      ensureDailyDueScheduleV10(true);
+      localStorage.setItem(STORE, JSON.stringify(db));
+    }
+
+    buildQuizQueue = function(useMissed = false) {
+      if (el.quizResults) el.quizResults.classList.add("hidden");
+      if (el.quizActiveArea) el.quizActiveArea.classList.remove("hidden");
+      if (el.quizControlsV40) el.quizControlsV40.classList.remove("hidden");
+
+      resetQuizRuntime();
+      unlockAudio();
+      enableTimedModeFromSelect();
+
+      quizSessionModeV10 = "practice";
+      quizDueSubjectV10 = "";
+      normalizeSequenceMetadataV101();
+
+      if (useMissed) {
+        const missedSet = new Set(lastMissedIds);
+        const missedItems = db.mcqs.filter(item => missedSet.has(item.id));
+        const groups = new Set(missedItems.map(item => item.sequenceGroupV101));
+
+        quizQueue = connectedBlocksV101(
+          db.mcqs.filter(item => groups.has(item.sequenceGroupV101)),
+          false
+        ).flat();
+      } else {
+        const deckId = el.quizDeckFilter.value || "all";
+        const subject = el.quizSubjectFilter.value || "all";
+
+        const filtered = db.mcqs.filter(item =>
+          (deckId === "all" || item.deckId === deckId) &&
+          (subject === "all" || canonicalSubjectV52(item.subject) === canonicalSubjectV52(subject))
+        );
+
+        const blocks = shuffleBlocksV101(connectedBlocksV101(filtered, false));
+        quizQueue = selectWholeBlocksV101(blocks, el.quizCount.value);
+      }
+
+      quizIndex = 0;
+      quizAnswers = {};
+      quizTimerRemainingById = {};
+      quizSessionStartedAt = nowISO();
+
+      if (quizQueue.length) saveQuizSession(false);
+      renderQuiz();
+      scrollQuizCardToCenterV52();
+    };
+
+    startDueQuizV10 = function(subject = "") {
+      normalizeSequenceMetadataV101();
+
+      const assignments = dueAssignmentsV10()
+        .filter(assignment => !subject || assignment.subject === subject);
+
+      const items = assignments.flatMap(assignment =>
+        dueItemsForAssignmentV10(assignment, true)
+      );
+
+      if (!items.length) {
+        showToast(subject ? `${subject} due set is complete` : "All due MCQs have been answered");
+        renderDueScreenV10();
+        return;
+      }
+
+      resetQuizRuntime();
+      unlockAudio();
+      enableTimedModeFromSelect();
+
+      quizSessionModeV10 = "due";
+      quizDueSubjectV10 = subject || "All subjects";
+      quizQueue = items;
+      quizIndex = 0;
+      quizAnswers = {};
+      quizTimerRemainingById = {};
+      quizSessionStartedAt = nowISO();
+
+      saveQuizSession(false);
+      showScreen("quiz");
+      renderQuiz();
+      scrollQuizCardToCenterV52();
+      showToast(subject ? `${subject} due set started` : "Daily due set started");
+    };
+
+    function currentSequenceInfoV101(item) {
+      if (!item || Number(item.sequenceSizeV101 || 1) <= 1) return null;
+      return {
+        position: Number(item.sequencePositionV101 || 0) + 1,
+        size: Number(item.sequenceSizeV101 || 1)
+      };
+    }
+
+    const baseRenderQuizV101 = renderQuiz;
+    renderQuiz = function() {
+      baseRenderQuizV101();
+
+      const item = currentQuizItem();
+      const info = currentSequenceInfoV101(item);
+      const existing = document.getElementById("quizSequenceNoteV101");
+      existing?.remove();
+
+      if (!item || !info || !el.quizQuestion) return;
+
+      const chip = document.createElement("span");
+      chip.className = "connected-sequence-chip";
+      chip.textContent = `Connected set ${info.position}/${info.size}`;
+      el.quizTopicTag?.appendChild(chip);
+
+      const note = document.createElement("div");
+      note.id = "quizSequenceNoteV101";
+      note.className = "quiz-sequence-note-v101";
+      note.innerHTML = `<span aria-hidden="true">↳</span><span><strong>Connected question.</strong> This item belongs to a ${info.size}-question sequence and is shown in its original logical order.</span>`;
+      el.quizQuestion.insertAdjacentElement("afterend", note);
+    };
+
+    function renderAllDueCompleteMessageV101() {
+      const banner = document.getElementById("allDueCompleteBanner");
+      if (!banner) return;
+
+      const overview = dueOverviewV10();
+      const complete = overview.total > 0 && overview.remaining === 0;
+      banner.classList.toggle("hidden", !complete);
+    }
+
+    const baseRenderDueScreenV101 = renderDueScreenV10;
+    renderDueScreenV10 = function() {
+      baseRenderDueScreenV101();
+      renderAllDueCompleteMessageV101();
+    };
+
+    function announceAllDueCompleteV101() {
+      const overview = dueOverviewV10();
+      const dateKey = activityDateKey();
+
+      if (
+        quizSessionModeV10 === "due" &&
+        overview.total > 0 &&
+        overview.remaining === 0 &&
+        dueCompleteAnnouncementDateV101 !== dateKey
+      ) {
+        dueCompleteAnnouncementDateV101 = dateKey;
+        showToast("All due MCQs have been answered");
+        try {
+          if (navigator.vibrate) navigator.vibrate([90, 55, 130]);
+        } catch {}
+      }
+
+      renderAllDueCompleteMessageV101();
+    }
+
+    const baseAnswerQuizV101 = answerQuiz;
+    answerQuiz = function(letter) {
+      const result = baseAnswerQuizV101(letter);
+      if (quizSessionModeV10 === "due") {
+        setTimeout(announceAllDueCompleteV101, 0);
+      }
+      return result;
+    };
+
+    const baseHandleQuestionTimeoutV101 = handleQuestionTimeout;
+    handleQuestionTimeout = function() {
+      const result = baseHandleQuestionTimeoutV101();
+      if (quizSessionModeV10 === "due") {
+        setTimeout(announceAllDueCompleteV101, 0);
+      }
+      return result;
+    };
+
+    const baseShowQuizResultsV101 = showQuizResults;
+    showQuizResults = function() {
+      const wasDue = quizSessionModeV10 === "due";
+      baseShowQuizResultsV101();
+
+      if (!wasDue || !el.quizResults) return;
+
+      const overview = dueOverviewV10();
+      const shell = el.quizResults.querySelector(".quiz-completion-shell");
+      const heading = el.quizResults.querySelector(".completion-heading");
+      const subtext = el.quizResults.querySelector(".completion-subtext");
+
+      if (!shell) return;
+
+      const message = document.createElement("div");
+
+      if (overview.total > 0 && overview.remaining === 0) {
+        if (heading) heading.textContent = "All due MCQs have been answered";
+        if (subtext) {
+          subtext.textContent = "You completed every scheduled MCQ for today. Your next adaptive due rotation will be prepared at midnight Philippine time.";
+        }
+
+        message.className = "due-completion-result-v101";
+        message.innerHTML = `
+          <span aria-hidden="true">✓</span>
+          <div>
+            <strong>Daily due rotation complete</strong>
+            <small>All subject-based due MCQs have been answered.</small>
+          </div>`;
+      } else {
+        message.className = "due-progress-result-v101";
+        message.textContent = `${overview.remaining} due MCQ${overview.remaining === 1 ? "" : "s"} remain across ${Math.max(0, overview.subjectTotal - overview.subjectCompleted)} subject rotation${overview.subjectTotal - overview.subjectCompleted === 1 ? "" : "s"}.`;
+      }
+
+      const stats = shell.querySelector(".completion-stats");
+      if (stats) stats.insertAdjacentElement("afterend", message);
+      else shell.appendChild(message);
+    };
+
+    function initConnectedSequencesV101() {
+      rebuildDueScheduleForSequenceV101();
+      normalizeSequenceMetadataV101();
+      renderDueScreenV10();
+    }
+
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
       navigator.serviceWorker.register("service-worker.js").catch(() => {});
     }
@@ -8825,6 +9632,7 @@ el.addDeckBtn.addEventListener("click", addDeck);
     bindEvents();
     bindDueFeaturesV10();
     initDueFeaturesV10();
+    initConnectedSequencesV101();
     renderProfile();
     updateAll();
     buildReviewQueue();
