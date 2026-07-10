@@ -1,9 +1,9 @@
 {
   "name": "CPALE Recall Deck",
-  "short_name": "CPALE Deck",
+  "short_name": "CPALE MCQ",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#070b14",
   "theme_color": "#070b14",
-  "description": "A professional CPALE study operating system with active recall, quizzes, focus timer, daily goals, adaptive insights, analytics, backup, and Firebase presence."
+  "description": "An MCQ-first CPALE review app with one adaptive due subtopic per subject, free practice, analytics, focus timer, backup, and Firebase presence."
 }

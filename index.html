@@ -1499,7 +1499,7 @@
 
 
     /* ============================
-       v9.0 — Focus Edition revamp
+       v10.0 — Focus Edition revamp
        ============================ */
     :root {
       --bg: #070b14;
@@ -2587,7 +2587,7 @@
 
 
     /* =============================
-       v9.0 — interaction refinement
+       v10.0 — interaction refinement
        ============================= */
     .app button,
     .modal button,
@@ -3040,7 +3040,7 @@
 
 
     /* =================================
-       v9.0 — Professional Study OS layer
+       v10.0 — Professional Study OS layer
        ================================= */
     :root {
       --surface-0: #070b14;
@@ -3820,6 +3820,435 @@
       }
     }
 
+
+    /* v10.0 MCQ Due Edition */
+    #review,
+    #cards {
+      display: none !important;
+    }
+
+    .due-hero {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      gap: clamp(22px,5vw,62px);
+      align-items: center;
+      min-height: 290px;
+      border-radius: 30px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 2% 5%, rgba(243,211,106,.14), transparent 32%),
+        radial-gradient(circle at 98% 8%, rgba(103,212,255,.15), transparent 35%),
+        radial-gradient(circle at 75% 100%, rgba(185,167,255,.10), transparent 36%),
+        linear-gradient(145deg, rgba(13,22,38,.98), rgba(8,14,26,.98));
+    }
+
+    .due-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,.025) 48%, transparent 72%);
+      transform: translateX(-100%);
+      animation: dueHeroSheen 10s ease-in-out infinite;
+    }
+
+    @keyframes dueHeroSheen {
+      0%,62% { transform: translateX(-100%); }
+      82%,100% { transform: translateX(100%); }
+    }
+
+    .due-hero-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+    }
+
+    .due-hero-copy h2 {
+      margin: 0;
+      font-size: clamp(2rem,6vw,4rem);
+      line-height: .98;
+      letter-spacing: -.065em;
+    }
+
+    .due-hero-copy > p {
+      max-width: 720px;
+      margin: 15px 0 19px;
+      color: #aeb9ca;
+      font-size: clamp(.86rem,2.2vw,1rem);
+      line-height: 1.56;
+    }
+
+    .due-hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .due-hero-actions button {
+      min-height: 49px;
+      padding-inline: 16px;
+    }
+
+    .due-reset-note {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+      color: #8290a5;
+      font-size: .72rem;
+      font-weight: 800;
+    }
+
+    .due-reset-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #67d4ff;
+      box-shadow: 0 0 0 4px rgba(103,212,255,.08), 0 0 12px rgba(103,212,255,.24);
+    }
+
+    .due-overview-ring {
+      --due-progress: 0;
+      width: clamp(175px,22vw,225px);
+      aspect-ratio: 1;
+      position: relative;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(#54e28a calc(var(--due-progress) * 1%), rgba(148,163,184,.12) 0);
+      box-shadow: 0 0 0 10px rgba(255,255,255,.018), 0 28px 60px rgba(0,0,0,.34);
+    }
+
+    .due-overview-ring::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 31%, rgba(255,255,255,.055), transparent 34%), #0b1423;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.055);
+    }
+
+    .due-overview-ring > div {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      justify-items: center;
+      line-height: 1;
+    }
+
+    .due-overview-ring b {
+      font-size: clamp(3rem,8vw,5rem);
+      letter-spacing: -.08em;
+    }
+
+    .due-overview-ring span {
+      margin-top: 8px;
+      color: #d7e0ed;
+      font-size: .72rem;
+      font-weight: 950;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .due-overview-ring small {
+      margin-top: 9px;
+      color: #7d8ba0;
+      font-size: .65rem;
+      font-weight: 800;
+    }
+
+    .due-layout {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) 330px;
+      gap: 14px;
+      margin-top: 14px;
+      align-items: start;
+    }
+
+    .due-heading-row {
+      padding: 0 2px;
+    }
+
+    .due-subject-grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 11px;
+    }
+
+    .due-subject-card {
+      --subject-color: #67d4ff;
+      position: relative;
+      min-height: 225px;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 10px;
+      padding: 17px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,.12);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 100% 0%, color-mix(in srgb,var(--subject-color) 13%,transparent), transparent 40%),
+        linear-gradient(150deg, rgba(20,31,52,.92), rgba(11,18,32,.94));
+      box-shadow: 0 15px 38px rgba(0,0,0,.20);
+      transition: transform .2s ease, border-color .2s ease;
+    }
+
+    .due-subject-card:hover {
+      transform: translateY(-3px);
+      border-color: color-mix(in srgb,var(--subject-color) 35%,rgba(148,163,184,.14));
+    }
+
+    .due-subject-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 16px;
+      bottom: 16px;
+      width: 3px;
+      border-radius: 999px;
+      background: var(--subject-color);
+      box-shadow: 0 0 14px color-mix(in srgb,var(--subject-color) 35%,transparent);
+    }
+
+    .due-subject-card.completed {
+      opacity: .84;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(84,226,138,.11), transparent 40%),
+        linear-gradient(150deg, rgba(16,35,37,.88), rgba(10,22,28,.94));
+    }
+
+    .due-subject-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .due-subject-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #f8fafc;
+      font-size: .74rem;
+      font-weight: 950;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .due-subject-name i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--subject-color);
+    }
+
+    .due-status-pill {
+      padding: 5px 8px;
+      border: 1px solid rgba(148,163,184,.13);
+      border-radius: 999px;
+      background: rgba(255,255,255,.035);
+      color: #aeb9ca;
+      font-size: .62rem;
+      font-weight: 900;
+    }
+
+    .due-subject-card.completed .due-status-pill {
+      color: #bbf7d0;
+      border-color: rgba(84,226,138,.18);
+      background: rgba(84,226,138,.07);
+    }
+
+    .due-subtopic-title {
+      margin: 0;
+      font-size: clamp(1.08rem,3vw,1.4rem);
+      line-height: 1.2;
+      letter-spacing: -.035em;
+    }
+
+    .due-subtopic-meta {
+      color: #8e9bb0;
+      font-size: .72rem;
+      line-height: 1.45;
+    }
+
+    .due-card-bottom {
+      display: grid;
+      gap: 9px;
+      align-self: end;
+    }
+
+    .due-mini-progress {
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+    }
+
+    .due-mini-progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg,var(--subject-color),rgba(255,255,255,.84));
+    }
+
+    .due-card-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .due-card-actions button {
+      min-height: 42px;
+      padding: 9px 12px;
+      font-size: .74rem;
+    }
+
+    .due-count-copy {
+      color: #7d8ba0;
+      font-size: .66rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .due-empty-card {
+      grid-column: 1/-1;
+      padding: 32px 20px;
+      border: 1px dashed rgba(148,163,184,.16);
+      border-radius: 22px;
+      color: #8d9ab0;
+      text-align: center;
+      line-height: 1.55;
+    }
+
+    .due-method-panel {
+      position: sticky;
+      top: 145px;
+      border-radius: 24px;
+      background: radial-gradient(circle at 100% 0%, rgba(185,167,255,.11), transparent 36%), var(--panel);
+    }
+
+    .due-method-step {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px 0;
+      border-top: 1px solid rgba(148,163,184,.09);
+    }
+
+    .due-method-step:first-of-type {
+      border-top: 0;
+    }
+
+    .due-method-step > span {
+      width: 29px;
+      height: 29px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: rgba(185,167,255,.09);
+      color: #ded7ff;
+      font-size: .65rem;
+      font-weight: 950;
+    }
+
+    .due-method-step p {
+      margin: 2px 0 0;
+      color: #9aa7bb;
+      font-size: .76rem;
+      line-height: 1.45;
+    }
+
+    .due-method-step strong {
+      color: #eef2f8;
+    }
+
+    .due-method-status {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-top: 11px;
+      padding: 11px;
+      border: 1px solid rgba(103,212,255,.12);
+      border-radius: 15px;
+      background: rgba(103,212,255,.045);
+    }
+
+    .due-method-status-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: rgba(103,212,255,.09);
+      color: #cbefff;
+    }
+
+    .due-method-status strong,
+    .due-method-status small {
+      display: block;
+    }
+
+    .due-method-status strong {
+      font-size: .78rem;
+    }
+
+    .due-method-status small {
+      margin-top: 3px;
+      color: #8492a7;
+      font-size: .65rem;
+      line-height: 1.35;
+    }
+
+    .week-bar.cards {
+      background: linear-gradient(180deg,#9ff0bd,#42cf78);
+      box-shadow: 0 0 12px rgba(84,226,138,.16);
+    }
+
+    .legend-card {
+      background: #54e28a;
+    }
+
+    @media (max-width: 980px) {
+      .due-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .due-method-panel {
+        position: relative;
+        top: auto;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .due-hero {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .due-hero-actions,
+      .due-reset-note {
+        justify-content: center;
+      }
+
+      .due-overview-ring {
+        width: 180px;
+      }
+
+      .due-subject-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .due-hero::after {
+        animation: none !important;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -3831,9 +4260,9 @@
   <div id="loginScreen" class="login-wrap hidden">
     <div class="login-card">
       <h1>CPALE Recall Deck</h1>
-      <p class="muted">A private flashcard and MCQ quiz app for active recall, spaced repetition, and CPALE-style practice.</p>
+      <p class="muted">A private MCQ-first review app for daily due questions, adaptive recall, and CPALE-style practice.</p>
       <div class="notice small">
-        This version uses a local profile. Your cards and quizzes are saved only on this device/browser unless you export them.
+        This version uses a local profile. Your MCQ library, due schedule, and performance history are saved only on this device/browser unless you export them.
       </div>
       <div class="divider"></div>
       <div class="stack">
@@ -3854,7 +4283,7 @@
       <div class="brand">
         <div class="brand-kicker">Your CPALE command center</div>
         <h1>CPALE Recall Deck</h1>
-        <p id="subtitle">Flashcards + CPALE-style multiple choice quizzes.</p>
+        <p id="subtitle">Daily due MCQs + CPALE-style multiple choice practice.</p>
       </div>
 
       <div class="top-actions">
@@ -3862,7 +4291,7 @@
           <span class="save-state-dot"></span>
           Saved locally
         </span>
-        <button class="utility-btn" id="globalSearchBtn" title="Search cards and MCQs">
+        <button class="utility-btn" id="globalSearchBtn" title="Search MCQs">
           <span aria-hidden="true">⌕</span>
           <span>Search</span>
           <kbd>/</kbd>
@@ -3888,11 +4317,10 @@
 
     <nav class="nav" aria-label="Main navigation">
       <button data-screen="dashboard" class="active"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
-      <button data-screen="review"><span class="nav-icon">↻</span><span>Review</span></button>
-      <button data-screen="quiz"><span class="nav-icon">◎</span><span>Quiz</span></button>
-      <button data-screen="decks"><span class="nav-icon">▦</span><span>Decks</span></button>
-      <button data-screen="cards"><span class="nav-icon">✦</span><span>Cards</span></button>
-      <button data-screen="mcq"><span class="nav-icon">◈</span><span>MCQs</span></button>
+      <button data-screen="due"><span class="nav-icon">◷</span><span>Due MCQs</span></button>
+      <button data-screen="quiz"><span class="nav-icon">◎</span><span>Practice</span></button>
+      <button data-screen="decks"><span class="nav-icon">▦</span><span>Topics</span></button>
+      <button data-screen="mcq"><span class="nav-icon">◈</span><span>MCQ Bank</span></button>
       <button data-screen="import"><span class="nav-icon">⇧</span><span>Import</span></button>
       <button data-screen="backup"><span class="nav-icon">⤓</span><span>Backup</span></button>
     </nav>
@@ -3989,28 +4417,28 @@
         </div>
 
         <div class="stat-grid">
-          <div class="stat stat-due"><span class="stat-icon">↻</span><b id="dashDue">0</b><span>Due flashcards</span></div>
-          <div class="stat stat-total"><span class="stat-icon">✦</span><b id="dashTotal">0</b><span>Total flashcards</span></div>
-          <div class="stat stat-mcq"><span class="stat-icon">◎</span><b id="dashMCQ">0</b><span>MCQ items</span></div>
+          <div class="stat stat-due"><span class="stat-icon">↻</span><b id="dashDue">0</b><span>Due MCQs</span></div>
+          <div class="stat stat-total"><span class="stat-icon">✦</span><b id="dashTotal">0</b><span>Total MCQs</span></div>
+          <div class="stat stat-mcq"><span class="stat-icon">◎</span><b id="dashMCQ">0</b><span>Due subtopics</span></div>
           <div class="stat stat-streak"><span class="stat-icon">♨</span><b id="dashStreak">0</b><span>Day streak</span></div>
-          <div class="stat stat-card-accuracy"><span class="stat-icon">✓</span><b id="dashAccuracy">0%</b><span>Flashcard accuracy</span></div>
+          <div class="stat stat-card-accuracy"><span class="stat-icon">✓</span><b id="dashAccuracy">0%</b><span>Today accuracy</span></div>
           <div class="stat stat-quiz-accuracy"><span class="stat-icon">◈</span><b id="dashQuizAccuracy">0%</b><span>Quiz accuracy</span></div>
         </div>
 
         <div class="quick-actions">
           <button class="quick-action primary-action" id="startDueBtn">
             <span class="quick-action-icon">↻</span>
-            <span><strong>Start due review</strong><small>Clear today’s spaced-repetition queue</small></span>
+            <span><strong>Answer due MCQs</strong><small>One prioritized subtopic per subject</small></span>
             <span class="quick-arrow">→</span>
           </button>
           <button class="quick-action quiz-action" id="startQuizBtn">
             <span class="quick-action-icon">◎</span>
-            <span><strong>Start MCQ quiz</strong><small>Practice CPALE-style application</small></span>
+            <span><strong>Start free practice</strong><small>Choose any subject, topic, and length</small></span>
             <span class="quick-arrow">→</span>
           </button>
           <button class="quick-action import-action" data-screen-link="import">
             <span class="quick-action-icon">⇧</span>
-            <span><strong>Import material</strong><small>Add a fresh CSV question bank</small></span>
+            <span><strong>Import MCQs</strong><small>Add a fresh CPALE question bank</small></span>
             <span class="quick-arrow">→</span>
           </button>
         </div>
@@ -4037,16 +4465,16 @@
 
             <div class="daily-pulse-copy">
               <h3 id="dailyPulseHeadline">Start your first focused block</h3>
-              <p id="dailyPulseText">Every flashcard rating and MCQ answer moves the ring.</p>
+              <p id="dailyPulseText">Every due or practice MCQ answer moves the ring.</p>
 
               <div class="pulse-metrics">
-                <div><strong id="todayCardCount">0</strong><span>Cards</span></div>
-                <div><strong id="todayMcqCount">0</strong><span>MCQs</span></div>
+                <div><strong id="todayCardCount">0</strong><span>Due MCQs</span></div>
+                <div><strong id="todayMcqCount">0</strong><span>Practice MCQs</span></div>
                 <div><strong id="todayAccuracy">—</strong><span>Accuracy</span></div>
               </div>
 
               <div class="pulse-actions">
-                <button class="secondary" id="pulseReviewBtn">Review due cards</button>
+                <button class="secondary" id="pulseReviewBtn">Answer due MCQs</button>
                 <button class="secondary" id="pulseFocusBtn">Start focus timer</button>
               </div>
             </div>
@@ -4063,8 +4491,8 @@
           </div>
           <div class="weekly-bars" id="weeklyActivityBars"></div>
           <div class="weekly-legend">
-            <span><i class="legend-card"></i> Flashcards</span>
-            <span><i class="legend-mcq"></i> MCQs</span>
+            <span><i class="legend-card"></i> Due MCQs</span>
+            <span><i class="legend-mcq"></i> Practice MCQs</span>
           </div>
         </section>
 
@@ -4074,7 +4502,7 @@
               <span class="eyebrow">Adaptive review</span>
               <h2 class="section-title">Growth priorities</h2>
             </div>
-            <span class="muted tiny">Based on your misses and weak cards</span>
+            <span class="muted tiny">Based on your MCQ misses and accuracy</span>
           </div>
           <div class="growth-priority-list" id="growthPriorityList"></div>
         </section>
@@ -4107,15 +4535,15 @@
           <h2 class="section-title">Study smarter</h2>
           <div class="strategy-step">
             <span>01</span>
-            <p><strong>Recall first.</strong> Answer before revealing the flashcard.</p>
+            <p><strong>Due first.</strong> Clear the prioritized subtopics before free practice.</p>
           </div>
           <div class="strategy-step">
             <span>02</span>
-            <p><strong>Apply second.</strong> Use MCQs to expose CPALE traps.</p>
+            <p><strong>Reason, do not guess.</strong> Commit to an answer before reading the rationale.</p>
           </div>
           <div class="strategy-step">
             <span>03</span>
-            <p><strong>Capture mistakes.</strong> Convert weak concepts into cards.</p>
+            <p><strong>Revisit the trap.</strong> Let misses determine future due priorities.</p>
           </div>
           <div class="backup-status-card">
             <span class="backup-status-icon">⇩</span>
@@ -4180,11 +4608,62 @@
       </div>
     </section>
 
+    <section id="due" class="screen">
+      <div class="due-hero panel pad">
+        <div class="due-hero-copy">
+          <span class="eyebrow">Daily adaptive schedule</span>
+          <h2>Today’s Due MCQs</h2>
+          <p>One subtopic is selected for every subject. Each due set contains up to five questions prioritized by weak performance, low exposure, and time since last review.</p>
+          <div class="due-hero-actions">
+            <button id="startAllDueBtn"><span aria-hidden="true">▶</span> Start all remaining due MCQs</button>
+            <button class="secondary" id="openPracticeFromDueBtn">Open free practice</button>
+          </div>
+          <div class="due-reset-note"><span class="due-reset-dot"></span>The schedule refreshes automatically at midnight Philippine time.</div>
+        </div>
+
+        <div class="due-overview-ring" id="dueOverviewRing" style="--due-progress:0">
+          <div>
+            <b id="dueOverviewRemaining">0</b>
+            <span>remaining</span>
+            <small id="dueOverviewCompleted">0 of 0 answered</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="due-layout">
+        <div>
+          <div class="section-heading-row due-heading-row">
+            <div>
+              <span class="eyebrow">Subject rotation</span>
+              <h2 class="section-title">One due subtopic per subject</h2>
+            </div>
+            <span class="intelligence-chip" id="dueSubjectSummary">0 subjects scheduled</span>
+          </div>
+          <div class="due-subject-grid" id="dueSubjectGrid"></div>
+        </div>
+
+        <aside class="panel pad due-method-panel">
+          <span class="eyebrow">How due selection works</span>
+          <h2 class="section-title">Adaptive, but predictable</h2>
+          <div class="due-method-step"><span>01</span><p><strong>One subtopic per subject.</strong> FAR, AFAR, MAS, Auditing, Taxation, and RFBT rotate independently.</p></div>
+          <div class="due-method-step"><span>02</span><p><strong>Weakness has priority.</strong> Missed and rarely answered questions move ahead in the queue.</p></div>
+          <div class="due-method-step"><span>03</span><p><strong>Five questions maximum.</strong> The daily workload stays focused and sustainable.</p></div>
+          <div class="due-method-status">
+            <span class="due-method-status-icon">◷</span>
+            <div>
+              <strong id="dueMethodStatusTitle">Schedule ready</strong>
+              <small id="dueMethodStatusText">Complete due items before starting random practice.</small>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
     <section id="quiz" class="screen">
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v9.0 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ practice <span class="quiz-version-v40">v10.0 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -4204,7 +4683,7 @@
               <button class="secondary" id="enableSoundBtn">Enable sound</button>
             </div>
             <div class="three-col" style="margin-top:10px;">
-              <button id="beginQuizBtn">Start quiz</button>
+              <button id="beginQuizBtn">Start practice</button>
               <button class="secondary" id="resumeQuizBtn">Resume saved quiz</button>
               <button class="secondary" id="retryMissedBtn">Retry missed</button>
             </div>
@@ -4230,7 +4709,7 @@
                   </div>
                   <div class="quiz-timer-text" id="quizTimerText">Untimed</div>
                 </div>
-                <p class="question" id="quizQuestion">Start a quiz to begin.</p>
+                <p class="question" id="quizQuestion">Start a practice set or open today’s Due MCQs.</p>
                 <div class="choice-grid" id="choiceGrid"></div>
                 <div class="explanation-box hidden" id="quizExplanation"></div>
               </div>
@@ -4271,7 +4750,7 @@
 
         <aside class="panel pad">
           <h2 class="section-title">Quiz queue</h2>
-          <p class="muted small" id="quizQueueSummary">No quiz started.</p>
+          <p class="muted small" id="quizQueueSummary">No practice set started.</p>
           <div class="divider"></div>
           <div id="quizQueueList" class="list"></div>
         </aside>
@@ -4281,11 +4760,11 @@
     <section id="decks" class="screen">
       <div class="grid">
         <div class="panel pad">
-          <h2 class="section-title">Decks</h2>
+          <h2 class="section-title">MCQ topics</h2>
           <div class="decks" id="deckGrid"></div>
         </div>
         <aside class="panel pad">
-          <h2 class="section-title">Create custom deck</h2>
+          <h2 class="section-title">Create MCQ topic</h2>
           <div class="stack">
             <select id="newDeckSubject">
               <option>FAR</option>
@@ -4295,11 +4774,11 @@
               <option>Taxation</option>
               <option>RFBT</option>
             </select>
-            <input id="newDeckName" placeholder="Deck name e.g. Leases, VAT, Obligations" />
+            <input id="newDeckName" placeholder="Topic group e.g. Leases, VAT, Obligations" />
             <button id="addDeckBtn">Add deck</button>
           </div>
           <div class="divider"></div>
-          <p class="muted small">Tip: make decks by topic, not only by subject. Example: FAR → Receivables, FAR → Inventory, RFBT → Obligations.</p>
+          <p class="muted small">Use specific topic groups so daily due rotation can select one focused subtopic per subject.</p>
         </aside>
       </div>
     </section>
@@ -4336,7 +4815,7 @@
     <section id="mcq" class="screen">
       <div class="grid">
         <div class="panel pad">
-          <h2 class="section-title">All MCQ items</h2>
+          <h2 class="section-title">All Due subtopics</h2>
           <div class="two-col">
             <select id="mcqDeckFilter"></select>
             <input id="mcqSearch" type="search" placeholder="Search MCQs..." />
@@ -4375,14 +4854,11 @@
     <section id="import" class="screen">
       <div class="grid">
         <div class="panel pad">
-          <h2 class="section-title">Import flashcards or MCQs</h2>
-          <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v9.0 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <h2 class="section-title">Import CPALE MCQs</h2>
+          <p class="muted small">Upload or paste an MCQ CSV using subject, deck, topic, question, A-D, correct, and explanation columns.</p>
+          <p class="muted tiny">v10.0 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
-            <select id="importType">
-              <option value="cards">Flashcards CSV / Q&A</option>
-              <option value="mcq">MCQ CSV</option>
-            </select>
+            <select id="importType"><option value="mcq" selected>CPALE MCQ CSV</option></select>
             <select id="importTargetDeck"></select>
             <input id="csvFileInput" type="file" accept=".csv,text/csv" />
             <button class="secondary" id="loadCsvFileBtn">Load CSV file into box</button>
@@ -4398,7 +4874,7 @@
           <h2 class="section-title">PDF to text helper</h2>
           <p class="muted small">
             Upload a text-based PDF. This extracts text into the box above. It does not understand images/scans.
-            After extraction, ask ChatGPT to convert the text into flashcard or MCQ CSV.
+            After extraction, ask ChatGPT to convert the text into CPALE-style MCQ CSV.
           </p>
           <div class="stack">
             <input id="pdfInput" type="file" accept="application/pdf" />
@@ -4409,10 +4885,7 @@
         <aside class="panel pad">
           <h2 class="section-title">Prompt generator</h2>
           <p class="muted small">Use this with GPT-5.5 to generate importable CPALE MCQs.</p>
-          <select id="promptType">
-            <option value="mcq">MCQ CSV prompt</option>
-            <option value="cards">Flashcard CSV prompt</option>
-          </select>
+          <select id="promptType"><option value="mcq" selected>MCQ CSV prompt</option></select>
           <textarea readonly id="cardPrompt"></textarea>
           <button class="secondary" id="copyPromptBtn">Copy prompt</button>
         </aside>
@@ -4423,9 +4896,9 @@
       <div class="grid">
         <div class="panel pad">
           <h2 class="section-title">Backup and restore</h2>
-          <p class="muted small">Export often. Browser storage can be cleared if you delete website data or change browsers.</p>
+          <p class="muted small">Export often. Your MCQ bank, due schedule, and performance history are stored in this browser.</p>
           <div class="three-col">
-            <button id="exportCsvBtn">Export flashcards CSV</button>
+            <button class="hidden" id="exportCsvBtn">Legacy card export</button>
             <button class="blue" id="exportMCQCsvBtn">Export MCQ CSV</button>
             <button class="secondary" id="exportJsonBtn">Export full JSON</button>
           </div>
@@ -4466,11 +4939,11 @@
       </div>
       <div class="search-input-wrap">
         <span class="search-input-icon">⌕</span>
-        <input id="globalSearchInput" type="search" placeholder="Search questions, answers, topics, or decks..." autocomplete="off" />
+        <input id="globalSearchInput" type="search" placeholder="Search questions, choices, explanations, topics, or decks..." autocomplete="off" />
         <kbd>ESC</kbd>
       </div>
       <div class="search-meta">
-        <span id="searchMetaText">Search across your flashcards and MCQs.</span>
+        <span id="searchMetaText">Search across your MCQ library.</span>
       </div>
       <div class="search-results" id="globalSearchResults"></div>
     </div>
@@ -4530,7 +5003,7 @@
         </select>
         <label class="profile-field-label" for="dailyGoalEdit">
           Daily study goal
-          <span>Counted as flashcards rated + MCQs answered</span>
+          <span>Counted as all MCQs answered, including due and free practice</span>
         </label>
         <input id="dailyGoalEdit" type="number" min="5" max="300" step="5" value="30" inputmode="numeric" />
         <button id="saveProfileBtn">Save profile</button>
@@ -5335,7 +5808,7 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v9.0` : "Flashcards + CPALE-style multiple choice quizzes. v9.0";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v10.0` : "Daily due MCQs + CPALE-style multiple choice practice. v10.0";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderTodayLine();
@@ -5529,12 +6002,12 @@
 
       if (!query) {
         if (el.searchMetaText) {
-          el.searchMetaText.textContent = `${db.cards.length} flashcards · ${db.mcqs.length} MCQs`;
+          el.searchMetaText.textContent = `${db.mcqs.length} MCQs in your library`;
         }
         el.globalSearchResults.innerHTML = `
           <div class="search-empty">
-            Search a concept, topic, question, answer, or deck name.<br>
-            Tap a result to jump directly to the matching library.
+            Search a concept, subtopic, question, choice, explanation, or deck name.<br>
+            Tap a result to jump directly to the matching MCQ.
           </div>`;
         return;
       }
@@ -5545,13 +6018,13 @@
       }
 
       if (!results.length) {
-        el.globalSearchResults.innerHTML = `<div class="search-empty">No matching flashcards or MCQs were found.</div>`;
+        el.globalSearchResults.innerHTML = `<div class="search-empty">No matching MCQs were found.</div>`;
         return;
       }
 
       el.globalSearchResults.innerHTML = results.map(result => `
         <button class="search-result" data-search-kind="${result.kind}" data-search-id="${escapeHTML(result.id)}">
-          <span class="search-result-kind">${result.kind === "card" ? "CARD" : "MCQ"}</span>
+          <span class="search-result-kind">MCQ</span>
           <span class="search-result-main">
             <strong>${escapeHTML(result.title)}</strong>
             <small>${escapeHTML(result.meta)}</small>
@@ -5584,7 +6057,7 @@
           }
 
           closeGlobalSearch();
-          showToast(kind === "card" ? "Flashcard located" : "MCQ located");
+          showToast("MCQ located");
         });
       });
     }
@@ -5861,7 +6334,7 @@
         el.dailyPulseText.textContent = "A short due-card review or a focused MCQ set can finish today’s target.";
       } else {
         el.dailyPulseHeadline.textContent = "Start your first focused block";
-        el.dailyPulseText.textContent = "Every flashcard rating and MCQ answer moves the ring.";
+        el.dailyPulseText.textContent = "Every due or practice MCQ answer moves the ring.";
       }
 
       const week = [];
@@ -6514,7 +6987,7 @@
       updateQuizProgressUI();
 
       const answeredNow = validQuizAnsweredCount();
-      el.quizQueueSummary.textContent = quizQueue.length ? `${answeredNow}/${quizQueue.length} answered in this quiz. You may exit anytime; unfinished progress is saved.` : "No quiz started.";
+      el.quizQueueSummary.textContent = quizQueue.length ? `${answeredNow}/${quizQueue.length} answered in this quiz. You may exit anytime; unfinished progress is saved.` : "No practice set started.";
       el.quizQueueList.innerHTML = quizQueue.length ? quizQueue.map((q, idx) => {
         const ans = quizAnswers[q.id];
         const mark = ans ? (ans === q.correct ? "✓ " : (ans === TIMEOUT_ANSWER ? "⏱ " : "✕ ")) : "";
@@ -6524,7 +6997,7 @@
 
       if (!item) {
         el.quizSubjectTag.textContent = "No MCQs"; el.quizTopicTag.textContent = "Add or import"; el.quizCounter.textContent = "0 / 0";
-        el.quizQuestion.textContent = "No MCQ items available for this filter.";
+        el.quizQuestion.textContent = "No Due subtopics available for this filter.";
         el.choiceGrid.innerHTML = ""; el.quizExplanation.classList.add("hidden"); el.quizHint.textContent = "Go to MCQs or Import to add questions.";
         el.quizScoreLive.textContent = "Score: 0/0";
         updateQuizProgressUI();
@@ -7394,13 +7867,12 @@
     }
 
     function clearAllData() {
-      if (!confirm("Delete all decks, cards, MCQs, and stats from this browser?")) return;
+      if (!confirm("Delete all MCQ topics, questions, due schedules, and stats from this browser?")) return;
       localStorage.removeItem(STORE); db = loadDB(); updateAll(); showToast("Data reset to samples");
     }
 
-    function promptText(type) {
-      if (type === "mcq") {
-        return `Convert the notes below into CPALE-style multiple choice questions. Output only CSV rows with this exact header:
+    function promptText() {
+      return `Convert the notes below into CPALE-style multiple choice questions. Output only CSV rows with this exact header:
 
 subject,deck,topic,question,A,B,C,D,correct,explanation
 
@@ -7414,22 +7886,9 @@ Rules:
 - Do not use markdown.
 
 Notes:`;
-      }
-      return `Convert the notes below into CPALE active-recall flashcards. Output only CSV rows with this exact header:
-
-subject,deck,topic,question,answer
-
-Rules:
-- Keep each question specific.
-- Include common CPALE traps where useful.
-- Answers should be concise but complete.
-- Use subjects only: FAR, AFAR, MAS, Auditing, Taxation, RFBT.
-- Do not use markdown.
-
-Notes:`;
     }
 
-    function updatePrompt() { el.cardPrompt.value = promptText(el.promptType.value); }
+    function updatePrompt() { el.cardPrompt.value = promptText(); }
 
     function copyPrompt() { el.cardPrompt.select(); navigator.clipboard?.writeText(el.cardPrompt.value); showToast("Prompt copied"); }
 
@@ -7515,11 +7974,7 @@ Notes:`;
         if (event.target === el.focusTimerModal) closeFocusTimer();
       });
       el.pulseFocusBtn?.addEventListener("click", openFocusTimer);
-      el.pulseReviewBtn?.addEventListener("click", () => {
-        el.reviewDeckFilter.value = "all";
-        el.reviewMode.value = "due";
-        showScreen("review");
-      });
+      el.pulseReviewBtn?.addEventListener("click", () => showScreen("due"));
       el.recentQuizStartBtn?.addEventListener("click", () => showScreen("quiz"));
 
       el.closeSearchBtn?.addEventListener("click", closeGlobalSearch);
@@ -7580,7 +8035,7 @@ Notes:`;
         showToast("Profile saved");
       });
 
-      el.startDueBtn.addEventListener("click", () => { el.reviewDeckFilter.value = "all"; el.reviewMode.value = "due"; showScreen("review"); });
+      el.startDueBtn.addEventListener("click", () => showScreen("due"));
       el.startQuizBtn.addEventListener("click", () => showScreen("quiz"));
 
       el.reviewDeckFilter.addEventListener("change", buildReviewQueue); el.reviewMode.addEventListener("change", buildReviewQueue);
@@ -7616,11 +8071,760 @@ el.addDeckBtn.addEventListener("click", addDeck);
       });
     }
 
+
+    /* ============================
+       v10.0 MCQ Due Engine
+       ============================ */
+    const DUE_ITEMS_PER_SUBTOPIC_V10 = 5;
+    const SUBJECT_COLOR_MAP_V10 = {
+      FAR: "#67d4ff",
+      AFAR: "#b9a7ff",
+      MAS: "#f3d36a",
+      Auditing: "#54e28a",
+      Taxation: "#fb923c",
+      RFBT: "#fb7185"
+    };
+
+    let quizSessionModeV10 = "practice";
+    let quizDueSubjectV10 = "";
+    let dueDateWatcherV10 = "";
+
+    function dueTopicLabelV10(item) {
+      const topic = String(item?.topic || "").trim();
+      return topic || getDeck(item?.deckId).name || "General";
+    }
+
+    function dueGroupKeyV10(item) {
+      return `${canonicalSubjectV52(item?.subject)}|${item?.deckId}|${dueTopicLabelV10(item).toLowerCase()}`;
+    }
+
+    function dateKeyDifferenceV10(laterKey, earlierKey) {
+      if (!earlierKey) return 999;
+      const later = new Date(`${laterKey}T12:00:00+08:00`).getTime();
+      const earlier = new Date(`${earlierKey}T12:00:00+08:00`).getTime();
+      if (!Number.isFinite(later) || !Number.isFinite(earlier)) return 999;
+      return Math.max(0, Math.round((later - earlier) / 86400000));
+    }
+
+    function ensureDueStatsV10() {
+      db.stats = db.stats || {};
+      db.stats.dueTopicHistory = db.stats.dueTopicHistory && typeof db.stats.dueTopicHistory === "object"
+        ? db.stats.dueTopicHistory
+        : {};
+      db.stats.dueSchedule = db.stats.dueSchedule && typeof db.stats.dueSchedule === "object"
+        ? db.stats.dueSchedule
+        : null;
+      db.stats.dailyActivity = db.stats.dailyActivity && typeof db.stats.dailyActivity === "object"
+        ? db.stats.dailyActivity
+        : {};
+    }
+
+    function chooseDueSubtopicV10(subject, dateKey) {
+      const groups = new Map();
+
+      db.mcqs
+        .filter(item => canonicalSubjectV52(item.subject) === subject)
+        .forEach(item => {
+          const key = dueGroupKeyV10(item);
+          if (!groups.has(key)) {
+            groups.set(key, {
+              key,
+              subject,
+              deckId: item.deckId,
+              topic: dueTopicLabelV10(item),
+              items: []
+            });
+          }
+          groups.get(key).items.push(item);
+        });
+
+      const candidates = [...groups.values()];
+      if (!candidates.length) return null;
+
+      candidates.forEach(group => {
+        const history = db.stats.dueTopicHistory[group.key] || {};
+        const daysSince = dateKeyDifferenceV10(dateKey, history.lastDue || "");
+        const attempts = group.items.reduce((sum, item) => sum + Number(item.attempts || 0), 0);
+        const correct = group.items.reduce((sum, item) => sum + Number(item.correctCount || 0), 0);
+        const wrong = Math.max(0, attempts - correct);
+        const wrongRate = attempts ? wrong / attempts : .55;
+        const unseenRatio = group.items.length
+          ? group.items.filter(item => !Number(item.attempts || 0)).length / group.items.length
+          : 0;
+
+        group.priority =
+          Math.min(40, daysSince * 2.3) +
+          wrongRate * 24 +
+          unseenRatio * 14 +
+          Math.min(8, group.items.length * .7) -
+          Number(history.timesAssigned || 0) * .08;
+      });
+
+      candidates.sort((a, b) => b.priority - a.priority || a.topic.localeCompare(b.topic));
+      const selected = candidates[0];
+
+      selected.items.sort((a, b) => {
+        const attemptsA = Number(a.attempts || 0);
+        const attemptsB = Number(b.attempts || 0);
+        if (attemptsA !== attemptsB) return attemptsA - attemptsB;
+
+        const accA = attemptsA ? Number(a.correctCount || 0) / attemptsA : -1;
+        const accB = attemptsB ? Number(b.correctCount || 0) / attemptsB : -1;
+        if (accA !== accB) return accA - accB;
+
+        const lastA = a.lastAnswered ? new Date(a.lastAnswered).getTime() : 0;
+        const lastB = b.lastAnswered ? new Date(b.lastAnswered).getTime() : 0;
+        return lastA - lastB || a.question.localeCompare(b.question);
+      });
+
+      const history = db.stats.dueTopicHistory[selected.key] || {};
+      db.stats.dueTopicHistory[selected.key] = {
+        lastDue: dateKey,
+        timesAssigned: Number(history.timesAssigned || 0) + 1
+      };
+
+      return {
+        subject,
+        deckId: selected.deckId,
+        topic: selected.topic,
+        key: selected.key,
+        itemIds: selected.items.slice(0, DUE_ITEMS_PER_SUBTOPIC_V10).map(item => item.id),
+        assignedAt: nowISO()
+      };
+    }
+
+    function ensureDailyDueScheduleV10(force = false) {
+      ensureDueStatsV10();
+      const dateKey = activityDateKey();
+      let schedule = db.stats.dueSchedule;
+      const validToday = schedule && schedule.date === dateKey && schedule.subjects && typeof schedule.subjects === "object";
+
+      if (!force && validToday) {
+        let changed = false;
+
+        ALLOWED_SUBJECTS_V52.forEach(subject => {
+          const hasItems = db.mcqs.some(item => canonicalSubjectV52(item.subject) === subject);
+          const existing = schedule.subjects[subject];
+
+          if (existing) {
+            const validIds = (existing.itemIds || []).filter(id => db.mcqs.some(item => item.id === id));
+            if (validIds.length !== (existing.itemIds || []).length) {
+              existing.itemIds = validIds;
+              changed = true;
+            }
+          }
+
+          if (hasItems && (!existing || !(existing.itemIds || []).length)) {
+            const assignment = chooseDueSubtopicV10(subject, dateKey);
+            if (assignment) {
+              schedule.subjects[subject] = assignment;
+              changed = true;
+            }
+          }
+        });
+
+        if (changed) localStorage.setItem(STORE, JSON.stringify(db));
+        return schedule;
+      }
+
+      const subjects = {};
+      ALLOWED_SUBJECTS_V52.forEach(subject => {
+        const assignment = chooseDueSubtopicV10(subject, dateKey);
+        if (assignment) subjects[subject] = assignment;
+      });
+
+      schedule = {
+        date: dateKey,
+        generatedAt: nowISO(),
+        subjects
+      };
+
+      db.stats.dueSchedule = schedule;
+      localStorage.setItem(STORE, JSON.stringify(db));
+      return schedule;
+    }
+
+    function dueAssignmentsV10() {
+      const schedule = ensureDailyDueScheduleV10();
+      return ALLOWED_SUBJECTS_V52.map(subject => schedule.subjects?.[subject]).filter(Boolean);
+    }
+
+    function dueItemsForAssignmentV10(assignment, remainingOnly = false) {
+      const map = new Map(db.mcqs.map(item => [item.id, item]));
+      const dateKey = activityDateKey();
+
+      return (assignment?.itemIds || [])
+        .map(id => map.get(id))
+        .filter(Boolean)
+        .filter(item => !remainingOnly || item.dueCompletedOn !== dateKey);
+    }
+
+    function dueItemsV10(subject = "", remainingOnly = false) {
+      return dueAssignmentsV10()
+        .filter(assignment => !subject || assignment.subject === subject)
+        .flatMap(assignment => dueItemsForAssignmentV10(assignment, remainingOnly));
+    }
+
+    function dueOverviewV10() {
+      const assignments = dueAssignmentsV10();
+      const total = assignments.reduce((sum, assignment) => sum + dueItemsForAssignmentV10(assignment).length, 0);
+      const remaining = assignments.reduce((sum, assignment) => sum + dueItemsForAssignmentV10(assignment, true).length, 0);
+      const completed = Math.max(0, total - remaining);
+      const subjectTotal = assignments.length;
+      const subjectCompleted = assignments.filter(assignment => dueItemsForAssignmentV10(assignment, true).length === 0).length;
+      return { assignments, total, remaining, completed, subjectTotal, subjectCompleted };
+    }
+
+    function topicAccuracyV10(assignment) {
+      const items = db.mcqs.filter(item => dueGroupKeyV10(item) === assignment.key);
+      const attempts = items.reduce((sum, item) => sum + Number(item.attempts || 0), 0);
+      const correct = items.reduce((sum, item) => sum + Number(item.correctCount || 0), 0);
+      return attempts ? Math.round((correct / attempts) * 100) : null;
+    }
+
+    function startDueQuizV10(subject = "") {
+      const items = dueItemsV10(subject, true);
+      if (!items.length) {
+        showToast(subject ? `${subject} due set is complete` : "All due MCQs are complete");
+        renderDueScreenV10();
+        return;
+      }
+
+      resetQuizRuntime();
+      unlockAudio();
+      enableTimedModeFromSelect();
+
+      quizSessionModeV10 = "due";
+      quizDueSubjectV10 = subject || "All subjects";
+      quizQueue = items.slice();
+      quizIndex = 0;
+      quizAnswers = {};
+      quizTimerRemainingById = {};
+      quizSessionStartedAt = nowISO();
+
+      saveQuizSession(false);
+      showScreen("quiz");
+      renderQuiz();
+      scrollQuizCardToCenterV52();
+      showToast(subject ? `${subject} due set started` : "Daily due set started");
+    }
+
+    function renderDueScreenV10() {
+      const grid = $("dueSubjectGrid");
+      if (!grid) return;
+
+      const overview = dueOverviewV10();
+      const progress = overview.total ? Math.round((overview.completed / overview.total) * 100) : 0;
+
+      $("dueOverviewRing")?.style.setProperty("--due-progress", progress);
+      if ($("dueOverviewRemaining")) $("dueOverviewRemaining").textContent = overview.remaining;
+      if ($("dueOverviewCompleted")) $("dueOverviewCompleted").textContent = `${overview.completed} of ${overview.total} answered`;
+      if ($("dueSubjectSummary")) $("dueSubjectSummary").textContent = `${overview.subjectTotal} subject${overview.subjectTotal === 1 ? "" : "s"} scheduled`;
+      if ($("startAllDueBtn")) $("startAllDueBtn").disabled = overview.remaining === 0;
+
+      if (overview.total === 0) {
+        $("dueMethodStatusTitle").textContent = "Import MCQs to begin";
+        $("dueMethodStatusText").textContent = "The daily schedule needs at least one MCQ subtopic.";
+      } else if (overview.remaining === 0) {
+        $("dueMethodStatusTitle").textContent = "Daily due complete";
+        $("dueMethodStatusText").textContent = "Free practice is optional. A new rotation appears tomorrow.";
+      } else {
+        $("dueMethodStatusTitle").textContent = `${overview.remaining} MCQ${overview.remaining === 1 ? "" : "s"} remaining`;
+        $("dueMethodStatusText").textContent = `${overview.subjectCompleted} of ${overview.subjectTotal} subject rotations completed.`;
+      }
+
+      grid.innerHTML = overview.assignments.length
+        ? overview.assignments.map(assignment => {
+            const all = dueItemsForAssignmentV10(assignment);
+            const remaining = dueItemsForAssignmentV10(assignment, true);
+            const completed = all.length - remaining.length;
+            const pct = all.length ? Math.round((completed / all.length) * 100) : 0;
+            const accuracy = topicAccuracyV10(assignment);
+            const complete = remaining.length === 0;
+            const color = SUBJECT_COLOR_MAP_V10[assignment.subject] || "#67d4ff";
+
+            return `
+              <article class="due-subject-card ${complete ? "completed" : ""}" style="--subject-color:${color}">
+                <div class="due-subject-top">
+                  <span class="due-subject-name"><i></i>${escapeHTML(assignment.subject)}</span>
+                  <span class="due-status-pill">${complete ? "Complete" : `${remaining.length} due`}</span>
+                </div>
+                <h3 class="due-subtopic-title">${escapeHTML(assignment.topic)}</h3>
+                <div class="due-subtopic-meta">
+                  ${all.length} prioritized question${all.length === 1 ? "" : "s"}
+                  · ${accuracy === null ? "No prior accuracy" : `${accuracy}% historical accuracy`}
+                </div>
+                <div class="due-card-bottom">
+                  <div class="due-mini-progress"><span style="width:${pct}%"></span></div>
+                  <div class="due-card-actions">
+                    <button ${complete ? "disabled" : ""} data-due-subject="${escapeHTML(assignment.subject)}">
+                      ${complete ? "Completed today" : "Start due set"}
+                    </button>
+                    <span class="due-count-copy">${completed}/${all.length}</span>
+                  </div>
+                </div>
+              </article>`;
+          }).join("")
+        : `<div class="due-empty-card">No MCQ subtopics are available yet. Import a CPALE question bank to generate the daily schedule.</div>`;
+
+      grid.querySelectorAll("[data-due-subject]").forEach(button => {
+        button.addEventListener("click", () => startDueQuizV10(button.dataset.dueSubject));
+      });
+    }
+
+    function buildGrowthPrioritiesV10() {
+      const map = new Map();
+
+      db.mcqs.forEach(item => {
+        const attempts = Number(item.attempts || 0);
+        const correct = Number(item.correctCount || 0);
+        const wrong = Math.max(0, attempts - correct);
+        if (!attempts) return;
+
+        const subject = canonicalSubjectV52(item.subject) || "General";
+        const topic = dueTopicLabelV10(item);
+        const key = `${subject}|${topic}`;
+        const current = map.get(key) || { subject, topic, wrong: 0, attempts: 0, correct: 0 };
+
+        current.wrong += wrong;
+        current.attempts += attempts;
+        current.correct += correct;
+        map.set(key, current);
+      });
+
+      return [...map.values()]
+        .map(item => ({
+          ...item,
+          accuracy: item.attempts ? Math.round((item.correct / item.attempts) * 100) : 0,
+          score: item.wrong * 3 + Math.max(0, 75 - (item.attempts ? (item.correct / item.attempts) * 100 : 0)) * .08
+        }))
+        .filter(item => item.wrong > 0)
+        .sort((a, b) => b.score - a.score || a.accuracy - b.accuracy)
+        .slice(0, 4);
+    }
+
+    renderStudyMission = function() {
+      const overview = dueOverviewV10();
+      const todayActivity = db.stats.dailyActivity?.[activityDateKey()] || { mcqs: 0, correct: 0, total: 0 };
+      const todayTotal = Number(todayActivity.mcqs || todayActivity.total || 0);
+      const todayAccuracyValue = todayTotal
+        ? Math.round((Number(todayActivity.correct || 0) / todayTotal) * 100)
+        : 0;
+
+      if (el.dashboardDateLabel) {
+        el.dashboardDateLabel.textContent = new Intl.DateTimeFormat("en-PH", {
+          timeZone: "Asia/Manila",
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }).format(new Date());
+      }
+
+      let headline = "Build your MCQ library";
+      let copy = "Import CPALE-style MCQs to generate one adaptive due subtopic for every subject.";
+      let badge = "MCQ first";
+      let progress = 8;
+
+      if (overview.remaining > 0) {
+        headline = `Answer ${overview.remaining} due MCQ${overview.remaining === 1 ? "" : "s"} first`;
+        copy = `${overview.subjectTotal - overview.subjectCompleted} subject rotation${overview.subjectTotal - overview.subjectCompleted === 1 ? "" : "s"} remain. Complete them before free practice.`;
+        badge = `${overview.subjectCompleted}/${overview.subjectTotal} subjects`;
+        progress = overview.total ? Math.round((overview.completed / overview.total) * 100) : 0;
+      } else if (db.mcqs.length) {
+        headline = "Today’s due rotation is complete";
+        copy = `Use free practice to strengthen growth priorities${todayAccuracyValue ? ` while protecting today’s ${todayAccuracyValue}% accuracy` : ""}.`;
+        badge = currentStreak() ? `${currentStreak()}-day streak` : "Practice ready";
+        progress = 100;
+      }
+
+      el.missionHeadline.textContent = headline;
+      el.missionText.textContent = copy;
+      el.missionBadge.textContent = badge;
+      el.missionProgress.style.width = `${Math.max(0, Math.min(100, progress))}%`;
+    };
+
+    renderLearningIntelligence = function() {
+      if (!el.dailyGoalRing) return;
+
+      ensureDueStatsV10();
+      const key = activityDateKey();
+      const activity = db.stats.dailyActivity[key] || {
+        mcqs: 0,
+        dueMcqs: 0,
+        practiceMcqs: 0,
+        correct: 0,
+        total: 0
+      };
+
+      const total = Number(activity.mcqs || activity.total || 0);
+      const dueCount = Number(activity.dueMcqs || 0);
+      const practiceCount = Number(activity.practiceMcqs || Math.max(0, total - dueCount));
+      const goal = Math.max(5, Math.min(300, Number(profile?.dailyGoal) || 30));
+      const progress = Math.max(0, Math.min(100, Math.round((total / goal) * 100)));
+      const accuracyValue = total ? Math.round((Number(activity.correct || 0) / total) * 100) : null;
+
+      el.dailyGoalRing.style.setProperty("--goal-progress", progress);
+      el.todayActivityCount.textContent = total;
+      el.dailyGoalValue.textContent = goal;
+      el.dailyGoalStatus.textContent = total >= goal ? "Goal complete" : `${progress}% of goal`;
+      el.todayCardCount.textContent = dueCount;
+      el.todayMcqCount.textContent = practiceCount;
+      el.todayAccuracy.textContent = accuracyValue === null ? "—" : `${accuracyValue}%`;
+
+      if (total >= goal) {
+        el.dailyPulseHeadline.textContent = "Daily MCQ goal complete";
+        el.dailyPulseText.textContent = "Excellent consistency. Continue only if the next block remains deliberate.";
+      } else if (total > 0) {
+        el.dailyPulseHeadline.textContent = `${goal - total} more MCQ${goal - total === 1 ? "" : "s"} to complete your goal`;
+        el.dailyPulseText.textContent = dueOverviewV10().remaining
+          ? "Finish the remaining due rotations before starting a random set."
+          : "The due rotation is complete. Use free practice to finish the goal.";
+      } else {
+        el.dailyPulseHeadline.textContent = "Start with today’s due MCQs";
+        el.dailyPulseText.textContent = "Every due or practice MCQ answer moves the ring.";
+      }
+
+      const week = [];
+      let weekTotal = 0;
+
+      for (let offset = -6; offset <= 0; offset++) {
+        const dateKey = activityDateOffset(offset);
+        const day = db.stats.dailyActivity?.[dateKey] || {};
+        const dayTotal = Number(day.mcqs || 0);
+        const dayDue = Number(day.dueMcqs || 0);
+        const dayPractice = Number(day.practiceMcqs || Math.max(0, dayTotal - dayDue));
+        const date = new Date(`${dateKey}T12:00:00+08:00`);
+        const label = new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Manila",
+          weekday: "short"
+        }).format(date).slice(0, 2);
+
+        weekTotal += dayDue + dayPractice;
+        week.push({ label, due: dayDue, practice: dayPractice, total: dayDue + dayPractice, today: offset === 0 });
+      }
+
+      const max = Math.max(1, ...week.map(day => Math.max(day.due, day.practice)));
+      el.weeklyTotalLabel.textContent = `${weekTotal} MCQ${weekTotal === 1 ? "" : "s"}`;
+      el.weeklyActivityBars.innerHTML = week.map(day => `
+        <div class="week-column ${day.today ? "today" : ""}" title="${day.total} MCQs">
+          <div class="week-bar-track">
+            <span class="week-bar cards" style="height:${Math.max(day.due ? 7 : 2, Math.round((day.due / max) * 100))}%"></span>
+            <span class="week-bar mcqs" style="height:${Math.max(day.practice ? 7 : 2, Math.round((day.practice / max) * 100))}%"></span>
+          </div>
+          <span class="week-count">${day.total}</span>
+          <span class="week-label">${day.label}</span>
+        </div>`).join("");
+
+      const priorities = buildGrowthPrioritiesV10();
+      el.growthPriorityList.innerHTML = priorities.length
+        ? priorities.map((item, index) => `
+            <button class="growth-priority-item" data-priority-subject="${escapeHTML(item.subject)}">
+              <span class="growth-priority-rank">0${index + 1}</span>
+              <span class="growth-priority-copy">
+                <strong>${escapeHTML(item.subject)} · ${escapeHTML(item.topic)}</strong>
+                <span>${item.wrong} wrong answer${item.wrong === 1 ? "" : "s"} · ${item.accuracy}% accuracy across ${item.attempts} attempt${item.attempts === 1 ? "" : "s"}</span>
+              </span>
+              <span class="priority-arrow">→</span>
+            </button>`).join("")
+        : `<div class="insight-empty">Complete a few MCQs and your adaptive growth priorities will appear here.</div>`;
+
+      el.growthPriorityList.querySelectorAll("[data-priority-subject]").forEach(button => {
+        button.addEventListener("click", () => {
+          quizSessionModeV10 = "practice";
+          quizDueSubjectV10 = "";
+          el.quizDeckFilter.value = "all";
+          el.quizSubjectFilter.value = button.dataset.prioritySubject || "all";
+          el.quizCount.value = "10";
+          buildQuizQueue(false);
+          showScreen("quiz");
+        });
+      });
+
+      const sessions = (db.stats.quizSessions || []).slice(0, 4);
+      el.recentQuizSessions.innerHTML = sessions.length
+        ? sessions.map(session => {
+            const pct = Number(session.pct || 0);
+            const scoreClass = pct >= 80 ? "high" : (pct >= 60 ? "mid" : "low");
+            return `
+              <div class="recent-session-item">
+                <span class="session-score ${scoreClass}">${pct}%</span>
+                <span class="session-copy">
+                  <strong>${escapeHTML(session.label || "MCQ session")}</strong>
+                  <span>${Number(session.correct || 0)}/${Number(session.total || 0)} correct · ${session.timed ? "Timed" : "Untimed"}</span>
+                </span>
+                <span class="session-time">${escapeHTML(formatRelativeTime(session.completedAt || session.startedAt))}</span>
+              </div>`;
+          }).join("")
+        : `<div class="insight-empty">Your completed due and practice runs will appear here.</div>`;
+    };
+
+    renderDashboard = function() {
+      const overview = dueOverviewV10();
+      const activity = db.stats.dailyActivity?.[activityDateKey()] || {};
+      const todayTotal = Number(activity.mcqs || activity.total || 0);
+      const todayAccuracyValue = todayTotal
+        ? Math.round((Number(activity.correct || 0) / todayTotal) * 100)
+        : 0;
+
+      el.dashDue.textContent = overview.remaining;
+      el.dashTotal.textContent = db.mcqs.length;
+      el.dashMCQ.textContent = Math.max(0, overview.subjectTotal - overview.subjectCompleted);
+      el.dashStreak.textContent = currentStreak();
+      el.dashAccuracy.textContent = `${todayAccuracyValue}%`;
+      el.dashQuizAccuracy.textContent = `${quizAccuracy()}%`;
+
+      const subjects = ALLOWED_SUBJECTS_V52.filter(subject =>
+        db.mcqs.some(item => canonicalSubjectV52(item.subject) === subject)
+      );
+
+      el.dashboardDecks.innerHTML = subjects.map(subject => {
+        const items = db.mcqs.filter(item => canonicalSubjectV52(item.subject) === subject);
+        const attempts = items.reduce((sum, item) => sum + Number(item.attempts || 0), 0);
+        const correct = items.reduce((sum, item) => sum + Number(item.correctCount || 0), 0);
+        const pct = attempts ? Math.round((correct / attempts) * 100) : 0;
+        const assignment = overview.assignments.find(item => item.subject === subject);
+        const remaining = assignment ? dueItemsForAssignmentV10(assignment, true).length : 0;
+        const dueLabel = assignment ? (remaining ? `Due: ${assignment.topic}` : "Due complete") : "No due subtopic";
+
+        return `
+          <div class="deck" data-subject-start="${escapeHTML(subject)}" data-subject-tone="${escapeHTML(subject)}">
+            <strong>${escapeHTML(subject)}</strong>
+            <span class="muted tiny">${items.length} MCQs · ${pct}% accuracy · ${escapeHTML(dueLabel)}</span>
+            <div class="progress"><div class="bar" style="width:${pct}%"></div></div>
+          </div>`;
+      }).join("");
+
+      el.dashboardDecks.querySelectorAll("[data-subject-start]").forEach(node => {
+        node.addEventListener("click", () => {
+          quizSessionModeV10 = "practice";
+          quizDueSubjectV10 = "";
+          el.quizSubjectFilter.value = node.dataset.subjectStart;
+          buildQuizQueue();
+          showScreen("quiz");
+        });
+      });
+
+      renderStudyMission();
+      updateBackupStatus();
+      renderLearningIntelligence();
+      renderDueScreenV10();
+    };
+
+    renderDecks = function() {
+      const decks = db.decks
+        .filter(deck => ALLOWED_SUBJECTS_V52.includes(canonicalSubjectV52(deck.subject)))
+        .filter(deck => db.mcqs.some(item => item.deckId === deck.id))
+        .slice()
+        .sort(compareDecksV52);
+
+      el.deckGrid.innerHTML = decks.length
+        ? decks.map(deck => {
+            const items = db.mcqs.filter(item => item.deckId === deck.id);
+            const attempts = items.reduce((sum, item) => sum + Number(item.attempts || 0), 0);
+            const correct = items.reduce((sum, item) => sum + Number(item.correctCount || 0), 0);
+            const pct = attempts ? Math.round((correct / attempts) * 100) : 0;
+            const subtopics = new Set(items.map(item => dueTopicLabelV10(item))).size;
+
+            return `
+              <div class="deck" data-deck-id="${escapeHTML(deck.id)}" data-subject-tone="${escapeHTML(deck.subject)}">
+                <strong>${escapeHTML(deck.name)}</strong>
+                <span class="muted tiny">${escapeHTML(deck.subject)} · ${items.length} MCQs · ${subtopics} subtopic${subtopics === 1 ? "" : "s"} · ${pct}% accuracy</span>
+                <div class="progress"><div class="bar" style="width:${pct}%"></div></div>
+              </div>`;
+          }).join("")
+        : `<div class="insight-empty">Import MCQs to create topic groups.</div>`;
+
+      el.deckGrid.querySelectorAll("[data-deck-id]").forEach(node => {
+        node.addEventListener("click", () => {
+          quizSessionModeV10 = "practice";
+          quizDueSubjectV10 = "";
+          el.quizDeckFilter.value = node.dataset.deckId;
+          el.quizSubjectFilter.value = "all";
+          buildQuizQueue();
+          showScreen("quiz");
+        });
+      });
+    };
+
+    librarySearchItems = function(query) {
+      const needle = String(query || "").trim().toLowerCase();
+      if (!needle) return [];
+
+      const scoreText = text => {
+        const hay = String(text || "").toLowerCase();
+        if (!hay.includes(needle)) return 0;
+        if (hay === needle) return 5;
+        if (hay.startsWith(needle)) return 4;
+        return 2;
+      };
+
+      return db.mcqs.map(item => {
+        const deck = getDeck(item.deckId);
+        const choices = [item.A, item.B, item.C, item.D].join(" ");
+        const score =
+          scoreText(item.question) * 3 +
+          scoreText(item.explanation) * 2 +
+          scoreText(choices) +
+          scoreText(item.topic) * 2 +
+          scoreText(deck.name) +
+          scoreText(item.subject);
+
+        return {
+          kind: "mcq",
+          id: item.id,
+          score,
+          title: item.question,
+          meta: `${item.subject} · ${deck.name}${item.topic ? ` · ${item.topic}` : ""}`
+        };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
+      .slice(0, 18);
+    };
+
+    const baseMarkStudiedV10 = markStudied;
+    markStudied = function(correct, isQuiz = false) {
+      baseMarkStudiedV10(correct, isQuiz);
+      if (!isQuiz) return;
+
+      ensureDueStatsV10();
+      const key = activityDateKey();
+      const activity = db.stats.dailyActivity[key] || {};
+      activity.dueMcqs = Number(activity.dueMcqs || 0);
+      activity.practiceMcqs = Number(activity.practiceMcqs || 0);
+
+      if (quizSessionModeV10 === "due") activity.dueMcqs += 1;
+      else activity.practiceMcqs += 1;
+
+      db.stats.dailyActivity[key] = activity;
+    };
+
+    const baseAnswerQuizV10 = answerQuiz;
+    answerQuiz = function(letter) {
+      const item = currentQuizItem();
+      if (item && quizSessionModeV10 === "due" && !quizAnswers[item.id]) {
+        item.dueCompletedOn = activityDateKey();
+        item.dueLastResult = letter === item.correct ? "correct" : "incorrect";
+      }
+      return baseAnswerQuizV10(letter);
+    };
+
+    const baseTimeoutV10 = handleQuestionTimeout;
+    handleQuestionTimeout = function() {
+      const item = currentQuizItem();
+      if (item && quizSessionModeV10 === "due" && !quizAnswers[item.id]) {
+        item.dueCompletedOn = activityDateKey();
+        item.dueLastResult = "timeout";
+      }
+      return baseTimeoutV10();
+    };
+
+    const baseBuildQuizQueueV10 = buildQuizQueue;
+    buildQuizQueue = function(useMissed = false) {
+      quizSessionModeV10 = "practice";
+      quizDueSubjectV10 = "";
+      return baseBuildQuizQueueV10(useMissed);
+    };
+
+    const baseSaveQuizSessionV10 = saveQuizSession;
+    saveQuizSession = function(completed = false) {
+      baseSaveQuizSessionV10(completed);
+      if (completed || !quizQueue.length || quizIsComplete()) return;
+
+      try {
+        const session = JSON.parse(localStorage.getItem(QUIZ_SESSION_KEY));
+        if (!session) return;
+        session.quizSessionModeV10 = quizSessionModeV10;
+        session.quizDueSubjectV10 = quizDueSubjectV10;
+        localStorage.setItem(QUIZ_SESSION_KEY, JSON.stringify(session));
+      } catch {}
+    };
+
+    const baseLoadQuizSessionV10 = loadQuizSession;
+    loadQuizSession = function() {
+      const loaded = baseLoadQuizSessionV10();
+      if (!loaded) return false;
+
+      try {
+        const session = JSON.parse(localStorage.getItem(QUIZ_SESSION_KEY));
+        quizSessionModeV10 = session?.quizSessionModeV10 === "due" ? "due" : "practice";
+        quizDueSubjectV10 = session?.quizDueSubjectV10 || "";
+      } catch {
+        quizSessionModeV10 = "practice";
+        quizDueSubjectV10 = "";
+      }
+
+      return true;
+    };
+
+    const baseRecordQuizSessionV10 = recordQuizSessionV90;
+    recordQuizSessionV90 = function(correctItems, totalItems, pct) {
+      baseRecordQuizSessionV10(correctItems, totalItems, pct);
+
+      if (quizSessionModeV10 === "due" && Array.isArray(db.stats.quizSessions) && db.stats.quizSessions[0]) {
+        const session = db.stats.quizSessions[0];
+        if (session.startedAt === quizSessionStartedAt) {
+          session.label = `Daily Due · ${quizDueSubjectV10 || "All subjects"}`;
+          session.mode = "due";
+        }
+      }
+    };
+
+    const baseFinishQuizSessionV10 = finishQuizSession;
+    finishQuizSession = function(event) {
+      quizSessionModeV10 = "practice";
+      quizDueSubjectV10 = "";
+      return baseFinishQuizSessionV10(event);
+    };
+    window.finishQuizSession = finishQuizSession;
+
+    const baseShowScreenV10 = showScreen;
+    showScreen = function(name) {
+      const result = baseShowScreenV10(name);
+      if (name === "due") renderDueScreenV10();
+      return result;
+    };
+
+    const baseUpdateAllV10 = updateAll;
+    updateAll = function() {
+      const result = baseUpdateAllV10();
+      renderDueScreenV10();
+      return result;
+    };
+
+    function bindDueFeaturesV10() {
+      $("startAllDueBtn")?.addEventListener("click", () => startDueQuizV10(""));
+      $("openPracticeFromDueBtn")?.addEventListener("click", () => showScreen("quiz"));
+
+      document.querySelectorAll('.nav button[data-screen="due"]').forEach(button => {
+        button.addEventListener("click", () => renderDueScreenV10());
+      });
+    }
+
+    function initDueFeaturesV10() {
+      ensureDueStatsV10();
+      ensureDailyDueScheduleV10();
+      dueDateWatcherV10 = activityDateKey();
+      renderDueScreenV10();
+
+      setInterval(() => {
+        const current = activityDateKey();
+        if (current !== dueDateWatcherV10) {
+          dueDateWatcherV10 = current;
+          ensureDailyDueScheduleV10(true);
+          updateAll();
+          showToast("A new daily due schedule is ready");
+        }
+      }, 60000);
+    }
+
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
       navigator.serviceWorker.register("service-worker.js").catch(() => {});
     }
 
     bindEvents();
+    bindDueFeaturesV10();
+    initDueFeaturesV10();
     renderProfile();
     updateAll();
     buildReviewQueue();

@@ -1,28 +1,44 @@
-CPALE Recall Deck v9.0 — Professional Study OS
+CPALE Recall Deck v10.0 — MCQ Due Edition
 
-New productivity features:
-- Built-in focus timer with 25, 50, and 90-minute presets.
-- Timer persists across refreshes and continues while navigating the app.
-- Keyboard shortcut: F opens the focus timer.
-- Custom daily study goal in Profile.
-- Daily Study Pulse ring tracking flashcards rated and MCQs answered.
-- Seven-day activity rhythm with separate flashcard and MCQ bars.
-- Adaptive Growth Priorities based on MCQ misses and low-box flashcards.
-- Recent Quiz Runs with score, subject mix, timing mode, and completion time.
-- Completed quiz sessions are now stored in local performance history.
+What changed:
+- Removed the flashcard feature from the visible website.
+- The app is now focused entirely on CPALE-style MCQs.
+- Existing old flashcard data remains inside full JSON backups but is not shown in navigation or study workflows.
 
-Professional visual overhaul:
-- New analytics dashboard layer with polished study-intelligence panels.
-- Improved depth, typography hierarchy, spacing, and responsive behavior.
-- Subject-specific accents across progress cards.
-- Refined animated borders, ambient background, focus states, and entrance motion.
-- Professional, restrained animations with reduced-motion support.
-- Preserved the v8.1 quiz Finish flow and button interactions.
+Daily Due MCQs:
+- Selects one due subtopic for each available subject:
+  FAR, AFAR, MAS, Auditing, Taxation, and RFBT.
+- Selects up to five MCQs from each chosen subtopic.
+- Prioritizes weak performance, unanswered questions, low exposure, and time since the subtopic was last scheduled.
+- The schedule stays fixed during the day and refreshes at midnight Philippine time.
+- A due item is completed after it is answered, whether correct or incorrect.
+- Wrong answers continue to raise the subtopic's future priority.
 
-Data compatibility:
-- Existing flashcards, MCQs, progress, profile, imports, and Firebase presence remain compatible.
-- New activity analytics begin recording after installing v9.0.
-- JSON backups automatically include the new daily activity and quiz history fields.
+New Due screen:
+- Shows the selected due subtopic for every available subject.
+- Displays remaining questions, completion progress, and historical accuracy.
+- Allows starting one subject at a time or all remaining due questions.
+- Uses the existing quiz engine, explanations, timing mode, save/resume, and Finish flow.
+
+MCQ-only dashboard:
+- Due MCQs remaining
+- Total MCQ library
+- Due subtopics remaining
+- Today accuracy
+- Lifetime accuracy
+- Due versus free-practice activity
+- MCQ-only growth priorities and quiz history
+
+Preserved:
+- Professional visual system
+- Focus timer
+- Universal MCQ search
+- Import and MCQ prompt generator
+- Quick JSON backup
+- Firebase learners-online indicator
+- Fiery-eye opening screen
+- Sleeping night ghost
+- Existing MCQ library and statistics
 
 Files to upload:
 - index.html
@@ -31,7 +47,6 @@ Files to upload:
 - README.txt
 
 Open after updating:
-https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=90
+https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=100
 
-Safari cache:
-Refresh several times after deployment. If the previous version remains, clear website data for the GitHub Pages site and reopen the v=90 URL.
+If Safari shows the old version, refresh several times or clear website data for the GitHub Pages site.
