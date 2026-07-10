@@ -3,7 +3,7 @@
   "short_name": "CPALE Deck",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#020617",
-  "theme_color": "#0f172a",
-  "description": "A CPALE recall app with a sleeping ghost companion beside the day/night toggle."
+  "background_color": "#070b14",
+  "theme_color": "#070b14",
+  "description": "A polished CPALE active-recall command center with flashcards, quizzes, search, backup, progress tracking, and Firebase presence."
 }

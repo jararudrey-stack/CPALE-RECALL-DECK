@@ -1497,6 +1497,1094 @@
       }
     }
 
+
+    /* ============================
+       v8.0 — Focus Edition revamp
+       ============================ */
+    :root {
+      --bg: #070b14;
+      --panel: rgba(13, 20, 35, .78);
+      --panel-solid: #0f172a;
+      --card: #141f34;
+      --text: #f8fafc;
+      --muted: #9eabc0;
+      --soft: rgba(255,255,255,.055);
+      --line: rgba(148,163,184,.14);
+      --line-strong: rgba(148,163,184,.23);
+      --accent: #f7d354;
+      --accent2: #5bc8f5;
+      --good: #4ade80;
+      --warn: #fb923c;
+      --bad: #fb7185;
+      --purple: #b69cff;
+      --shadow: 0 22px 70px rgba(0,0,0,.34);
+      --shadow-soft: 0 12px 34px rgba(0,0,0,.22);
+      --radius: 24px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      position: relative;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 12% -6%, rgba(247,211,84,.12), transparent 25%),
+        radial-gradient(circle at 90% 4%, rgba(91,200,245,.12), transparent 27%),
+        radial-gradient(circle at 78% 92%, rgba(182,156,255,.10), transparent 28%),
+        linear-gradient(180deg, #070b14 0%, #080d18 48%, #060a12 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: .34;
+      background-image:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, black, transparent 82%);
+    }
+
+    .app {
+      width: min(1280px, 100%);
+      padding: 14px 20px max(34px, env(safe-area-inset-bottom));
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 55;
+      align-items: center;
+      padding: 14px 0 12px;
+      background: linear-gradient(180deg, rgba(7,11,20,.96) 0%, rgba(7,11,20,.78) 72%, transparent 100%);
+      backdrop-filter: blur(20px);
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .brand-kicker,
+    .eyebrow {
+      display: block;
+      margin-bottom: 6px;
+      color: #aeb9ca;
+      font-size: .69rem;
+      font-weight: 950;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .brand h1 {
+      font-size: clamp(1.65rem, 4vw, 2.35rem);
+      letter-spacing: -.052em;
+      line-height: 1;
+    }
+
+    .brand p {
+      margin-top: 7px;
+      max-width: 620px;
+      font-size: .9rem;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .save-state {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 42px;
+      padding: 0 11px;
+      border: 1px solid rgba(74,222,128,.16);
+      border-radius: 14px;
+      background: rgba(74,222,128,.055);
+      color: #bbf7d0;
+      font-size: .75rem;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .save-state-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--good);
+      box-shadow: 0 0 0 4px rgba(74,222,128,.09), 0 0 14px rgba(74,222,128,.25);
+    }
+
+    .utility-btn,
+    .user-pill {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.055);
+      color: var(--text);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+    }
+
+    .utility-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 14px;
+      padding: 9px 11px;
+      white-space: nowrap;
+      font-size: .82rem;
+    }
+
+    .utility-btn:hover,
+    .user-pill:hover {
+      border-color: var(--line-strong);
+      background: rgba(255,255,255,.085);
+      transform: translateY(-1px);
+    }
+
+    .utility-btn kbd,
+    .search-input-wrap kbd {
+      border: 1px solid rgba(255,255,255,.12);
+      border-bottom-color: rgba(255,255,255,.22);
+      border-radius: 7px;
+      background: rgba(2,6,23,.58);
+      color: var(--muted);
+      padding: 3px 6px;
+      font-size: .66rem;
+      font-family: inherit;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .backup-btn {
+      color: #dff4ff;
+    }
+
+    .user-pill {
+      padding: 7px 10px 7px 7px;
+      border-radius: 15px;
+      text-align: left;
+    }
+
+    .avatar {
+      width: 31px;
+      height: 31px;
+      background:
+        linear-gradient(145deg, #ffe88a, #f7c948);
+      box-shadow: 0 5px 16px rgba(247,211,84,.18);
+    }
+
+    .user-copy {
+      display: grid;
+      line-height: 1.05;
+      gap: 3px;
+    }
+
+    .user-copy small {
+      color: var(--muted);
+      font-size: .62rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .nav {
+      position: sticky;
+      top: 82px;
+      z-index: 50;
+      gap: 5px;
+      margin: 0 0 17px;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(9,14,25,.82);
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .nav button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      flex: 1 0 auto;
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 0;
+      border-radius: 13px;
+      background: transparent;
+      color: #aeb9ca;
+      font-size: .81rem;
+    }
+
+    .nav button:hover {
+      background: rgba(255,255,255,.055);
+      color: var(--text);
+    }
+
+    .nav button.active {
+      background:
+        linear-gradient(145deg, rgba(247,211,84,.98), rgba(244,190,52,.96));
+      color: #172033;
+      box-shadow: 0 8px 24px rgba(247,211,84,.13);
+    }
+
+    .nav-icon {
+      font-size: .93rem;
+      line-height: 1;
+    }
+
+    .panel {
+      position: relative;
+      border-color: var(--line);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.024), transparent 42%),
+        var(--panel);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+    }
+
+    .pad {
+      padding: 20px;
+    }
+
+    .countdown-panel {
+      border-radius: 30px;
+      margin-bottom: 14px;
+      background:
+        radial-gradient(circle at 8% 0%, rgba(91,200,245,.14), transparent 32%),
+        radial-gradient(circle at 92% 2%, rgba(182,156,255,.17), transparent 34%),
+        radial-gradient(circle at 52% 100%, rgba(247,211,84,.075), transparent 35%),
+        linear-gradient(135deg, rgba(7,13,27,.98), rgba(14,22,39,.95));
+      box-shadow: 0 25px 80px rgba(0,0,0,.32);
+    }
+
+    .countdown-top-row {
+      padding-bottom: 4px;
+    }
+
+    .today-line {
+      font-size: .8rem;
+      letter-spacing: .01em;
+    }
+
+    .clock-chip,
+    .online-chip {
+      background: rgba(4,9,19,.54);
+      border-color: rgba(148,163,184,.15);
+    }
+
+    .mission-card {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 17px 18px;
+      border: 1px solid rgba(247,211,84,.16);
+      border-radius: 23px;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(247,211,84,.11), transparent 32%),
+        linear-gradient(140deg, rgba(17,25,42,.94), rgba(10,16,29,.90));
+      box-shadow: var(--shadow-soft);
+    }
+
+    .mission-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: rgba(247,211,84,.13);
+      border: 1px solid rgba(247,211,84,.22);
+      color: #ffe88a;
+      font-size: 1.15rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .mission-copy {
+      min-width: 0;
+    }
+
+    .mission-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .mission-label {
+      color: #d3dbe7;
+      font-size: .69rem;
+      font-weight: 950;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .mission-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(91,200,245,.10);
+      border: 1px solid rgba(91,200,245,.20);
+      color: #c9efff;
+      font-size: .68rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .mission-copy h2 {
+      margin: 0;
+      font-size: clamp(1.08rem, 3vw, 1.42rem);
+      letter-spacing: -.035em;
+    }
+
+    .mission-copy p {
+      margin: 5px 0 10px;
+      color: var(--muted);
+      line-height: 1.42;
+      font-size: .86rem;
+    }
+
+    .mission-progress {
+      height: 5px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.075);
+    }
+
+    .mission-progress span {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width .35s ease;
+    }
+
+    .dashboard-overview {
+      border-radius: 27px;
+    }
+
+    .section-heading-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-heading-row .section-title {
+      margin-bottom: 0;
+    }
+
+    .dashboard-date {
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 850;
+    }
+
+    .stat-grid {
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .stat {
+      position: relative;
+      min-height: 104px;
+      padding: 14px;
+      border-color: rgba(148,163,184,.12);
+      background:
+        linear-gradient(150deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+      overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .stat:hover {
+      transform: translateY(-2px);
+      border-color: var(--line-strong);
+      background:
+        linear-gradient(150deg, rgba(255,255,255,.075), rgba(255,255,255,.025));
+    }
+
+    .stat::after {
+      content: "";
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      right: -30px;
+      bottom: -38px;
+      border-radius: 50%;
+      background: var(--stat-glow, rgba(247,211,84,.12));
+      filter: blur(2px);
+    }
+
+    .stat-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 25px;
+      height: 25px;
+      margin-bottom: 9px;
+      border-radius: 9px;
+      background: rgba(255,255,255,.075);
+      color: #e9eef7;
+      font-size: .75rem;
+      font-weight: 950;
+    }
+
+    .stat b {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(1.45rem, 4vw, 2rem);
+      margin-bottom: 3px;
+    }
+
+    .stat-due { --stat-glow: rgba(247,211,84,.15); }
+    .stat-mcq { --stat-glow: rgba(91,200,245,.14); }
+    .stat-streak { --stat-glow: rgba(251,146,60,.14); }
+    .stat-card-accuracy,
+    .stat-quiz-accuracy { --stat-glow: rgba(74,222,128,.12); }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 9px;
+    }
+
+    .quick-action {
+      display: grid;
+      grid-template-columns: 38px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      min-height: 78px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.045);
+      color: var(--text);
+      text-align: left;
+    }
+
+    .quick-action:hover {
+      transform: translateY(-2px);
+      border-color: var(--line-strong);
+      background: rgba(255,255,255,.07);
+    }
+
+    .quick-action-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: rgba(255,255,255,.07);
+      color: #fff0aa;
+      font-size: .95rem;
+    }
+
+    .quick-action strong {
+      display: block;
+      font-size: .87rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .quick-action small {
+      display: block;
+      color: var(--muted);
+      font-size: .7rem;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    .quick-arrow {
+      color: var(--muted);
+      font-size: 1rem;
+      transition: transform .18s ease, color .18s ease;
+    }
+
+    .quick-action:hover .quick-arrow {
+      transform: translateX(3px);
+      color: var(--text);
+    }
+
+    .primary-action {
+      background:
+        linear-gradient(145deg, rgba(247,211,84,.13), rgba(255,255,255,.025));
+      border-color: rgba(247,211,84,.17);
+    }
+
+    .quiz-action {
+      background:
+        linear-gradient(145deg, rgba(91,200,245,.12), rgba(255,255,255,.025));
+      border-color: rgba(91,200,245,.16);
+    }
+
+    .dashboard-lower-grid {
+      margin-top: 14px;
+      grid-template-columns: minmax(0,1fr) 340px;
+    }
+
+    .subject-panel,
+    .strategy-panel {
+      border-radius: 27px;
+    }
+
+    .decks {
+      gap: 9px;
+    }
+
+    .deck {
+      position: relative;
+      min-height: 126px;
+      padding: 15px;
+      border-color: rgba(148,163,184,.12);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(91,200,245,.06), transparent 38%),
+        linear-gradient(145deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
+      overflow: hidden;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .deck:hover {
+      transform: translateY(-2px);
+      border-color: var(--line-strong);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(91,200,245,.10), transparent 38%),
+        linear-gradient(145deg, rgba(255,255,255,.07), rgba(255,255,255,.022));
+    }
+
+    .deck strong {
+      font-size: 1.06rem;
+      letter-spacing: -.02em;
+    }
+
+    .deck .progress {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      height: 6px;
+    }
+
+    .deck .bar {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    .strategy-panel {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(182,156,255,.12), transparent 34%),
+        var(--panel);
+    }
+
+    .strategy-step {
+      display: grid;
+      grid-template-columns: 29px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 11px 0;
+      border-top: 1px solid rgba(148,163,184,.10);
+    }
+
+    .strategy-step:first-of-type {
+      border-top: 0;
+    }
+
+    .strategy-step > span {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: rgba(182,156,255,.10);
+      border: 1px solid rgba(182,156,255,.16);
+      color: #ded5ff;
+      font-size: .66rem;
+      font-weight: 950;
+    }
+
+    .strategy-step p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.4;
+    }
+
+    .strategy-step strong {
+      color: var(--text);
+    }
+
+    .backup-status-card {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+      padding: 11px;
+      border-radius: 16px;
+      border: 1px solid rgba(91,200,245,.13);
+      background: rgba(91,200,245,.055);
+    }
+
+    .backup-status-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: rgba(91,200,245,.10);
+      color: #c9efff;
+    }
+
+    .backup-status-card strong,
+    .backup-status-card small {
+      display: block;
+    }
+
+    .backup-status-card strong {
+      font-size: .8rem;
+    }
+
+    .backup-status-card small {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: .69rem;
+      line-height: 1.3;
+    }
+
+    .hero-card,
+    .quiz-card {
+      border-radius: 28px;
+      border-color: rgba(148,163,184,.14);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(91,200,245,.08), transparent 34%),
+        radial-gradient(circle at 0% 100%, rgba(182,156,255,.07), transparent 34%),
+        linear-gradient(145deg, rgba(25,37,60,.96), rgba(14,22,38,.96));
+      box-shadow: var(--shadow-soft);
+    }
+
+    .question {
+      letter-spacing: -.034em;
+    }
+
+    button {
+      min-height: 44px;
+      border-radius: 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    button:hover {
+      filter: brightness(1.035);
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 2px solid rgba(91,200,245,.80);
+      outline-offset: 2px;
+    }
+
+    input,
+    select,
+    textarea {
+      min-height: 46px;
+      border-radius: 14px;
+      border-color: rgba(148,163,184,.14);
+      background: rgba(3,8,18,.70);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #738096;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(91,200,245,.55);
+      box-shadow: 0 0 0 3px rgba(91,200,245,.09);
+    }
+
+    .choice {
+      min-height: 62px;
+      border-radius: 17px;
+      background: rgba(255,255,255,.045);
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    .choice:hover {
+      transform: translateY(-1px);
+      border-color: rgba(91,200,245,.30);
+      background: rgba(91,200,245,.075);
+    }
+
+    .choice .letter {
+      border-radius: 11px;
+      background: rgba(255,255,255,.075);
+    }
+
+    .quiz-actions-v40 {
+      position: sticky;
+      bottom: max(8px, env(safe-area-inset-bottom));
+      z-index: 18;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(8,13,24,.90);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 14px 40px rgba(0,0,0,.28);
+    }
+
+    .list {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(148,163,184,.28) transparent;
+    }
+
+    .list-item {
+      border-radius: 15px;
+      background: rgba(255,255,255,.038);
+      transition: background .16s ease, border-color .16s ease, transform .16s ease;
+    }
+
+    .list-item:hover {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: rgba(255,255,255,.065);
+    }
+
+    .toast {
+      bottom: max(20px, calc(env(safe-area-inset-bottom) + 12px));
+      border-radius: 14px;
+      background: rgba(8,13,24,.94);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 18px 48px rgba(0,0,0,.32);
+    }
+
+    .modal-backdrop {
+      background: rgba(1,4,11,.76);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal {
+      border-color: rgba(148,163,184,.18);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(91,200,245,.07), transparent 30%),
+        #0c1424;
+      box-shadow: 0 30px 100px rgba(0,0,0,.55);
+    }
+
+    .search-modal {
+      width: min(760px, 100%);
+      padding: 20px;
+    }
+
+    .compact-btn {
+      min-height: 38px;
+      padding: 8px 12px;
+    }
+
+    .search-input-wrap {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      border: 1px solid rgba(91,200,245,.20);
+      border-radius: 17px;
+      background: rgba(3,8,18,.75);
+      box-shadow: 0 0 0 3px rgba(91,200,245,.035);
+    }
+
+    .search-input-wrap input {
+      min-height: 38px;
+      padding: 6px 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .search-input-icon {
+      color: #c9efff;
+      font-size: 1.1rem;
+    }
+
+    .search-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 10px 2px;
+      color: var(--muted);
+      font-size: .74rem;
+    }
+
+    .search-results {
+      max-height: min(56vh, 520px);
+      overflow: auto;
+      display: grid;
+      gap: 7px;
+      padding-right: 3px;
+    }
+
+    .search-empty {
+      padding: 26px 18px;
+      border: 1px dashed rgba(148,163,184,.17);
+      border-radius: 17px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: .84rem;
+    }
+
+    .search-result {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 11px;
+      align-items: center;
+      min-height: 72px;
+      width: 100%;
+      padding: 11px;
+      border: 1px solid rgba(148,163,184,.12);
+      border-radius: 16px;
+      background: rgba(255,255,255,.035);
+      color: var(--text);
+      text-align: left;
+    }
+
+    .search-result:hover {
+      transform: translateY(-1px);
+      border-color: rgba(91,200,245,.25);
+      background: rgba(91,200,245,.06);
+    }
+
+    .search-result-kind {
+      display: grid;
+      place-items: center;
+      min-height: 34px;
+      padding: 5px;
+      border-radius: 10px;
+      background: rgba(91,200,245,.09);
+      color: #c9efff;
+      font-size: .63rem;
+      font-weight: 950;
+      letter-spacing: .07em;
+    }
+
+    .search-result-main {
+      min-width: 0;
+    }
+
+    .search-result-main strong {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      margin-bottom: 4px;
+      font-size: .85rem;
+      line-height: 1.35;
+    }
+
+    .search-result-main small {
+      display: block;
+      color: var(--muted);
+      font-size: .69rem;
+      line-height: 1.3;
+    }
+
+    .search-result-arrow {
+      color: var(--muted);
+    }
+
+    .login-wrap {
+      background:
+        radial-gradient(circle at 20% 0%, rgba(247,211,84,.13), transparent 29%),
+        radial-gradient(circle at 85% 5%, rgba(91,200,245,.12), transparent 30%),
+        linear-gradient(180deg, #070b14, #080d18);
+    }
+
+    .login-card {
+      border-color: rgba(148,163,184,.16);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(182,156,255,.10), transparent 30%),
+        rgba(13,20,35,.90);
+      box-shadow: 0 30px 100px rgba(0,0,0,.42);
+    }
+
+    @media (max-width: 1040px) {
+      .topbar {
+        position: relative;
+        align-items: flex-start;
+      }
+
+      .top-actions {
+        justify-content: flex-start;
+      }
+
+      .nav {
+        top: 6px;
+      }
+
+      .dashboard-lower-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        padding: 10px 12px max(28px, env(safe-area-inset-bottom));
+      }
+
+      .topbar {
+        position: relative;
+        padding-top: 8px;
+      }
+
+      .brand p {
+        font-size: .82rem;
+      }
+
+      .top-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .save-state {
+        display: none;
+      }
+
+      .utility-btn {
+        width: 100%;
+      }
+
+      .user-pill {
+        grid-column: span 2;
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .nav {
+        top: 6px;
+        border-radius: 16px;
+        justify-content: flex-start;
+      }
+
+      .nav button {
+        flex: 0 0 auto;
+        min-width: 88px;
+      }
+
+      .mission-card {
+        grid-template-columns: 40px 1fr;
+        padding: 14px;
+      }
+
+      .mission-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 13px;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+
+      .stat-grid .stat:first-child {
+        grid-column: auto;
+      }
+
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-action {
+        min-height: 68px;
+      }
+
+      .section-heading-row {
+        align-items: flex-start;
+      }
+
+      .search-result {
+        grid-template-columns: 48px 1fr auto;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .brand h1 {
+        font-size: 1.55rem;
+      }
+
+      .top-actions {
+        gap: 7px;
+      }
+
+      .utility-btn {
+        font-size: .76rem;
+      }
+
+      .utility-btn kbd {
+        display: none;
+      }
+
+      .pad {
+        padding: 16px;
+      }
+
+      .countdown-panel,
+      .dashboard-overview,
+      .subject-panel,
+      .strategy-panel {
+        border-radius: 23px;
+      }
+
+      .mission-topline {
+        align-items: flex-start;
+      }
+
+      .mission-badge {
+        font-size: .61rem;
+      }
+
+      .search-modal {
+        padding: 15px;
+      }
+
+      .search-result {
+        grid-template-columns: 43px 1fr;
+      }
+
+      .search-result-arrow {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+      }
+    }
+
 </style>
 </head>
 <body>
@@ -1529,24 +2617,44 @@
   <main id="mainApp" class="app hidden">
     <header class="topbar">
       <div class="brand">
+        <div class="brand-kicker">Your CPALE command center</div>
         <h1>CPALE Recall Deck</h1>
         <p id="subtitle">Flashcards + CPALE-style multiple choice quizzes.</p>
       </div>
-      <button class="user-pill" id="profileBtn" title="Edit profile">
-        <span class="avatar" id="avatar">R</span>
-        <span id="userLabel">Student</span>
-      </button>
+
+      <div class="top-actions">
+        <span class="save-state" id="saveState" title="Your library is automatically saved in this browser">
+          <span class="save-state-dot"></span>
+          Saved locally
+        </span>
+        <button class="utility-btn" id="globalSearchBtn" title="Search cards and MCQs">
+          <span aria-hidden="true">⌕</span>
+          <span>Search</span>
+          <kbd>/</kbd>
+        </button>
+        <button class="utility-btn backup-btn" id="quickBackupBtn" title="Export a full JSON backup">
+          <span aria-hidden="true">⇩</span>
+          <span id="quickBackupLabel">Quick backup</span>
+        </button>
+        <button class="user-pill" id="profileBtn" title="Edit profile">
+          <span class="avatar" id="avatar">R</span>
+          <span class="user-copy">
+            <small>Reviewer</small>
+            <span id="userLabel">Student</span>
+          </span>
+        </button>
+      </div>
     </header>
 
-    <nav class="nav">
-      <button data-screen="dashboard" class="active">Dashboard</button>
-      <button data-screen="review">Review</button>
-      <button data-screen="quiz">Quiz</button>
-      <button data-screen="decks">Decks</button>
-      <button data-screen="cards">Cards</button>
-      <button data-screen="mcq">MCQs</button>
-      <button data-screen="import">Import</button>
-      <button data-screen="backup">Backup</button>
+    <nav class="nav" aria-label="Main navigation">
+      <button data-screen="dashboard" class="active"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
+      <button data-screen="review"><span class="nav-icon">↻</span><span>Review</span></button>
+      <button data-screen="quiz"><span class="nav-icon">◎</span><span>Quiz</span></button>
+      <button data-screen="decks"><span class="nav-icon">▦</span><span>Decks</span></button>
+      <button data-screen="cards"><span class="nav-icon">✦</span><span>Cards</span></button>
+      <button data-screen="mcq"><span class="nav-icon">◈</span><span>MCQs</span></button>
+      <button data-screen="import"><span class="nav-icon">⇧</span><span>Import</span></button>
+      <button data-screen="backup"><span class="nav-icon">⤓</span><span>Backup</span></button>
     </nav>
 
     <section id="dashboard" class="screen active">
@@ -1618,35 +2726,89 @@
         </div>
       </div>
 
-      <div class="panel pad">
-        <h2 class="section-title">Today’s dashboard</h2>
-        <div class="stat-grid">
-          <div class="stat"><b id="dashDue">0</b><span>Due flashcards</span></div>
-          <div class="stat"><b id="dashTotal">0</b><span>Total flashcards</span></div>
-          <div class="stat"><b id="dashMCQ">0</b><span>MCQ items</span></div>
-          <div class="stat"><b id="dashStreak">0</b><span>Day streak</span></div>
-          <div class="stat"><b id="dashAccuracy">0%</b><span>Flashcard accuracy</span></div>
-          <div class="stat"><b id="dashQuizAccuracy">0%</b><span>Quiz accuracy</span></div>
-        </div>
-        <div class="three-col">
-          <button id="startDueBtn">Start due review</button>
-          <button class="blue" id="startQuizBtn">Start MCQ quiz</button>
-          <button class="secondary" data-screen-link="import">Import cards</button>
+      <div class="mission-card" id="studyMission">
+        <div class="mission-icon" aria-hidden="true">✦</div>
+        <div class="mission-copy">
+          <div class="mission-topline">
+            <span class="mission-label">Recommended next move</span>
+            <span class="mission-badge" id="missionBadge">Ready</span>
+          </div>
+          <h2 id="missionHeadline">Build today’s momentum</h2>
+          <p id="missionText">Your study plan will appear here.</p>
+          <div class="mission-progress"><span id="missionProgress"></span></div>
         </div>
       </div>
 
-      <div class="grid" style="margin-top:16px;">
-        <div class="panel pad">
-          <h2 class="section-title">Subject progress</h2>
+      <div class="panel pad dashboard-overview">
+        <div class="section-heading-row">
+          <div>
+            <span class="eyebrow">Performance snapshot</span>
+            <h2 class="section-title">Today’s dashboard</h2>
+          </div>
+          <span class="dashboard-date" id="dashboardDateLabel">Live</span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat stat-due"><span class="stat-icon">↻</span><b id="dashDue">0</b><span>Due flashcards</span></div>
+          <div class="stat stat-total"><span class="stat-icon">✦</span><b id="dashTotal">0</b><span>Total flashcards</span></div>
+          <div class="stat stat-mcq"><span class="stat-icon">◎</span><b id="dashMCQ">0</b><span>MCQ items</span></div>
+          <div class="stat stat-streak"><span class="stat-icon">♨</span><b id="dashStreak">0</b><span>Day streak</span></div>
+          <div class="stat stat-card-accuracy"><span class="stat-icon">✓</span><b id="dashAccuracy">0%</b><span>Flashcard accuracy</span></div>
+          <div class="stat stat-quiz-accuracy"><span class="stat-icon">◈</span><b id="dashQuizAccuracy">0%</b><span>Quiz accuracy</span></div>
+        </div>
+
+        <div class="quick-actions">
+          <button class="quick-action primary-action" id="startDueBtn">
+            <span class="quick-action-icon">↻</span>
+            <span><strong>Start due review</strong><small>Clear today’s spaced-repetition queue</small></span>
+            <span class="quick-arrow">→</span>
+          </button>
+          <button class="quick-action quiz-action" id="startQuizBtn">
+            <span class="quick-action-icon">◎</span>
+            <span><strong>Start MCQ quiz</strong><small>Practice CPALE-style application</small></span>
+            <span class="quick-arrow">→</span>
+          </button>
+          <button class="quick-action import-action" data-screen-link="import">
+            <span class="quick-action-icon">⇧</span>
+            <span><strong>Import material</strong><small>Add a fresh CSV question bank</small></span>
+            <span class="quick-arrow">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid dashboard-lower-grid">
+        <div class="panel pad subject-panel">
+          <div class="section-heading-row">
+            <div>
+              <span class="eyebrow">Mastery map</span>
+              <h2 class="section-title">Subject progress</h2>
+            </div>
+            <span class="muted tiny">Tap a subject to launch a quiz</span>
+          </div>
           <div class="decks" id="dashboardDecks"></div>
         </div>
-        <aside class="panel pad">
-          <h2 class="section-title">Study rule</h2>
-          <p class="muted small">
-            Use flashcards for mastery. Use MCQ quizzes for CPALE-style application. When you miss a question, read the explanation and convert the trap into a flashcard.
-          </p>
-          <div class="divider"></div>
-          <p class="muted small" id="examCountdownAside">Your live countdown now appears at the top of the dashboard.</p>
+        <aside class="panel pad strategy-panel">
+          <span class="eyebrow">Review strategy</span>
+          <h2 class="section-title">Study smarter</h2>
+          <div class="strategy-step">
+            <span>01</span>
+            <p><strong>Recall first.</strong> Answer before revealing the flashcard.</p>
+          </div>
+          <div class="strategy-step">
+            <span>02</span>
+            <p><strong>Apply second.</strong> Use MCQs to expose CPALE traps.</p>
+          </div>
+          <div class="strategy-step">
+            <span>03</span>
+            <p><strong>Capture mistakes.</strong> Convert weak concepts into cards.</p>
+          </div>
+          <div class="backup-status-card">
+            <span class="backup-status-icon">⇩</span>
+            <div>
+              <strong id="backupStatusTitle">Backup recommended</strong>
+              <small id="backupStatusText">Protect your library with a JSON export.</small>
+            </div>
+          </div>
         </aside>
       </div>
     </section>
@@ -1707,7 +2869,7 @@
       <div class="grid">
         <div>
           <div class="panel pad">
-            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v7.0 controls</span></h2>
+            <h2 class="section-title">CPALE-style MCQ quiz <span class="quiz-version-v40">v8.0 controls</span></h2>
             <div class="three-col">
               <select id="quizDeckFilter"></select>
               <select id="quizSubjectFilter"></select>
@@ -1900,7 +3062,7 @@
         <div class="panel pad">
           <h2 class="section-title">Import flashcards or MCQs</h2>
           <p class="muted small">Choose whether you are importing flashcards or CPALE-style multiple choice questions.</p>
-          <p class="muted tiny">v7.0 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
+          <p class="muted tiny">v8.0 grouping: new MCQs are merged into the existing subject + deck/topic when names match; Auditing General is reinstated as the broad Auditing container. Decks stay in upload order, with each subject’s General deck first.</p>
           <div class="stack">
             <select id="importType">
               <option value="cards">Flashcards CSV / Q&A</option>
@@ -1977,6 +3139,27 @@
       </div>
     </section>
   </main>
+
+  <div class="modal-backdrop search-backdrop" id="searchModal">
+    <div class="modal search-modal" role="dialog" aria-modal="true" aria-labelledby="searchModalTitle">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow">Universal library search</span>
+          <h2 id="searchModalTitle">Find anything instantly</h2>
+        </div>
+        <button class="secondary compact-btn" id="closeSearchBtn">Close</button>
+      </div>
+      <div class="search-input-wrap">
+        <span class="search-input-icon">⌕</span>
+        <input id="globalSearchInput" type="search" placeholder="Search questions, answers, topics, or decks..." autocomplete="off" />
+        <kbd>ESC</kbd>
+      </div>
+      <div class="search-meta">
+        <span id="searchMetaText">Search across your flashcards and MCQs.</span>
+      </div>
+      <div class="search-results" id="globalSearchResults"></div>
+    </div>
+  </div>
 
   <div class="modal-backdrop" id="profileModal">
     <div class="modal">
@@ -2464,9 +3647,13 @@
     const el = {
       loginScreen: $("loginScreen"), mainApp: $("mainApp"), profileName: $("profileName"), targetExam: $("targetExam"), startBtn: $("startBtn"),
       userLabel: $("userLabel"), avatar: $("avatar"), subtitle: $("subtitle"), profileBtn: $("profileBtn"), profileModal: $("profileModal"),
+      globalSearchBtn: $("globalSearchBtn"), quickBackupBtn: $("quickBackupBtn"), quickBackupLabel: $("quickBackupLabel"), saveState: $("saveState"),
+      searchModal: $("searchModal"), closeSearchBtn: $("closeSearchBtn"), globalSearchInput: $("globalSearchInput"), globalSearchResults: $("globalSearchResults"), searchMetaText: $("searchMetaText"),
       profileNameEdit: $("profileNameEdit"), targetExamEdit: $("targetExamEdit"), saveProfileBtn: $("saveProfileBtn"), closeProfileBtn: $("closeProfileBtn"), toast: $("toast"),
 
       dashDue: $("dashDue"), dashTotal: $("dashTotal"), dashMCQ: $("dashMCQ"), dashStreak: $("dashStreak"), dashAccuracy: $("dashAccuracy"), dashQuizAccuracy: $("dashQuizAccuracy"),
+      missionBadge: $("missionBadge"), missionHeadline: $("missionHeadline"), missionText: $("missionText"), missionProgress: $("missionProgress"), dashboardDateLabel: $("dashboardDateLabel"),
+      backupStatusTitle: $("backupStatusTitle"), backupStatusText: $("backupStatusText"),
       dashboardDecks: $("dashboardDecks"), examCountdownPanel: $("examCountdownPanel"), examCountdownLabel: $("examCountdownLabel"), todayLabel: $("todayLabel"), daysLeftValue: $("daysLeftValue"), progressPercent: $("progressPercent"), bottleLiquid: $("bottleLiquid"), liveClock: $("liveClock"), sleepGhostWrap: $("sleepGhostWrap"), dayNightToggle: $("dayNightToggle"), dayNightOrb: $("dayNightOrb"), startDueBtn: $("startDueBtn"), startQuizBtn: $("startQuizBtn"),
 
       reviewDeckFilter: $("reviewDeckFilter"), reviewMode: $("reviewMode"), reviewCard: $("reviewCard"),
@@ -2754,7 +3941,7 @@
       el.avatar.textContent = name.trim().charAt(0).toUpperCase() || "S";
 
       const info = targetExamInfo();
-      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v7.0` : "Flashcards + CPALE-style multiple choice quizzes. v7.0";
+      el.subtitle.textContent = info ? `Target: ${info.label}. Review smarter, not just longer. v8.0` : "Flashcards + CPALE-style multiple choice quizzes. v8.0";
       el.profileNameEdit.value = profile.name || "";
       el.targetExamEdit.value = profile.targetExam || "";
       renderTodayLine();
@@ -2792,6 +3979,239 @@
       if (el.bottleLiquid) el.bottleLiquid.style.setProperty("--fill-level", `${progress}%`);
     }
 
+
+    const LAST_BACKUP_KEY = "cpale_recall_last_json_backup";
+
+    function escapeSearchRegex(value) {
+      return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function formatRelativeTime(iso) {
+      if (!iso) return "";
+      const time = new Date(iso).getTime();
+      if (!Number.isFinite(time)) return "";
+      const diff = Date.now() - time;
+      const minute = 60 * 1000;
+      const hour = 60 * minute;
+      const day = 24 * hour;
+      if (diff < minute) return "just now";
+      if (diff < hour) return `${Math.floor(diff / minute)}m ago`;
+      if (diff < day) return `${Math.floor(diff / hour)}h ago`;
+      const days = Math.floor(diff / day);
+      return days === 1 ? "yesterday" : `${days} days ago`;
+    }
+
+    function updateBackupStatus() {
+      const last = localStorage.getItem(LAST_BACKUP_KEY);
+      const relative = formatRelativeTime(last);
+
+      if (el.quickBackupLabel) {
+        el.quickBackupLabel.textContent = relative ? `Backed up ${relative}` : "Quick backup";
+      }
+
+      if (el.backupStatusTitle && el.backupStatusText) {
+        if (!last) {
+          el.backupStatusTitle.textContent = "Backup recommended";
+          el.backupStatusText.textContent = "Protect your library with a full JSON export.";
+          return;
+        }
+
+        const ageDays = (Date.now() - new Date(last).getTime()) / (24 * 60 * 60 * 1000);
+        if (ageDays <= 3) {
+          el.backupStatusTitle.textContent = "Backup is current";
+          el.backupStatusText.textContent = `Last full backup: ${relative}.`;
+        } else {
+          el.backupStatusTitle.textContent = "Your backup is getting old";
+          el.backupStatusText.textContent = `Last full backup: ${relative}. Export another copy soon.`;
+        }
+      }
+    }
+
+    function renderStudyMission() {
+      const due = dueCards().length;
+      const totalCards = db.cards.length;
+      const weak = db.cards.filter(card => Number(card.box || 1) <= 2).length;
+      const mcqs = db.mcqs.length;
+      const streak = currentStreak();
+      const mastered = db.cards.filter(card => Number(card.box || 1) >= 5).length;
+      const mastery = totalCards ? Math.round((mastered / totalCards) * 100) : 0;
+
+      if (el.dashboardDateLabel) {
+        el.dashboardDateLabel.textContent = new Intl.DateTimeFormat("en-PH", {
+          timeZone: "Asia/Manila",
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        }).format(new Date());
+      }
+
+      if (!el.missionHeadline || !el.missionText || !el.missionBadge || !el.missionProgress) return;
+
+      let headline = "Build today’s momentum";
+      let copy = "Add a few cards or MCQs, then begin a focused review session.";
+      let badge = "Ready";
+      let progress = Math.max(8, mastery);
+
+      if (due > 0) {
+        headline = `Clear ${due} due card${due === 1 ? "" : "s"} first`;
+        copy = `Finish the spaced-repetition queue, then reinforce the weakest topic with a 10-item MCQ set.`;
+        badge = `${weak} weak`;
+        progress = Math.max(8, Math.min(100, 100 - Math.round((due / Math.max(totalCards, 1)) * 100)));
+      } else if (mcqs > 0) {
+        headline = "Your recall queue is clear";
+        copy = `Keep the streak alive with a mixed MCQ quiz${weak ? `, then revisit ${weak} weak card${weak === 1 ? "" : "s"}` : ""}.`;
+        badge = streak ? `${streak}-day streak` : "Quiz ready";
+        progress = Math.max(18, mastery);
+      }
+
+      el.missionHeadline.textContent = headline;
+      el.missionText.textContent = copy;
+      el.missionBadge.textContent = badge;
+      el.missionProgress.style.width = `${Math.max(0, Math.min(100, progress))}%`;
+    }
+
+    function librarySearchItems(query) {
+      const needle = String(query || "").trim().toLowerCase();
+      if (!needle) return [];
+
+      const scoreText = (text) => {
+        const hay = String(text || "").toLowerCase();
+        if (!hay.includes(needle)) return 0;
+        if (hay === needle) return 5;
+        if (hay.startsWith(needle)) return 4;
+        return 2;
+      };
+
+      const items = [];
+
+      db.cards.forEach(card => {
+        const deck = getDeck(card.deckId);
+        const score =
+          scoreText(card.question) * 3 +
+          scoreText(card.answer) * 2 +
+          scoreText(card.topic) * 2 +
+          scoreText(deck.name) +
+          scoreText(card.subject);
+        if (score > 0) {
+          items.push({
+            kind: "card",
+            id: card.id,
+            score,
+            title: card.question,
+            meta: `${card.subject} · ${deck.name}${card.topic ? ` · ${card.topic}` : ""}`
+          });
+        }
+      });
+
+      db.mcqs.forEach(item => {
+        const deck = getDeck(item.deckId);
+        const choices = [item.A, item.B, item.C, item.D].join(" ");
+        const score =
+          scoreText(item.question) * 3 +
+          scoreText(item.explanation) * 2 +
+          scoreText(choices) +
+          scoreText(item.topic) * 2 +
+          scoreText(deck.name) +
+          scoreText(item.subject);
+        if (score > 0) {
+          items.push({
+            kind: "mcq",
+            id: item.id,
+            score,
+            title: item.question,
+            meta: `${item.subject} · ${deck.name}${item.topic ? ` · ${item.topic}` : ""}`
+          });
+        }
+      });
+
+      return items
+        .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
+        .slice(0, 18);
+    }
+
+    function renderGlobalSearch() {
+      if (!el.globalSearchResults || !el.globalSearchInput) return;
+      const query = el.globalSearchInput.value.trim();
+
+      if (!query) {
+        if (el.searchMetaText) {
+          el.searchMetaText.textContent = `${db.cards.length} flashcards · ${db.mcqs.length} MCQs`;
+        }
+        el.globalSearchResults.innerHTML = `
+          <div class="search-empty">
+            Search a concept, topic, question, answer, or deck name.<br>
+            Tap a result to jump directly to the matching library.
+          </div>`;
+        return;
+      }
+
+      const results = librarySearchItems(query);
+      if (el.searchMetaText) {
+        el.searchMetaText.textContent = `${results.length} result${results.length === 1 ? "" : "s"} for “${query}”`;
+      }
+
+      if (!results.length) {
+        el.globalSearchResults.innerHTML = `<div class="search-empty">No matching flashcards or MCQs were found.</div>`;
+        return;
+      }
+
+      el.globalSearchResults.innerHTML = results.map(result => `
+        <button class="search-result" data-search-kind="${result.kind}" data-search-id="${escapeHTML(result.id)}">
+          <span class="search-result-kind">${result.kind === "card" ? "CARD" : "MCQ"}</span>
+          <span class="search-result-main">
+            <strong>${escapeHTML(result.title)}</strong>
+            <small>${escapeHTML(result.meta)}</small>
+          </span>
+          <span class="search-result-arrow">→</span>
+        </button>
+      `).join("");
+
+      el.globalSearchResults.querySelectorAll("[data-search-kind]").forEach(button => {
+        button.addEventListener("click", () => {
+          const kind = button.dataset.searchKind;
+          const id = button.dataset.searchId;
+
+          if (kind === "card") {
+            const card = db.cards.find(item => item.id === id);
+            if (card) {
+              el.cardDeckFilter.value = "all";
+              el.cardSearch.value = card.question.slice(0, 90);
+              renderCardsList();
+              showScreen("cards");
+            }
+          } else {
+            const item = db.mcqs.find(question => question.id === id);
+            if (item) {
+              el.mcqDeckFilter.value = "all";
+              el.mcqSearch.value = item.question.slice(0, 90);
+              renderMCQList();
+              showScreen("mcq");
+            }
+          }
+
+          closeGlobalSearch();
+          showToast(kind === "card" ? "Flashcard located" : "MCQ located");
+        });
+      });
+    }
+
+    function openGlobalSearch() {
+      if (!el.searchModal) return;
+      el.searchModal.classList.add("show");
+      renderGlobalSearch();
+      setTimeout(() => el.globalSearchInput?.focus(), 40);
+    }
+
+    function closeGlobalSearch() {
+      el.searchModal?.classList.remove("show");
+    }
+
+    function runQuickBackup() {
+      exportJSON();
+      localStorage.setItem(LAST_BACKUP_KEY, nowISO());
+      updateBackupStatus();
+    }
+
     function renderDashboard() {
       el.dashDue.textContent = dueCards().length;
       el.dashTotal.textContent = db.cards.length;
@@ -2818,6 +4238,9 @@
           showScreen("quiz");
         });
       });
+
+      renderStudyMission();
+      updateBackupStatus();
     }
 
     function deckOptionHTML(includeAll = true) {
@@ -3917,7 +5340,11 @@
       downloadFile("cpale-mcq-v3.csv", rows.map(r => r.map(csvEscape).join(",")).join("\n"), "text/csv");
     }
 
-    function exportJSON() { downloadFile("cpale-recall-deck-full-backup-v3.json", JSON.stringify({ profile, db }, null, 2), "application/json"); }
+    function exportJSON() {
+      downloadFile("cpale-recall-deck-full-backup-v3.json", JSON.stringify({ profile, db }, null, 2), "application/json");
+      localStorage.setItem(LAST_BACKUP_KEY, nowISO());
+      updateBackupStatus();
+    }
 
     function downloadFile(filename, content, type) {
       const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const a = document.createElement("a");
@@ -4235,6 +5662,29 @@ Notes:`;
     }
 
     function bindEvents() {
+      el.globalSearchBtn?.addEventListener("click", openGlobalSearch);
+      el.closeSearchBtn?.addEventListener("click", closeGlobalSearch);
+      el.globalSearchInput?.addEventListener("input", renderGlobalSearch);
+      el.quickBackupBtn?.addEventListener("click", runQuickBackup);
+
+      el.searchModal?.addEventListener("click", event => {
+        if (event.target === el.searchModal) closeGlobalSearch();
+      });
+
+      document.addEventListener("keydown", event => {
+        const tag = document.activeElement?.tagName;
+        const typing = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+
+        if (event.key === "/" && !typing) {
+          event.preventDefault();
+          openGlobalSearch();
+        }
+
+        if (event.key === "Escape" && el.searchModal?.classList.contains("show")) {
+          closeGlobalSearch();
+        }
+      });
+
       el.startBtn.addEventListener("click", () => {
         const name = el.profileName.value.trim() || "Student";
         profile = { name, targetExam: normalizeTargetExamValue(el.targetExam.value || ""), createdAt: nowISO() };

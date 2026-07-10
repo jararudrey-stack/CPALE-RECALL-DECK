@@ -1,12 +1,17 @@
-CPALE Recall Deck v7.0
+CPALE Recall Deck v8.0 — Focus Edition
 
-Sleeping ghost redo:
-- Rebuilt from v6.7, the last good centered splash version.
-- Restored the day/night toggle to its original placement.
-- Added a small animated sleeping ghost to the LEFT of the toggle.
-- The ghost gently bobs, snores, and emits floating "z" symbols.
-- The ghost appears only from 10:00 PM to 5:59 AM Philippine time.
-- The design blends with the website aesthetic and uses CSS animation, so movement is smooth and reliable.
+Major revamp:
+- Redesigned the entire interface with a cleaner, more premium command-center aesthetic.
+- Added a sticky glass navigation system with clearer visual hierarchy.
+- Added universal search across flashcards, answers, topics, decks, MCQs, choices, and explanations.
+- Added a one-tap full JSON backup in the header.
+- Added backup freshness status and reminders.
+- Added a dynamic Recommended Next Move study mission.
+- Redesigned dashboard statistics and quick actions.
+- Improved subject progress cards and review strategy guidance.
+- Improved quiz choices, panels, forms, modals, focus states, and touch interactions.
+- Made quiz session controls sticky for easier navigation.
+- Preserved the centered fiery-eye opening, night ghost, Firebase learners-online count, local data, quizzes, imports, exports, and all existing study functionality.
 
 Files to upload:
 - index.html
@@ -15,6 +20,7 @@ Files to upload:
 - README.txt
 
 Open after updating:
-https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=70
+https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=80
 
-If Safari still shows the old version, refresh several times or clear website data for the GitHub Pages site.
+Safari cache:
+Refresh several times after deployment. If the previous design remains, clear website data for the GitHub Pages site and reopen the URL above.
