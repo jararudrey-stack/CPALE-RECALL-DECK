@@ -1,17 +1,19 @@
-CPALE Recall Deck v8.0 — Focus Edition
+CPALE Recall Deck v8.1 — Quiz Flow & Interaction Update
 
-Major revamp:
-- Redesigned the entire interface with a cleaner, more premium command-center aesthetic.
-- Added a sticky glass navigation system with clearer visual hierarchy.
-- Added universal search across flashcards, answers, topics, decks, MCQs, choices, and explanations.
-- Added a one-tap full JSON backup in the header.
-- Added backup freshness status and reminders.
-- Added a dynamic Recommended Next Move study mission.
-- Redesigned dashboard statistics and quick actions.
-- Improved subject progress cards and review strategy guidance.
-- Improved quiz choices, panels, forms, modals, focus states, and touch interactions.
-- Made quiz session controls sticky for easier navigation.
-- Preserved the centered fiery-eye opening, night ghost, Firebase learners-online count, local data, quizzes, imports, exports, and all existing study functionality.
+Bug fixes:
+- A completed quiz now displays one clear Finish button.
+- Finish clears the completed session and exits the quiz screen.
+- Finish returns the user directly to the dashboard.
+- Previous and Next are physically removed from view once the quiz ends.
+- Removed the duplicate finish-event fallback that could cause inconsistent behavior.
+
+Interaction improvements:
+- Added a polished animated quiz-completion screen.
+- Added an animated score ring, completion mark, result statistics, subtle sparkles, and contextual result messaging.
+- Added professional hover, press, sheen, and ripple feedback to buttons.
+- Added animated correct and incorrect answer feedback.
+- Improved disabled-button treatment and reduced-motion accessibility.
+- Preserved the v8.0 redesign, universal search, quick backup, Firebase presence, fiery-eye opening, night ghost, and all study data features.
 
 Files to upload:
 - index.html
@@ -20,7 +22,7 @@ Files to upload:
 - README.txt
 
 Open after updating:
-https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=80
+https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=81
 
 Safari cache:
-Refresh several times after deployment. If the previous design remains, clear website data for the GitHub Pages site and reopen the URL above.
+After deployment, refresh several times. If v8.0 remains visible, clear website data for the GitHub Pages site and reopen the v=81 URL.
