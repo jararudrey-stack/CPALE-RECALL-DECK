@@ -1,46 +1,50 @@
-CPALE Recall Deck v10.1 — Connected MCQ Sequences
+CPALE Recall Deck v10.2 — Performance Fix
 
-Connected-question fix:
-- Connected MCQs are now treated as one question block.
-- The app shuffles independent blocks instead of shuffling every question individually.
-- Questions inside a connected block always retain their original logical order.
-- A follow-up question appears immediately after its main scenario question.
-- Connected blocks are kept intact even when this slightly exceeds the selected quiz length.
-- Reviewing missed items also restores the main question and the complete connected sequence.
+Problems fixed:
+- The app no longer keeps the opening screen visible for 2.45 seconds.
+- The opening transition now lasts about half a second on the first visit.
+- Reloads in the same browser session skip the opening transition completely.
+- The large opening animation was moved out of index.html into opening-eye.webp.
+- This reduces index.html parsing work and lets the browser cache the animation separately.
 
-How connections are detected:
-- Original CSV/import order
-- Same subject, deck, and subtopic
-- Phrases such as “using the same data,” “based on the preceding information,” and similar references
-- Main questions that explicitly state that several questions use the same information
-- Repeated scenario entities, values, or substantially shared facts
-- Short dependent follow-up questions after a detailed main scenario
+Due MCQ performance:
+- Sequence metadata is indexed once and reused.
+- Connected-question groups are stored in fast in-memory maps.
+- Due assignments and completion totals use a cached snapshot.
+- Repeated Due-screen render requests are deduplicated.
+- The Due tab no longer rebuilds every connected group repeatedly.
+- The extra duplicate Due-tab click listener was removed.
+- The hidden Due screen is no longer rendered during every dashboard update.
+- Full connected-question recomputation now occurs only after MCQ imports or edits.
 
-Quiz improvements:
-- Connected questions display a Connected Set position indicator.
-- Free-practice quizzes randomize complete question blocks, not individual connected questions.
-- Imported MCQs receive stable sequence-order metadata for future quizzes.
+General startup improvements:
+- Hidden flashcard lists and the removed flashcard review queue are no longer built during startup.
+- The complete MCQ bank and topic pages render only when opened.
+- App updates now refresh only the active screen instead of rebuilding every hidden screen.
 
-Due MCQ improvements:
-- Due selection chooses complete connected blocks.
-- A connected set is never divided between different due sessions.
-- Existing daily due schedules are rebuilt once for the new sequence system.
-- Due sets continue to use one adaptive subtopic per subject.
-
-Due-completion message:
-- The Due screen displays “All due MCQs have been answered” after completion.
-- The last answered due item triggers the same confirmation message.
-- The quiz-results screen clearly confirms when the entire daily due rotation is complete.
-- The completion message remains visible until the next due schedule is generated at midnight Philippine time.
+Preserved:
+- One due subtopic per subject
+- Connected MCQ sequencing
+- Due-completion message
+- Quiz Finish flow
+- Focus timer
+- Analytics and growth priorities
+- Firebase learners-online indicator
+- Sleeping night ghost
+- Fiery-eye opening animation
 
 Files to upload:
 - index.html
+- opening-eye.webp
 - manifest.webmanifest
 - service-worker.js
 - README.txt
 
 Open after updating:
-https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=101
+https://jararudrey-stack.github.io/CPALE-RECALL-DECK/?v=102
+
+Important:
+Upload opening-eye.webp together with the other files. The opening animation will not appear if that file is missing.
 
 Safari cache:
-Refresh several times after deployment. If the previous version remains visible, clear website data for the GitHub Pages site and reopen the v=101 URL.
+After deployment, refresh several times. If v10.1 remains visible, clear website data for the GitHub Pages site and reopen the v=102 URL.

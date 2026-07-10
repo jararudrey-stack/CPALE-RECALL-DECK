@@ -5,5 +5,5 @@
   "display": "standalone",
   "background_color": "#070b14",
   "theme_color": "#070b14",
-  "description": "An MCQ-first CPALE review app with connected question sequencing, one adaptive due subtopic per subject, analytics, focus timer, backup, and Firebase presence."
+  "description": "An optimized MCQ-first CPALE review app with fast startup, cached Due MCQs, connected question sequencing, analytics, focus timer, backup, and Firebase presence."
 }
